@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../../auth.service';
+import { AuthService } from '../../../auth/auth.service';
 import { UserService } from '../../../user.service';
 import { User } from '../../../models/user.model'; // Assuming you have a User model defined
 

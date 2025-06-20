@@ -1,0 +1,18 @@
+{
+    "sourceFile": "src/app/auth/auth.service.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1750458693190,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1750458693190,
+            "name": "Commit-0",
+            "content": "import { Injectable } from '@angular/core';\nimport { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';\nimport { Observable } from 'rxjs';\nimport { map } from 'rxjs/operators';\n\n@Injectable({ providedIn: 'root' })\nexport class AuthService {\n  constructor(private auth: Auth) { }\n\n  currentUser$ = authState(this.auth);\n  redirectUrl: string | null = null;\n\n  login(email: string, password: string) {\n    return signInWithEmailAndPassword(this.auth, email, password);\n  }\n\n  register(email: string, password: string) {\n    return createUserWithEmailAndPassword(this.auth, email, password);\n  }\n\n  logout() {\n    return signOut(this.auth);\n  }\n\n  isLoggedIn(): Observable<boolean> {\n    return this.currentUser$.pipe(map(user => !!user));\n  }\n}"
+        }
+    ]
+}

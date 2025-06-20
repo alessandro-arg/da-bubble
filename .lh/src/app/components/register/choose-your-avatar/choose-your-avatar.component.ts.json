@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/app/components/register/choose-your-avatar/choose-your-avatar.component.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1750459120843,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1750459127133,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import { Component, OnInit } from '@angular/core';\n import { CommonModule } from '@angular/common';\n import { RouterLink, Router } from '@angular/router';\n import { FormsModule } from '@angular/forms';\n-import { AuthService } from '../../../aauth.service';\n+import { AuthService } from '../../../auth/auth.service';\n import { UserService } from '../../../user.service';\n import { User } from '../../../models/user.model'; // Assuming you have a User model defined\n \n @Component({\n"
+                }
+            ],
+            "date": 1750459120843,
+            "name": "Commit-0",
+            "content": "import { Component, OnInit } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { RouterLink, Router } from '@angular/router';\nimport { FormsModule } from '@angular/forms';\nimport { AuthService } from '../../../aauth.service';\nimport { UserService } from '../../../user.service';\nimport { User } from '../../../models/user.model'; // Assuming you have a User model defined\n\n@Component({\n  selector: 'app-choose-your-avatar',\n  standalone: true,\n  imports: [CommonModule, FormsModule, RouterLink],\n  templateUrl: './choose-your-avatar.component.html',\n  styleUrl: './choose-your-avatar.component.scss'\n})\nexport class ChooseYourAvatarComponent implements OnInit {\n  avatars = [\n    'assets/img/charaters.svg',\n    'assets/img/charaters(1).svg',\n    'assets/img/charaters(2).svg',\n    'assets/img/charaters(3).svg',\n    'assets/img/charaters(4).svg',\n    'assets/img/charaters(5).svg'\n  ];\n  \n  selectedAvatar: string = '';\n  currentUser: User | null = null;\n  loading = false;\n\n  constructor(\n    private authService: AuthService,\n    private userService: UserService,\n    private router: Router\n  ) {}\n\n  async ngOnInit() {\n    this.authService.currentUser$.subscribe(async (firebaseUser) => {\n      if (firebaseUser) {\n        this.currentUser = await this.userService.getUser(firebaseUser.uid);\n      }\n    });\n  }\n\n  selectAvatar(avatar: string) {\n    this.selectedAvatar = avatar;\n  }\n\n  async confirmAvatar() {\n    if (!this.selectedAvatar || !this.currentUser?.uid) {\n      alert('Bitte wählen Sie einen Avatar aus');\n      return;\n    }\n  \n    this.loading = true;\n    \n    try {\n      // Erstelle ein neues Objekt mit nur den zu aktualisierenden Feldern\n      const updateData = {\n        avatar: this.selectedAvatar,\n        lastUpdated: new Date() // Optional: Timestamp hinzufügen\n      };\n  \n      await this.userService.updateUser(this.currentUser.uid, updateData);\n      \n      // Aktualisiere lokale Benutzerdaten\n      this.currentUser = {\n        ...this.currentUser,\n        ...updateData\n      };\n      \n      this.router.navigate(['/login']); // Zur Chat-Seite navigieren\n    } catch (error) {\n      console.error('Avatar Update Error:', error);\n      alert(`Fehler: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`);\n    } finally {\n      this.loading = false;\n    }\n  }\n}\n"
+        }
+    ]
+}

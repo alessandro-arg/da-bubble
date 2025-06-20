@@ -1,0 +1,26 @@
+{
+    "sourceFile": "src/app/components/register/register.component.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1750459040910,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1750459050814,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,9 @@\n import { CommonModule } from '@angular/common';\n import { RouterLink, Router } from '@angular/router';\n import { FormsModule, NgForm } from '@angular/forms';\n import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';\n-import { AuthService } from ''; // Du musst diesen Service noch erstellen\n+import { AuthService } from '../..'; // Du musst diesen Service noch erstellen\n import { UserService } from '../../user.service'; // Du musst diesen Service noch erstellen\n \n @Component({\n   selector: 'app-register',\n"
+                },
+                {
+                    "date": 1750459056381,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,9 @@\n import { CommonModule } from '@angular/common';\n import { RouterLink, Router } from '@angular/router';\n import { FormsModule, NgForm } from '@angular/forms';\n import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';\n-import { AuthService } from '../..'; // Du musst diesen Service noch erstellen\n+import { AuthService } from '../../auth/'; // Du musst diesen Service noch erstellen\n import { UserService } from '../../user.service'; // Du musst diesen Service noch erstellen\n \n @Component({\n   selector: 'app-register',\n"
+                }
+            ],
+            "date": 1750459040910,
+            "name": "Commit-0",
+            "content": "import { Component } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { RouterLink, Router } from '@angular/router';\nimport { FormsModule, NgForm } from '@angular/forms';\nimport { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';\nimport { AuthService } from ''; // Du musst diesen Service noch erstellen\nimport { UserService } from '../../user.service'; // Du musst diesen Service noch erstellen\n\n@Component({\n  selector: 'app-register',\n  standalone: true,\n  imports: [CommonModule, FormsModule, RouterLink, ReactiveFormsModule],\n  templateUrl: './register.component.html',\n  styleUrl: './register.component.scss'\n})\nexport class RegisterComponent {\n  registerForm: FormGroup;\n  showPassword = false;\n  errorMessage: string | null = null;\n  loading = false;\n\n  constructor(\n    private authService: AuthService,\n    private userService: UserService,\n    private router: Router\n  ) {\n    this.registerForm = new FormGroup({\n      name: new FormControl('', [Validators.required]),\n      email: new FormControl('', [Validators.required, Validators.email]),\n      password: new FormControl('', [Validators.required, Validators.minLength(6)]),\n      privacyPolicy: new FormControl(false, [Validators.requiredTrue])\n    });\n  }\n\n  togglePasswordVisibility() {\n    this.showPassword = !this.showPassword;\n  }\n\n  async onSubmit() {\n    if (this.registerForm.invalid) {\n      return;\n    }\n\n    this.loading = true;\n    this.errorMessage = null;\n\n    const { name, email, password } = this.registerForm.value;\n\n    try {\n      // Benutzer registrieren\n      const userCredential = await this.authService.register(email, password);\n      \n      // Benutzerdaten in Firestore speichern\n      await this.userService.createUser({\n        uid: userCredential.user?.uid,\n        name: name,\n        email: email,\n        avatar: 'default-avatar' // Standard-Avatar\n      });\n\n      // Weiter zur Avatar-Auswahl\n      this.router.navigate(['/choose-your-avatar']);\n    } catch (error) {\n      console.error('Registration error:', error);\n      this.errorMessage = 'Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut.';\n      if (error instanceof Error) {\n        this.errorMessage = error.message;\n      }\n    } finally {\n      this.loading = false;\n    }\n  }\n}\n\n/* Kannst mir jetzt den html mit \nng FormsModule an passenden machen bitte damit es jetzt funktioniert bitte\n machen wir jetzt Einzel component bitte zu erst RegisterComponent.   hier */"
+        }
+    ]
+}

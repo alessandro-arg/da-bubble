@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 14,
+            "activePatchIndex": 18,
             "patches": [
                 {
                     "date": 1750443745141,
@@ -64,6 +64,22 @@
                 {
                     "date": 1750457441074,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -29,18 +29,8 @@\n   togglePasswordVisibility() {\n     this.showPassword = !this.showPassword;\n   }\n \n-  /*   async onSubmit(form: NgForm) {\n-      if (form.invalid) {\n-        return;\n-      }\n-  \n-      this.loading = true;\n-      this.errorMessage = null;\n-  \n-    } */\n-\n   async guestLogin() {\n     this.loading = true;\n     try {\n       await this.authService.login('guest@example.com', 'guestpassword');\n"
+                },
+                {
+                    "date": 1750459154604,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import { Component } from '@angular/core';\n import { CommonModule } from '@angular/common';\n import { FormsModule, NgForm } from '@angular/forms';\n import { RouterLink, Router } from '@angular/router';\n-import { AuthService } from './../../auth.service';\n+import { AuthService } from '../../../auth.service';\n \n @Component({\n   selector: 'app-login',\n   standalone: true,\n"
+                },
+                {
+                    "date": 1750459163153,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import { Component } from '@angular/core';\n import { CommonModule } from '@angular/common';\n import { FormsModule, NgForm } from '@angular/forms';\n import { RouterLink, Router } from '@angular/router';\n-import { AuthService } from '../../../auth.service';\n+import { AuthService } from '../../../aauth.service';\n \n @Component({\n   selector: 'app-login',\n   standalone: true,\n"
+                },
+                {
+                    "date": 1750459173381,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import { Component } from '@angular/core';\n import { CommonModule } from '@angular/common';\n import { FormsModule, NgForm } from '@angular/forms';\n import { RouterLink, Router } from '@angular/router';\n-import { AuthService } from '../../../aauth.service';\n+import { AuthService } from '../../../authauth.service';\n \n @Component({\n   selector: 'app-login',\n   standalone: true,\n"
+                },
+                {
+                    "date": 1750459181134,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import { Component } from '@angular/core';\n import { CommonModule } from '@angular/common';\n import { FormsModule, NgForm } from '@angular/forms';\n import { RouterLink, Router } from '@angular/router';\n-import { AuthService } from '../../../authauth.service';\n+import { AuthService } from '../../auth/auth.service';\n \n @Component({\n   selector: 'app-login',\n   standalone: true,\n"
                 }
             ],
             "date": 1750443745141,

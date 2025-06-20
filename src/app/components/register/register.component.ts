@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from './../../auth.service'; // Du musst diesen Service noch erstellen
+import { AuthService } from '../../auth/auth.service'; // Du musst diesen Service noch erstellen
 import { UserService } from '../../user.service'; // Du musst diesen Service noch erstellen
 
 @Component({

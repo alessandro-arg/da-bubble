@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 4,
+            "activePatchIndex": 9,
             "patches": [
                 {
                     "date": 1750446456117,
@@ -24,6 +24,26 @@
                 {
                     "date": 1750454789159,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,10 +8,8 @@\n \n   if (authService.isLoggedIn()) {\n     return true;\n   }\n-  \n-  // Store attempted URL for redirect after login\n   authService.redirectUrl = state.url;\n   router.navigate(['/login']);\n   return false;\n };\n"
+                },
+                {
+                    "date": 1750458845699,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { CanActivateFn, Router } from '@angular/router';\n import { inject } from '@angular/core';\n-import { AuthService } from './auth.service';\n+import { AuthService } from '';\n \n export const authGuard: CanActivateFn = (route, state) => {\n   const authService = inject(AuthService);\n   const router = inject(Router);\n"
+                },
+                {
+                    "date": 1750458851072,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { CanActivateFn, Router } from '@angular/router';\n import { inject } from '@angular/core';\n-import { AuthService } from '';\n+import { AuthService } from '..';\n \n export const authGuard: CanActivateFn = (route, state) => {\n   const authService = inject(AuthService);\n   const router = inject(Router);\n"
+                },
+                {
+                    "date": 1750458862157,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { CanActivateFn, Router } from '@angular/router';\n import { inject } from '@angular/core';\n-import { AuthService } from '..';\n+import { AuthService } from '../app';\n \n export const authGuard: CanActivateFn = (route, state) => {\n   const authService = inject(AuthService);\n   const router = inject(Router);\n"
+                },
+                {
+                    "date": 1750458870732,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { CanActivateFn, Router } from '@angular/router';\n import { inject } from '@angular/core';\n-import { AuthService } from '../app';\n+import { AuthService } from '../app/auth';\n \n export const authGuard: CanActivateFn = (route, state) => {\n   const authService = inject(AuthService);\n   const router = inject(Router);\n"
+                },
+                {
+                    "date": 1750458875925,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { CanActivateFn, Router } from '@angular/router';\n import { inject } from '@angular/core';\n-import { AuthService } from '../app/auth';\n+import { AuthService } from '../app/auth/auth.service';\n \n export const authGuard: CanActivateFn = (route, state) => {\n   const authService = inject(AuthService);\n   const router = inject(Router);\n"
                 }
             ],
             "date": 1750446456117,

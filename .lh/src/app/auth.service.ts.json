@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1750446724496,
@@ -20,6 +20,10 @@
                 {
                     "date": 1750448995754,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,10 +4,10 @@\n import { map } from 'rxjs/operators';\n \n @Injectable({ providedIn: 'root' })\n export class AuthService {\n-  constructor(private auth: Auth) {}\n-  \n+  constructor(private auth: Auth) { }\n+\n   currentUser$ = authState(this.auth);\n   redirectUrl: string | null = null;\n \n   login(email: string, password: string) {\n"
+                },
+                {
+                    "date": 1750458725816,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { Injectable } from '@angular/core';\n+/* import { Injectable } from '@angular/core';\n import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';\n import { Observable } from 'rxjs';\n import { map } from 'rxjs/operators';\n \n@@ -24,5 +24,5 @@\n \n   isLoggedIn(): Observable<boolean> {\n     return this.currentUser$.pipe(map(user => !!user));\n   }\n-}\n\\ No newline at end of file\n+} */\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1750446724496,
