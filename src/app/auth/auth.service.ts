@@ -1,6 +1,6 @@
-/* import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
-import { User } from './../models/user.model'; // Assuming you have a User model defined
+
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -14,23 +14,11 @@ export class AuthService {
   logout() {
     return signOut(this.auth);
   }
+
+  isLoggedIn() {
+    return !!this.auth.currentUser;
+  }
+
+  redirectUrl: string | null = null;
   currentUser$ = authState(this.auth);
-} */
-
-/* 
-
-  guestLogin(): Promise<void> {
-    // Implement guest login logic here
-    // For example, you can create a guest user with predefined credentials
-    return this.login('')
-      .then(() => {
-        console.log('Guest login successful');
-      })
-      .catch((error) => {
-        console.error('Guest login failed:', error);
-        throw error; // Re-throw the error for further handling if needed
-      }
-      );
-    }
-
-*/
+}
