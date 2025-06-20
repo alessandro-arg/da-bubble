@@ -1,0 +1,30 @@
+{
+    "sourceFile": "src/app/auth.service.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1750446724496,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1750446739253,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,12 +14,15 @@\n   logout() {\n     return signOut(this.auth);\n   }\n \n-  isLoggedIn() {\n+/*   isLoggedIn() {\n     return !!this.auth.currentUser;\n-  }\n+  } */\n \n-  \n+  // auth.service.ts\n+isLoggedIn(): Observable<boolean> {\n+  return this.currentUser$.pipe(map(user => !!user));\n+}\n   redirectUrl: string | null = null;\n   currentUser$ = authState(this.auth);\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1750447569354,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,28 +1,28 @@\n import { Injectable } from '@angular/core';\n import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';\n-import { User } from './models/user.model'; // Assuming you have a User model defined\n+import { Observable } from 'rxjs';\n+import { map } from 'rxjs/operators';\n \n @Injectable({ providedIn: 'root' })\n export class AuthService {\n   constructor(private auth: Auth) {}\n+  \n+  currentUser$ = authState(this.auth);\n+  redirectUrl: string | null = null;\n+\n   login(email: string, password: string) {\n     return signInWithEmailAndPassword(this.auth, email, password);\n   }\n+\n   register(email: string, password: string) {\n     return createUserWithEmailAndPassword(this.auth, email, password);\n   }\n+\n   logout() {\n     return signOut(this.auth);\n   }\n \n-/*   isLoggedIn() {\n-    return !!this.auth.currentUser;\n-  } */\n-\n-  // auth.service.ts\n-isLoggedIn(): Observable<boolean> {\n-  return this.currentUser$.pipe(map(user => !!user));\n-}\n-  redirectUrl: string | null = null;\n-  currentUser$ = authState(this.auth);\n+  isLoggedIn(): Observable<boolean> {\n+    return this.currentUser$.pipe(map(user => !!user));\n+  }\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1750448995754,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,10 +4,10 @@\n import { map } from 'rxjs/operators';\n \n @Injectable({ providedIn: 'root' })\n export class AuthService {\n-  constructor(private auth: Auth) {}\n-  \n+  constructor(private auth: Auth) { }\n+\n   currentUser$ = authState(this.auth);\n   redirectUrl: string | null = null;\n \n   login(email: string, password: string) {\n"
+                }
+            ],
+            "date": 1750446724496,
+            "name": "Commit-0",
+            "content": "import { Injectable } from '@angular/core';\nimport { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';\nimport { User } from './models/user.model'; // Assuming you have a User model defined\n\n@Injectable({ providedIn: 'root' })\nexport class AuthService {\n  constructor(private auth: Auth) {}\n  login(email: string, password: string) {\n    return signInWithEmailAndPassword(this.auth, email, password);\n  }\n  register(email: string, password: string) {\n    return createUserWithEmailAndPassword(this.auth, email, password);\n  }\n  logout() {\n    return signOut(this.auth);\n  }\n\n  isLoggedIn() {\n    return !!this.auth.currentUser;\n  }\n\n  \n  redirectUrl: string | null = null;\n  currentUser$ = authState(this.auth);\n}"
+        }
+    ]
+}

@@ -1,0 +1,34 @@
+{
+    "sourceFile": "src/app/auth.guard.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 4,
+            "patches": [
+                {
+                    "date": 1750446456117,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1750446461475,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,4 +12,7 @@\n   authService.redirectUrl = state.url;\n   router.navigate(['/login']);\n   return false;\n }; */\n+\n+\n+\n"
+                },
+                {
+                    "date": 1750447256011,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,5 +14,22 @@\n   return false;\n }; */\n \n \n+import { Injectable } from '@angular/core';\n+import { CanActivate, Router, UrlTree } from '@angular/router';\n+import { AuthService } from './auth.service';\n+import { Observable } from 'rxjs';\n+import { map } from 'rxjs/operators';\n \n+@Injectable({\n+  providedIn: 'root'\n+})\n+export class AuthGuard implements CanActivate {\n+  constructor(private authService: AuthService, private router: Router) {}\n+\n+  canActivate(): Observable<boolean | UrlTree> {\n+    return this.authService.currentUser$.pipe(\n+      map(user => user ? true : this.router.parseUrl('/login'))\n+    );\n+  }\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1750454781369,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-/* import { CanActivateFn, Router } from '@angular/router';\n+import { CanActivateFn, Router } from '@angular/router';\n import { inject } from '@angular/core';\n import { AuthService } from './auth.service';\n \n export const authGuard: CanActivateFn = (route, state) => {\n@@ -8,28 +8,10 @@\n \n   if (authService.isLoggedIn()) {\n     return true;\n   }\n+  \n+  // Store attempted URL for redirect after login\n   authService.redirectUrl = state.url;\n   router.navigate(['/login']);\n   return false;\n-}; */\n-\n-\n-import { Injectable } from '@angular/core';\n-import { CanActivate, Router, UrlTree } from '@angular/router';\n-import { AuthService } from './auth.service';\n-import { Observable } from 'rxjs';\n-import { map } from 'rxjs/operators';\n-\n-@Injectable({\n-  providedIn: 'root'\n-})\n-export class AuthGuard implements CanActivate {\n-  constructor(private authService: AuthService, private router: Router) {}\n-\n-  canActivate(): Observable<boolean | UrlTree> {\n-    return this.authService.currentUser$.pipe(\n-      map(user => user ? true : this.router.parseUrl('/login'))\n-    );\n\\ No newline at end of file\n-  }\n-}\n+};\n"
+                },
+                {
+                    "date": 1750454789159,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,10 +8,8 @@\n \n   if (authService.isLoggedIn()) {\n     return true;\n   }\n-  \n-  // Store attempted URL for redirect after login\n   authService.redirectUrl = state.url;\n   router.navigate(['/login']);\n   return false;\n };\n"
+                }
+            ],
+            "date": 1750446456117,
+            "name": "Commit-0",
+            "content": "/* import { CanActivateFn, Router } from '@angular/router';\nimport { inject } from '@angular/core';\nimport { AuthService } from './auth.service';\n\nexport const authGuard: CanActivateFn = (route, state) => {\n  const authService = inject(AuthService);\n  const router = inject(Router);\n\n  if (authService.isLoggedIn()) {\n    return true;\n  }\n  authService.redirectUrl = state.url;\n  router.navigate(['/login']);\n  return false;\n}; */\n"
+        }
+    ]
+}

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 17,
             "patches": [
                 {
                     "date": 1750441765784,
@@ -20,6 +20,62 @@
                 {
                     "date": 1750441910087,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -37,6 +37,4 @@\n \n <app-workspace-toggle-button></app-workspace-toggle-button>\n \n <router-outlet></router-outlet>\n-\n-\n"
+                },
+                {
+                    "date": 1750445281692,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -36,5 +36,5 @@\n </div>\n \n <app-workspace-toggle-button></app-workspace-toggle-button>\n \n-<router-outlet></router-outlet>\n+<!-- <router-outlet></router-outlet> -->\n"
+                },
+                {
+                    "date": 1750445320560,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -36,5 +36,5 @@\n </div>\n \n <app-workspace-toggle-button></app-workspace-toggle-button>\n \n-<!-- <router-outlet></router-outlet> -->\n+<router-outlet></router-outlet>\n"
+                },
+                {
+                    "date": 1750449599863,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,6 +35,4 @@\n   </div>\n </div>\n \n <app-workspace-toggle-button></app-workspace-toggle-button>\n-\n-<router-outlet></router-outlet>\n"
+                },
+                {
+                    "date": 1750449696773,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,4 +35,6 @@\n   </div>\n </div>\n \n <app-workspace-toggle-button></app-workspace-toggle-button>\n+\n+<router-outlet></router-outlet>\n"
+                },
+                {
+                    "date": 1750449866582,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,6 @@\n+\n+\n <div class=\"max-w-[1600px] mx-auto flex items-center justify-between px-6 py-4\">\n   <img src=\"../assets/img/logo.png\" alt=\"Logo\" class=\"h-16\" />\n \n   <app-searchbar\n"
+                },
+                {
+                    "date": 1750450305170,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,38 @@\n+<div class=\"p-8\">\n+  <h1 class=\"text-2xl font-bold mb-4\">Willkommen bei DABubble</h1>\n \n+  <div\n+    *ngIf=\"currentUser\"\n+    class=\"flex flex-col items-center justify-center gap-4\"\n+  >\n+    <div class=\"flex items-center justify-center gap-4\">\n+      <p class=\"text-lg font-medium\">{{ currentUser.name }}</p>\n+      <img\n+        [src]=\"currentUser.avatar || './assets/img/profile.svg'\"\n+        alt=\"Profilbild\"\n+        class=\"w-16 h-16 rounded-full object-cover\"\n+      />\n+    </div>\n+    <button\n+      (click)=\"logout()\"\n+      class=\"px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors\"\n+    >\n+      Abmelden\n+    </button>\n+  </div>\n \n+  <div *ngIf=\"!currentUser\" class=\"text-center py-8\">\n+    <p>Kein Benutzer angemeldet</p>\n+    <a\n+      routerLink=\"/login\"\n+      class=\"text-blue-500 hover:text-blue-700 underline mt-2 inline-block\"\n+    >\n+      Zum Login\n+    </a>\n+  </div>\n+</div>\n+\n <div class=\"max-w-[1600px] mx-auto flex items-center justify-between px-6 py-4\">\n   <img src=\"../assets/img/logo.png\" alt=\"Logo\" class=\"h-16\" />\n \n   <app-searchbar\n@@ -38,5 +70,5 @@\n </div>\n \n <app-workspace-toggle-button></app-workspace-toggle-button>\n \n-<router-outlet></router-outlet>\n+\n"
+                },
+                {
+                    "date": 1750450313462,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,6 @@\n+\n+\n <div class=\"p-8\">\n   <h1 class=\"text-2xl font-bold mb-4\">Willkommen bei DABubble</h1>\n \n   <div\n"
+                },
+                {
+                    "date": 1750450367774,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n-\n-\n+<router-outlet></router-outlet>\n+<!-- \n <div class=\"p-8\">\n   <h1 class=\"text-2xl font-bold mb-4\">Willkommen bei DABubble</h1>\n \n   <div\n@@ -73,4 +73,5 @@\n \n <app-workspace-toggle-button></app-workspace-toggle-button>\n \n \n+ -->\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1750450469961,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n <router-outlet></router-outlet>\n-<!-- \n+\n <div class=\"p-8\">\n   <h1 class=\"text-2xl font-bold mb-4\">Willkommen bei DABubble</h1>\n \n   <div\n@@ -73,5 +73,4 @@\n \n <app-workspace-toggle-button></app-workspace-toggle-button>\n \n \n- -->\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1750450512891,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,9 +32,9 @@\n       Zum Login\n     </a>\n   </div>\n </div>\n-\n+<!-- \n <div class=\"max-w-[1600px] mx-auto flex items-center justify-between px-6 py-4\">\n   <img src=\"../assets/img/logo.png\" alt=\"Logo\" class=\"h-16\" />\n \n   <app-searchbar\n@@ -73,4 +73,5 @@\n \n <app-workspace-toggle-button></app-workspace-toggle-button>\n \n \n+ -->\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1750450546706,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,9 +32,9 @@\n       Zum Login\n     </a>\n   </div>\n </div>\n-<!-- \n+\n <div class=\"max-w-[1600px] mx-auto flex items-center justify-between px-6 py-4\">\n   <img src=\"../assets/img/logo.png\" alt=\"Logo\" class=\"h-16\" />\n \n   <app-searchbar\n@@ -73,5 +73,4 @@\n \n <app-workspace-toggle-button></app-workspace-toggle-button>\n \n \n- -->\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1750456954191,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n-<router-outlet></router-outlet>\n \n+\n <div class=\"p-8\">\n   <h1 class=\"text-2xl font-bold mb-4\">Willkommen bei DABubble</h1>\n \n   <div\n"
+                },
+                {
+                    "date": 1750457014264,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,76 +1,4 @@\n \n \n-<div class=\"p-8\">\n-  <h1 class=\"text-2xl font-bold mb-4\">Willkommen bei DABubble</h1>\n \n-  <div\n-    *ngIf=\"currentUser\"\n-    class=\"flex flex-col items-center justify-center gap-4\"\n-  >\n-    <div class=\"flex items-center justify-center gap-4\">\n-      <p class=\"text-lg font-medium\">{{ currentUser.name }}</p>\n-      <img\n-        [src]=\"currentUser.avatar || './assets/img/profile.svg'\"\n-        alt=\"Profilbild\"\n-        class=\"w-16 h-16 rounded-full object-cover\"\n-      />\n-    </div>\n-    <button\n-      (click)=\"logout()\"\n-      class=\"px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors\"\n-    >\n-      Abmelden\n-    </button>\n-  </div>\n-\n-  <div *ngIf=\"!currentUser\" class=\"text-center py-8\">\n-    <p>Kein Benutzer angemeldet</p>\n-    <a\n-      routerLink=\"/login\"\n-      class=\"text-blue-500 hover:text-blue-700 underline mt-2 inline-block\"\n-    >\n-      Zum Login\n-    </a>\n-  </div>\n-</div>\n-\n-<div class=\"max-w-[1600px] mx-auto flex items-center justify-between px-6 py-4\">\n-  <img src=\"../assets/img/logo.png\" alt=\"Logo\" class=\"h-16\" />\n-\n-  <app-searchbar\n-    class=\"w-full items-center flex justify-center\"\n-  ></app-searchbar>\n-\n-  <div class=\"flex items-center gap-5 text-gray-700 w-1/3 justify-center\">\n-    <h2 class=\"font-bold text-xl\">Frederik Beck</h2>\n-    <div class=\"relative w-16 h-16\">\n-      <img\n-        src=\"../../../assets/img/avatar.png\"\n-        alt=\"User\"\n-        class=\"w-16 h-16 rounded-full object-cover\"\n-      />\n-      <div\n-        class=\"absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white\"\n-      ></div>\n-    </div>\n-    <img src=\"../assets/img/icons/arrow_down.png\" alt=\"\" />\n-  </div>\n-</div>\n-\n-<div class=\"max-w-[1600px] mx-auto flex h-[calc(100vh-96px)] px-6 pb-6 gap-4\">\n-  <div class=\"w-1/4 bg-white h-full shadow-sm rounded-[32px]\">\n-    <app-user-list></app-user-list>\n-  </div>\n-\n-  <div class=\"w-2/4 bg-white h-full shadow-sm rounded-[32px]\">\n-    <p>Center content</p>\n-  </div>\n-\n-  <div class=\"w-1/4 bg-white h-full shadow-sm rounded-[32px]\">\n-    <p>Right content</p>\n-  </div>\n-</div>\n-\n-<app-workspace-toggle-button></app-workspace-toggle-button>\n-\n-\n+<router-outlet></router-outlet>\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1750457688877,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,2 @@\n \n-\n-\n <router-outlet></router-outlet>\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1750441765784,

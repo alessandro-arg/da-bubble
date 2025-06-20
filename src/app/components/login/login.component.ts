@@ -24,42 +24,37 @@ export class LoginComponent {
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
-  }
-
-  async onSubmit(form: NgForm) {
-    if (form.invalid) {
-      return;
-    }
-
-    this.loading = true;
-    this.errorMessage = null;
-
-    try {
-      await this.authService.login(this.credentials.email, this.credentials.password);
-      this.router.navigate(['/landingpage']);
-    } catch (error) {
-      console.error('Login error:', error);
-      this.errorMessage = 'Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre E-Mail und Passwort.';
-      if (error instanceof Error) {
-        this.errorMessage = error.message;
-      }
-    } finally {
-      this.loading = false;
-    }
   }
 
   async guestLogin() {
     this.loading = true;
     try {
       await this.authService.login('guest@example.com', 'guestpassword');
-      this.router.navigate(['/landingpage']);
+      this.router.navigate(['/AppComponent']);
     } catch (error) {
       console.error('Guest login error:', error);
       this.errorMessage = 'Gast-Login fehlgeschlagen.';
+    } finally {
+      this.loading = false;
+    }
+  }
+
+
+  async onSubmit(form: NgForm) {
+    if (form.invalid) return;
+  
+    this.loading = true;
+    this.errorMessage = null;
+  
+    try {
+      await this.authService.login(this.credentials.email, this.credentials.password);
+      this.router.navigate(['/landingpage']); // Zum geschützten Bereich
+    } catch (error) {
+      this.errorMessage = 'Login fehlgeschlagen.';
     } finally {
       this.loading = false;
     }

@@ -1,0 +1,102 @@
+{
+    "sourceFile": "src/app/app.routes.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 21,
+            "patches": [
+                {
+                    "date": 1750443615340,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1750443622017,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,26 @@\n+import { Routes } from '@angular/router';\n+import { authGuard } from './auth.guard';\n+import { LandingPageComponent } from './components/landing-page/landing-page.component';\n+import { LoginComponent } from './components/login/login.component';\n+import { RegisterComponent } from './components/register/register.component';\n+import { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';\n+\n+\n+export const routes: Routes = [\n+    {\n+        path: 'AppComponent',\n+        canActivate: [authGuard], // Protected route\n+    },\n+\n+    {\n+        path: 'login', component: LoginComponent\n+    },\n+\n+    {\n+        path: 'register', component: RegisterComponent\n+    }\n+    ,\n+    {\n+        path: 'choose-your-avatar', component: ChooseYourAvatarComponent\n+    }\n+];\n"
+                },
+                {
+                    "date": 1750443633612,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,15 +1,15 @@\n import { Routes } from '@angular/router';\n import { authGuard } from './auth.guard';\n-import { LandingPageComponent } from './components/landing-page/landing-page.component';\n+//import { LandingPageComponent } from './components/landing-page/landing-page.component';\n import { LoginComponent } from './components/login/login.component';\n import { RegisterComponent } from './components/register/register.component';\n import { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';\n \n \n export const routes: Routes = [\n     {\n-        path: 'AppComponent',\n+        path: 'AppComponent' ,\n         canActivate: [authGuard], // Protected route\n     },\n \n     {\n@@ -23,30 +23,4 @@\n     {\n         path: 'choose-your-avatar', component: ChooseYourAvatarComponent\n     }\n ];\n-import { Routes } from '@angular/router';\n-import { authGuard } from './auth.guard';\n-import { LandingPageComponent } from './components/landing-page/landing-page.component';\n-import { LoginComponent } from './components/login/login.component';\n-import { RegisterComponent } from './components/register/register.component';\n-import { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';\n-\n-\n-export const routes: Routes = [\n-    {\n-        path: 'landingpage',,\n-        canActivate: [authGuard], // Protected route\n-    },\n-\n-    {\n-        path: 'login', component: LoginComponent\n-    },\n-\n-    {\n-        path: 'register', component: RegisterComponent\n-    }\n-    ,\n-    {\n-        path: 'choose-your-avatar', component: ChooseYourAvatarComponent\n-    }\n-];\n"
+                },
+                {
+                    "date": 1750443643546,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n \n \n export const routes: Routes = [\n     {\n-        path: 'AppComponent' ,\n+        path: 'AppComponent', ,\n         canActivate: [authGuard], // Protected route\n     },\n \n     {\n"
+                },
+                {
+                    "date": 1750443661544,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,15 +1,16 @@\n import { Routes } from '@angular/router';\n import { authGuard } from './auth.guard';\n+\n //import { LandingPageComponent } from './components/landing-page/landing-page.component';\n import { LoginComponent } from './components/login/login.component';\n import { RegisterComponent } from './components/register/register.component';\n import { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';\n \n \n export const routes: Routes = [\n     {\n-        path: 'AppComponent', ,\n+        path: 'AppComponent',  ,\n         canActivate: [authGuard], // Protected route\n     },\n \n     {\n"
+                },
+                {
+                    "date": 1750443668810,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { Routes } from '@angular/router';\n import { authGuard } from './auth.guard';\n-\n+import { AppComponent } from './app.component';\n //import { LandingPageComponent } from './components/landing-page/landing-page.component';\n import { LoginComponent } from './components/login/login.component';\n import { RegisterComponent } from './components/register/register.component';\n import { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';\n"
+                },
+                {
+                    "date": 1750443674124,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,9 @@\n \n \n export const routes: Routes = [\n     {\n-        path: 'AppComponent',  ,\n+        path: 'AppComponent',\n         canActivate: [authGuard], // Protected route\n     },\n \n     {\n"
+                },
+                {
+                    "date": 1750443687619,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,10 +8,10 @@\n \n \n export const routes: Routes = [\n     {\n-        path: 'AppComponent',\n-        canActivate: [authGuard], // Protected route\n+        path: 'AppComponent', component: AppComponent\n+        //canActivate: [authGuard], // Protected route\n     },\n \n     {\n         path: 'login', component: LoginComponent\n"
+                },
+                {
+                    "date": 1750444459169,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,9 +9,9 @@\n \n export const routes: Routes = [\n     {\n         path: 'AppComponent', component: AppComponent\n-        //canActivate: [authGuard], // Protected route\n+        canActivate: [authGuard], // Protected route\n     },\n \n     {\n         path: 'login', component: LoginComponent\n"
+                },
+                {
+                    "date": 1750444665645,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,8 +19,9 @@\n \n     {\n         path: 'register', component: RegisterComponent\n     }\n+    \n     ,\n     {\n         path: 'choose-your-avatar', component: ChooseYourAvatarComponent\n     }\n"
+                },
+                {
+                    "date": 1750444674851,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -18,11 +18,9 @@\n     },\n \n     {\n         path: 'register', component: RegisterComponent\n-    }\n-    \n-    ,\n+    },\n     {\n         path: 'choose-your-avatar', component: ChooseYourAvatarComponent\n     }\n ];\n"
+                },
+                {
+                    "date": 1750444744596,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,9 @@\n \n \n export const routes: Routes = [\n     {\n-        path: 'AppComponent', component: AppComponent\n+        path: 'AppComponent', component: AppComponent,\n         canActivate: [authGuard], // Protected route\n     },\n \n     {\n@@ -19,8 +19,9 @@\n \n     {\n         path: 'register', component: RegisterComponent\n     },\n+\n     {\n         path: 'choose-your-avatar', component: ChooseYourAvatarComponent\n     }\n ];\n"
+                },
+                {
+                    "date": 1750444882527,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,9 @@\n \n \n export const routes: Routes = [\n     {\n-        path: 'AppComponent', component: AppComponent,\n+        path: 'AppComponent', component: AppComponent\n         canActivate: [authGuard], // Protected route\n     },\n \n     {\n@@ -19,9 +19,9 @@\n \n     {\n         path: 'register', component: RegisterComponent\n     },\n-\n+    \n     {\n         path: 'choose-your-avatar', component: ChooseYourAvatarComponent\n     }\n ];\n"
+                },
+                {
+                    "date": 1750444889402,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,9 @@\n \n \n export const routes: Routes = [\n     {\n-        path: 'AppComponent', component: AppComponent\n+        path: 'AppComponent', component: AppComponent,\n         canActivate: [authGuard], // Protected route\n     },\n \n     {\n"
+                },
+                {
+                    "date": 1750446556228,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,8 +6,10 @@\n import { RegisterComponent } from './components/register/register.component';\n import { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';\n \n \n+\n+\n export const routes: Routes = [\n     {\n         path: 'AppComponent', component: AppComponent,\n         canActivate: [authGuard], // Protected route\n"
+                },
+                {
+                    "date": 1750446568272,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,10 +6,38 @@\n import { RegisterComponent } from './components/register/register.component';\n import { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';\n \n \n+export const routes: Routes = [\n+    {\n+        path: '', // Standard-Route\n+        redirectTo: 'login', // oder 'landing-page' falls vorhanden\n+        pathMatch: 'full'\n+    },\n+    {\n+        path: 'app', // Besser: umbenennen zu einem sprechenden Pfad (z. B. 'dashboard')\n+        component: AppComponent,\n+        canActivate: [authGuard] // Geschützte Route\n+    },\n+    {\n+        path: 'login', \n+        component: LoginComponent\n+    },\n+    {\n+        path: 'register', \n+        component: RegisterComponent\n+    },\n+    {\n+        path: 'choose-your-avatar', \n+        component: ChooseYourAvatarComponent\n+    },\n+    {\n+        path: '**', // Fallback für ungültige Pfade\n+        redirectTo: 'login'\n+    }\n+];\n \n-\n+/* \n export const routes: Routes = [\n     {\n         path: 'AppComponent', component: AppComponent,\n         canActivate: [authGuard], // Protected route\n@@ -26,4 +54,5 @@\n     {\n         path: 'choose-your-avatar', component: ChooseYourAvatarComponent\n     }\n ];\n+ */\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1750447321295,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,40 +1,18 @@\n import { Routes } from '@angular/router';\n-import { authGuard } from './auth.guard';\n+import { AuthGuard } from './auth.guard'; // Großschreibung\n import { AppComponent } from './app.component';\n-//import { LandingPageComponent } from './components/landing-page/landing-page.component';\n import { LoginComponent } from './components/login/login.component';\n import { RegisterComponent } from './components/register/register.component';\n import { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';\n \n-\n export const routes: Routes = [\n-    {\n-        path: '', // Standard-Route\n-        redirectTo: 'login', // oder 'landing-page' falls vorhanden\n-        pathMatch: 'full'\n-    },\n-    {\n-        path: 'app', // Besser: umbenennen zu einem sprechenden Pfad (z. B. 'dashboard')\n-        component: AppComponent,\n-        canActivate: [authGuard] // Geschützte Route\n-    },\n-    {\n-        path: 'login', \n-        component: LoginComponent\n-    },\n-    {\n-        path: 'register', \n-        component: RegisterComponent\n-    },\n-    {\n-        path: 'choose-your-avatar', \n-        component: ChooseYourAvatarComponent\n-    },\n-    {\n-        path: '**', // Fallback für ungültige Pfade\n-        redirectTo: 'login'\n-    }\n+  { path: '', redirectTo: 'login', pathMatch: 'full' },\n+  { path: 'app', component: AppComponent, canActivate: [AuthGuard] },\n+  { path: 'login', component: LoginComponent },\n+  { path: 'register', component: RegisterComponent },\n+  { path: 'choose-your-avatar', component: ChooseYourAvatarComponent },\n+  { path: '**', redirectTo: 'login' }\n ];\n \n /* \n export const routes: Routes = [\n"
+                },
+                {
+                    "date": 1750447387682,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n import { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';\n \n export const routes: Routes = [\n   { path: '', redirectTo: 'login', pathMatch: 'full' },\n-  { path: 'app', component: AppComponent, canActivate: [AuthGuard] },\n+  { path: '', component: AppComponent, canActivate: [AuthGuard] },\n   { path: 'login', component: LoginComponent },\n   { path: 'register', component: RegisterComponent },\n   { path: 'choose-your-avatar', component: ChooseYourAvatarComponent },\n   { path: '**', redirectTo: 'login' }\n"
+                },
+                {
+                    "date": 1750448701255,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,31 +6,10 @@\n import { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';\n \n export const routes: Routes = [\n   { path: '', redirectTo: 'login', pathMatch: 'full' },\n-  { path: '', component: AppComponent, canActivate: [AuthGuard] },\n+  { path: 'AppComponent', component: AppComponent, canActivate: [AuthGuard] },\n   { path: 'login', component: LoginComponent },\n   { path: 'register', component: RegisterComponent },\n   { path: 'choose-your-avatar', component: ChooseYourAvatarComponent },\n   { path: '**', redirectTo: 'login' }\n ];\n-\n-/* \n-export const routes: Routes = [\n-    {\n-        path: 'AppComponent', component: AppComponent,\n-        canActivate: [authGuard], // Protected route\n-    },\n-\n-    {\n-        path: 'login', component: LoginComponent\n-    },\n-\n-    {\n-        path: 'register', component: RegisterComponent\n-    },\n-    \n-    {\n-        path: 'choose-your-avatar', component: ChooseYourAvatarComponent\n-    }\n-];\n\\ No newline at end of file\n- */\n"
+                },
+                {
+                    "date": 1750448719742,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import { Routes } from '@angular/router';\n-import { AuthGuard } from './auth.guard'; // Großschreibung\n+import { AuthGuard } from './auth.guard';\n import { AppComponent } from './app.component';\n import { LoginComponent } from './components/login/login.component';\n import { RegisterComponent } from './components/register/register.component';\n import { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';\n"
+                },
+                {
+                    "date": 1750452516246,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,11 +5,18 @@\n import { RegisterComponent } from './components/register/register.component';\n import { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';\n \n export const routes: Routes = [\n-  { path: '', redirectTo: 'login', pathMatch: 'full' },\n-  { path: 'AppComponent', component: AppComponent, canActivate: [AuthGuard] },\n-  { path: 'login', component: LoginComponent },\n-  { path: 'register', component: RegisterComponent },\n-  { path: 'choose-your-avatar', component: ChooseYourAvatarComponent },\n-  { path: '**', redirectTo: 'login' }\n-];\n+    { path: '', redirectTo: 'login', pathMatch: 'full' },\n+    { \n+      path: 'app', \n+      component: AppComponent, \n+      canActivate: [AuthGuard],\n+      children: [\n+        // Hier können Unterrouten für deine App hinzugefügt werden\n+      ]\n+    },\n+    { path: 'login', component: LoginComponent },\n+    { path: 'register', component: RegisterComponent },\n+    { path: 'choose-your-avatar', component: ChooseYourAvatarComponent },\n+    { path: '**', redirectTo: 'login' }\n+  ];\n"
+                },
+                {
+                    "date": 1750454678108,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,22 +1,26 @@\n import { Routes } from '@angular/router';\n-import { AuthGuard } from './auth.guard';\n-import { AppComponent } from './app.component';\n+import { authGuard } from './auth.guard';\n+import { LandingPageComponent } from './components/landing-page/landing-page.component';\n import { LoginComponent } from './components/login/login.component';\n import { RegisterComponent } from './components/register/register.component';\n import { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';\n \n+\n export const routes: Routes = [\n-    { path: '', redirectTo: 'login', pathMatch: 'full' },\n-    { \n-      path: 'app', \n-      component: AppComponent, \n-      canActivate: [AuthGuard],\n-      children: [\n-        // Hier können Unterrouten für deine App hinzugefügt werden\n-      ]\n+    {\n+        path: 'landingpage', component: LandingPageComponent,\n+        canActivate: [authGuard], // Protected route\n     },\n-    { path: 'login', component: LoginComponent },\n-    { path: 'register', component: RegisterComponent },\n-    { path: 'choose-your-avatar', component: ChooseYourAvatarComponent },\n-    { path: '**', redirectTo: 'login' }\n-  ];\n+\n+    {\n+        path: 'login', component: LoginComponent\n+    },\n+\n+    {\n+        path: 'register', component: RegisterComponent\n+    }\n+    ,\n+    {\n+        path: 'choose-your-avatar', component: ChooseYourAvatarComponent\n+    }\n+];\n"
+                }
+            ],
+            "date": 1750443615340,
+            "name": "Commit-0",
+            "content": "import { Routes } from '@angular/router';\nimport { authGuard } from './auth.guard';\nimport { LandingPageComponent } from './components/landing-page/landing-page.component';\nimport { LoginComponent } from './components/login/login.component';\nimport { RegisterComponent } from './components/register/register.component';\nimport { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';\n\n\nexport const routes: Routes = [\n    {\n        path: 'landingpage',,\n        canActivate: [authGuard], // Protected route\n    },\n\n    {\n        path: 'login', component: LoginComponent\n    },\n\n    {\n        path: 'register', component: RegisterComponent\n    }\n    ,\n    {\n        path: 'choose-your-avatar', component: ChooseYourAvatarComponent\n    }\n];\n"
+        }
+    ]
+}
