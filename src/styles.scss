@@ -2,11 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background-color: #eceefe;
-}
-
 html,
 body {
   height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #edeefe;
 }
