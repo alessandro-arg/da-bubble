@@ -1,0 +1,18 @@
+{
+    "sourceFile": "src/app/app.component.html",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1750441765784,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1750441765784,
+            "name": "Commit-0",
+            "content": "<div class=\"max-w-[1600px] mx-auto flex items-center justify-between px-6 py-4\">\n  <img src=\"../assets/img/logo.png\" alt=\"Logo\" class=\"h-16\" />\n\n  <app-searchbar\n    class=\"w-full items-center flex justify-center\"\n  ></app-searchbar>\n\n  <div class=\"flex items-center gap-5 text-gray-700 w-1/3 justify-center\">\n    <h2 class=\"font-bold text-xl\">Frederik Beck</h2>\n    <div class=\"relative w-16 h-16\">\n      <img\n        src=\"../../../assets/img/avatar.png\"\n        alt=\"User\"\n        class=\"w-16 h-16 rounded-full object-cover\"\n      />\n      <div\n        class=\"absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white\"\n      ></div>\n    </div>\n    <img src=\"../assets/img/icons/arrow_down.png\" alt=\"\" />\n  </div>\n</div>\n\n<div class=\"max-w-[1600px] mx-auto flex h-[calc(100vh-96px)] px-6 pb-6 gap-4\">\n  <div class=\"w-1/4 bg-white h-full shadow-sm rounded-[32px]\">\n    <app-user-list></app-user-list>\n  </div>\n\n  <div class=\"w-2/4 bg-white h-full shadow-sm rounded-[32px]\">\n    <p>Center content</p>\n  </div>\n\n  <div class=\"w-1/4 bg-white h-full shadow-sm rounded-[32px]\">\n    <p>Right content</p>\n  </div>\n</div>\n\n<app-workspace-toggle-button></app-workspace-toggle-button>\n\n\n"
+        }
+    ]
+}
