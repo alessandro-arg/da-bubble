@@ -17,5 +17,11 @@ import { Router } from '@angular/router';
 export class AppComponent {
   title = 'da-bubble';
 
-
+  constructor(private authService: AuthService, private router: Router) {
+    this.authService.currentUser$.subscribe(user => {
+      if (!user) {
+        this.router.navigate(['/login']);
+      }
+    });
+  }
 }
