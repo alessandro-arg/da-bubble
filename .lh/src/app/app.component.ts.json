@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 21,
+            "activePatchIndex": 26,
             "patches": [
                 {
                     "date": 1750449806212,
@@ -92,6 +92,26 @@
                 {
                     "date": 1750457680842,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,7 @@\n import { Component } from '@angular/core';\n import { CommonModule } from '@angular/common';\n import { RouterOutlet } from '@angular/router';\n-import { SearchbarComponent } from './components/searchbar/searchbar.component';\n-import { UserListComponent } from './components/user-list/user-list.component';\n-import { WorkspaceToggleButtonComponent } from './components/workspace-toggle-button/workspace-toggle-button.component';\n \n @Component({\n   selector: 'app-root',\n   standalone: true,\n"
+                },
+                {
+                    "date": 1750501024631,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,5 +13,7 @@\n   styleUrl: './app.component.scss',\n })\n export class AppComponent {\n   title = 'da-bubble';\n+\n+  \n }\n"
+                },
+                {
+                    "date": 1750501081347,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,9 @@\n import { Component } from '@angular/core';\n import { CommonModule } from '@angular/common';\n import { RouterOutlet } from '@angular/router';\n \n+\n @Component({\n   selector: 'app-root',\n   standalone: true,\n   imports: [\n@@ -14,6 +15,13 @@\n })\n export class AppComponent {\n   title = 'da-bubble';\n \n-  \n+  // In Ihrer AppComponent\n+constructor(private authService: AuthService, private router: Router) {\n+  this.authService.currentUser$.subscribe(user => {\n+    if (!user) {\n+      this.router.navigate(['/login']);\n+    }\n+  });\n }\n+}\n"
+                },
+                {
+                    "date": 1750501613132,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,10 @@\n import { Component } from '@angular/core';\n import { CommonModule } from '@angular/common';\n import { RouterOutlet } from '@angular/router';\n+import { AuthService } from './auth/auth.service';\n+import { Router } from '@angular/router';\n \n-\n @Component({\n   selector: 'app-root',\n   standalone: true,\n   imports: [\n@@ -15,9 +16,8 @@\n })\n export class AppComponent {\n   title = 'da-bubble';\n \n-  // In Ihrer AppComponent\n constructor(private authService: AuthService, private router: Router) {\n   this.authService.currentUser$.subscribe(user => {\n     if (!user) {\n       this.router.navigate(['/login']);\n"
+                },
+                {
+                    "date": 1750501619549,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,12 +16,12 @@\n })\n export class AppComponent {\n   title = 'da-bubble';\n \n-constructor(private authService: AuthService, private router: Router) {\n-  this.authService.currentUser$.subscribe(user => {\n-    if (!user) {\n-      this.router.navigate(['/login']);\n-    }\n-  });\n+  constructor(private authService: AuthService, private router: Router) {\n+    this.authService.currentUser$.subscribe(user => {\n+      if (!user) {\n+        this.router.navigate(['/login']);\n+      }\n+    });\n+  }\n }\n-}\n"
+                },
+                {
+                    "date": 1750501846825,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,12 +16,6 @@\n })\n export class AppComponent {\n   title = 'da-bubble';\n \n-  constructor(private authService: AuthService, private router: Router) {\n-    this.authService.currentUser$.subscribe(user => {\n-      if (!user) {\n-        this.router.navigate(['/login']);\n-      }\n-    });\n-  }\n+\n }\n"
                 }
             ],
             "date": 1750449806212,

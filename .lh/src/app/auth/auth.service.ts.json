@@ -3,11 +3,27 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1750458693190,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1750500899113,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,11 +17,14 @@\n   register(email: string, password: string) {\n     return createUserWithEmailAndPassword(this.auth, email, password);\n   }\n \n-  logout() {\n-    return signOut(this.auth);\n-  }\n+// In Ihrem AuthService\n+async logout() {\n+  await this.angularFireAuth.signOut();\n+  this.currentUserSubject.next(null);\n+  this.router.navigate(['/login']); // Sicherstellen, dass nach Logout zur Login-Seite navigiert wird\n+}\n \n   isLoggedIn(): Observable<boolean> {\n     return this.currentUser$.pipe(map(user => !!user));\n   }\n"
+                },
+                {
+                    "date": 1750501103200,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,8 +2,9 @@\n import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';\n import { Observable } from 'rxjs';\n import { map } from 'rxjs/operators';\n \n+\n @Injectable({ providedIn: 'root' })\n export class AuthService {\n   constructor(private auth: Auth) { }\n \n"
+                },
+                {
+                    "date": 1750501156358,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,8 @@\n import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';\n import { Observable } from 'rxjs';\n import { map } from 'rxjs/operators';\n \n-\n @Injectable({ providedIn: 'root' })\n export class AuthService {\n   constructor(private auth: Auth) { }\n \n@@ -18,14 +17,14 @@\n   register(email: string, password: string) {\n     return createUserWithEmailAndPassword(this.auth, email, password);\n   }\n \n-// In Ihrem AuthService\n-async logout() {\n-  await this.angularFireAuth.signOut();\n-  this.currentUserSubject.next(null);\n-  this.router.navigate(['/login']); // Sicherstellen, dass nach Logout zur Login-Seite navigiert wird\n-}\n+  // In Ihrem AuthService\n+  async logout() {\n+    await this.angularFireAuth.signOut();\n+    this.currentUserSubject.next(null);\n+    this.router.navigate(['/login']); // Sicherstellen, dass nach Logout zur Login-Seite navigiert wird\n+  }\n \n   isLoggedIn(): Observable<boolean> {\n     return this.currentUser$.pipe(map(user => !!user));\n   }\n"
+                },
+                {
+                    "date": 1750501229575,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,29 +1,34 @@\n import { Injectable } from '@angular/core';\n import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';\n-import { Observable } from 'rxjs';\n+import { Router } from '@angular/router';\n+import { BehaviorSubject, Observable } from 'rxjs';\n import { map } from 'rxjs/operators';\n \n @Injectable({ providedIn: 'root' })\n export class AuthService {\n-  constructor(private auth: Auth) { }\n+  private currentUserSubject = new BehaviorSubject<any>(null);\n+  currentUser$ = authState(this.auth);\n \n-  currentUser$ = authState(this.auth);\n   redirectUrl: string | null = null;\n \n+  constructor(\n+    private auth: Auth,\n+    private router: Router\n+  ) { }\n+\n   login(email: string, password: string) {\n     return signInWithEmailAndPassword(this.auth, email, password);\n   }\n \n   register(email: string, password: string) {\n     return createUserWithEmailAndPassword(this.auth, email, password);\n   }\n \n-  // In Ihrem AuthService\n   async logout() {\n-    await this.angularFireAuth.signOut();\n+    await signOut(this.auth);\n     this.currentUserSubject.next(null);\n-    this.router.navigate(['/login']); // Sicherstellen, dass nach Logout zur Login-Seite navigiert wird\n+    this.router.navigate(['/login']);\n   }\n \n   isLoggedIn(): Observable<boolean> {\n     return this.currentUser$.pipe(map(user => !!user));\n"
                 }
             ],
             "date": 1750458693190,

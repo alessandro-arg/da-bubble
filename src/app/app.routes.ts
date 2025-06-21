@@ -9,14 +9,17 @@ export const routes: Routes = [
   {
     path: 'landingpage',
     component: LandingPageComponent,
-    canActivate: [authGuard], // Protected route
+    canActivate: [authGuard], // Geschützte Route
   },
-
   {
     path: '',
+    redirectTo: '/login',
+    pathMatch: 'full'
+  },
+  {
+    path: 'login',
     component: LoginComponent,
   },
-
   {
     path: 'register',
     component: RegisterComponent,

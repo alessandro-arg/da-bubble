@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 9,
+            "activePatchIndex": 12,
             "patches": [
                 {
                     "date": 1750446456117,
@@ -44,6 +44,18 @@
                 {
                     "date": 1750458875925,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { CanActivateFn, Router } from '@angular/router';\n import { inject } from '@angular/core';\n-import { AuthService } from '../app/auth';\n+import { AuthService } from '../app/auth/auth.service';\n \n export const authGuard: CanActivateFn = (route, state) => {\n   const authService = inject(AuthService);\n   const router = inject(Router);\n"
+                },
+                {
+                    "date": 1750500973813,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,15 +1,11 @@\n-import { CanActivateFn, Router } from '@angular/router';\n-import { inject } from '@angular/core';\n-import { AuthService } from '../app/auth/auth.service';\n-\n export const authGuard: CanActivateFn = (route, state) => {\n   const authService = inject(AuthService);\n   const router = inject(Router);\n \n   if (authService.isLoggedIn()) {\n     return true;\n   }\n-  authService.redirectUrl = state.url;\n+  authService.redirectUrl = state.url; // Für Redirect nach Login\n   router.navigate(['/login']);\n   return false;\n };\n"
+                },
+                {
+                    "date": 1750500982522,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,8 @@\n+import { CanActivateFn, Router } from '@angular/router';\n+import { inject } from '@angular/core';\n+import { AuthService } from '../app/auth/auth.service';\n+\n export const authGuard: CanActivateFn = (route, state) => {\n   const authService = inject(AuthService);\n   const router = inject(Router);\n \n"
+                },
+                {
+                    "date": 1750501811900,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,8 +8,8 @@\n \n   if (authService.isLoggedIn()) {\n     return true;\n   }\n-  authService.redirectUrl = state.url; // Für Redirect nach Login\n+  authService.redirectUrl = state.url;\n   router.navigate(['/login']);\n   return false;\n };\n"
                 }
             ],
             "date": 1750446456117,
