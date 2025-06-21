@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Firestore, doc, setDoc, getDoc, updateDoc } from '@angular/fire/firestore';
+import {
+  Firestore,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+} from '@angular/fire/firestore';
 import { User } from '../app/models/user.model';
 
 @Injectable({ providedIn: 'root' })
@@ -8,27 +14,25 @@ export class UserService {
 
   async createUser(user: Partial<User>) {
     if (!user.uid) throw new Error('User UID is required');
-    
+
     const userRef = doc(this.firestore, `users/${user.uid}`);
     await setDoc(userRef, {
       uid: user.uid, // Wichtig: UID im Dokument speichern
       name: user.name,
       email: user.email,
       avatar: user.avatar || 'assets/img/profile.svg',
-      createdAt: new Date()
+      createdAt: new Date(),
     });
   }
 
   async getUser(uid: string): Promise<User | null> {
-    const userRef = doc(this.firestore, `users/${uid}`);
-    const userSnap = await getDoc(userRef);
-    
-    return userSnap.exists() ? userSnap.data() as User : null;
+    const userDoc = await getDoc(doc(this.firestore, 'users', uid));
+    return userDoc.exists() ? (userDoc.data() as User) : null;
   }
 
   async updateUser(uid: string, data: Partial<User>) {
     if (!uid) throw new Error('User UID is required');
-    
+
     const userRef = doc(this.firestore, `users/${uid}`);
     await updateDoc(userRef, data);
   }

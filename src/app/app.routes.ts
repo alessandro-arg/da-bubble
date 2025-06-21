@@ -7,14 +7,14 @@ import { ChooseYourAvatarComponent } from './components/register/choose-your-ava
 
 export const routes: Routes = [
   {
-    path: 'landingpage',
+    path: 'landingpage/:uid',
     component: LandingPageComponent,
     canActivate: [authGuard], // Geschützte Route
   },
   {
     path: '',
     redirectTo: '/login',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'login',
