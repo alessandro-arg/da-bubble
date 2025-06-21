@@ -33,5 +33,11 @@ export class LandingPageComponent {
     });
   }
 
-
+  async logout() {
+    try {
+      await this.authService.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  }
 }

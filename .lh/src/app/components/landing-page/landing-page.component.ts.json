@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 22,
+            "activePatchIndex": 23,
             "patches": [
                 {
                     "date": 1750457096519,
@@ -96,6 +96,10 @@
                 {
                     "date": 1750501858961,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,9 +3,8 @@\n import { AuthService } from '../../auth/auth.service';\n import { Router } from '@angular/router';\n import { UserService } from '../../user.service';\n import { User } from '../../models/user.model';\n-\n import { SearchbarComponent } from '../../components/searchbar/searchbar.component';\n import { UserListComponent } from '../../components/user-list/user-list.component';\n import { WorkspaceToggleButtonComponent } from '../../components/workspace-toggle-button/workspace-toggle-button.component';\n \n@@ -33,12 +32,6 @@\n       }\n     });\n   }\n \n-  async logout() {\n-    try {\n-      await this.authService.logout();\n-    } catch (error) {\n-      console.error('Logout error:', error);\n-    }\n-  }\n+\n }\n"
+                },
+                {
+                    "date": 1750501906005,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,6 +32,12 @@\n       }\n     });\n   }\n \n-\n+  async logout() {\n+    try {\n+      await this.authService.logout();\n+    } catch (error) {\n+      console.error('Logout error:', error);\n+    }\n+  }\n }\n"
                 }
             ],
             "date": 1750457096519,
