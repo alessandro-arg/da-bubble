@@ -26,7 +26,7 @@ export class LoginComponent {
     private authService: AuthService,
     private userService: UserService,
     private router: Router
-  ) {}
+  ) { }
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
@@ -56,13 +56,14 @@ export class LoginComponent {
         this.credentials.email,
         this.credentials.password
       ).toPromise();
-      const user = userCredential?.user;
-      if (user) {
-        const userData = await this.userService.getUser(user.uid);
-        this.router.navigate([`/landingpage/${user.uid}`]); // Zum geschützten Bereich
+
+      if (userCredential?.user) {
+        const userData = await this.userService.getUser(userCredential.user.uid);
+        const redirectUrl = this.authService.redirectUrl || `/landingpage/${userCredential.user.uid}`;
+        this.router.navigateByUrl(redirectUrl);
       }
-    } catch (error) {
-      this.errorMessage = 'Login fehlgeschlagen.';
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Login fehlgeschlagen.';
       console.error('Login error:', error);
     } finally {
       this.loading = false;
@@ -72,12 +73,12 @@ export class LoginComponent {
   async loginWithGoogle() {
     this.loading = true;
     this.errorMessage = null;
-    
+
     try {
       const result = await this.authService.loginWithGoogle().toPromise();
       if (result?.user) {
         const userExists = await this.userService.getUser(result.user.uid);
-        
+
         if (!userExists) {
           await this.userService.createUser({
             uid: result.user.uid,
@@ -86,7 +87,7 @@ export class LoginComponent {
             avatar: result.user.photoURL || 'assets/img/profile.svg'
           });
         }
-        
+
         // Prüfe ob es eine redirectUrl gibt
         const redirectUrl = this.authService.redirectUrl || `/landingpage/${result.user.uid}`;
         this.router.navigateByUrl(redirectUrl);
@@ -98,5 +99,5 @@ export class LoginComponent {
       this.loading = false;
     }
   }
-  
+
 }

@@ -12,6 +12,8 @@ import {
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, from } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
+import { UserCredential } from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -28,8 +30,30 @@ export class AuthService {
     });
   }
 
-  login(email: string, password: string) {
-    return from(signInWithEmailAndPassword(this.auth, email, password));
+  login(email: string, password: string): Observable<UserCredential> {
+    return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
+      catchError((error: FirebaseError) => {
+        console.error('Firebase login error:', error);
+        let errorMessage = 'Login fehlgeschlagen.';
+
+        switch (error.code) {
+          case 'auth/invalid-credential':
+            errorMessage = 'Ungültige Anmeldedaten. Bitte überprüfen Sie E-Mail und Passwort.';
+            break;
+          case 'auth/user-not-found':
+            errorMessage = 'Kein Konto mit dieser E-Mail gefunden.';
+            break;
+          case 'auth/wrong-password':
+            errorMessage = 'Falsches Passwort.';
+            break;
+          case 'auth/too-many-requests':
+            errorMessage = 'Zu viele fehlgeschlagene Versuche. Bitte später erneut versuchen.';
+            break;
+        }
+
+        throw new Error(errorMessage);
+      })
+    );
   }
 
   register(email: string, password: string) {
