@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { 
-  Auth, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut, 
-  User, 
-  GoogleAuthProvider, 
+import {
+  Auth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  User,
+  GoogleAuthProvider,
   signInWithPopup,
   authState
 } from '@angular/fire/auth';
@@ -22,8 +22,7 @@ export class AuthService {
   constructor(
     private auth: Auth,
     private router: Router
-  ) { 
-    // Bessere Initialisierung des Auth-State
+  ) {
     authState(this.auth).subscribe(user => {
       this.currentUserSubject.next(user);
     });
@@ -50,13 +49,15 @@ export class AuthService {
     return this.currentUser$.pipe(map(user => !!user));
   }
 
-  // Verbesserte Google-Anmeldung
   loginWithGoogle(): Observable<any> {
     const provider = new GoogleAuthProvider();
-    // Füge Scope hinzu falls benötigt
     provider.addScope('profile');
     provider.addScope('email');
-    
+
+    //provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+    //provider.addScope('https://www.googleapis.com/auth/user.birthday.read');
+    //provider.addScope('https://www.googleapis.com/auth/user.addresses.read');
+
     return from(signInWithPopup(this.auth, provider)).pipe(
       catchError((error: any) => {
         console.error('Google login error:', error);
