@@ -1,5 +1,6 @@
 import { Component, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../auth/auth.service';
 import { Router } from '@angular/router';
 import { UserService } from '../../user.service';
@@ -14,6 +15,7 @@ import { WorkspaceToggleButtonComponent } from '../../components/workspace-toggl
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     SearchbarComponent,
     UserListComponent,
     WorkspaceToggleButtonComponent,
@@ -22,9 +24,13 @@ import { WorkspaceToggleButtonComponent } from '../../components/workspace-toggl
   styleUrl: './landing-page.component.scss',
 })
 export class LandingPageComponent {
-  currentUser: User | null = null;
   showDropdown = false;
   showProfileModal = false;
+
+  currentUser: User | null = null;
+  isEditingName = false;
+  editedName: string = '';
+  nameError: string | null = null;
 
   constructor(
     private authService: AuthService,
@@ -51,6 +57,9 @@ export class LandingPageComponent {
   }
 
   closeProfileModal() {
+    if (this.isEditingName) {
+      this.isEditingName = false;
+    }
     this.showProfileModal = false;
     this.showDropdown = true;
   }
@@ -58,6 +67,35 @@ export class LandingPageComponent {
   closeModals() {
     this.showDropdown = false;
     this.showProfileModal = false;
+  }
+
+  enableEdit() {
+    this.editedName = this.currentUser?.name || '';
+    this.isEditingName = true;
+  }
+
+  validateName() {
+    const name = this.editedName.trim();
+    const isValid = /^[A-Za-zÄäÖöÜüß]+\s+[A-Za-zÄäÖöÜüß]+$/.test(name);
+    this.nameError = isValid ? null : 'Please enter your first and last name';
+    return isValid;
+  }
+
+  async saveName() {
+    if (!this.validateName()) return;
+
+    try {
+      if (this.currentUser?.uid) {
+        await this.userService.updateUser(this.currentUser.uid, {
+          name: this.editedName.trim(),
+        });
+
+        this.currentUser.name = this.editedName.trim();
+        this.isEditingName = false;
+      }
+    } catch (error) {
+      console.error('Name konnte nicht gespeichert werden:', error);
+    }
   }
 
   async logout() {

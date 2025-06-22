@@ -99,10 +99,16 @@
     </div>
 
     <!-- Name & Edit -->
-    <div class="flex flex-col justify-between gap-4 items-center">
+    <div
+      *ngIf="!isEditingName"
+      class="flex flex-col justify-between gap-4 items-center"
+    >
       <div class="flex justify-between items-center w-full">
         <span class="font-bold text-3xl">{{ currentUser?.name }}</span>
-        <button class="text-[#535AF1] font-semibold text-lg hover:font-bold">
+        <button
+          class="text-[#535AF1] font-semibold text-lg hover:font-bold"
+          (click)="enableEdit()"
+        >
           Edit
         </button>
       </div>
@@ -113,13 +119,62 @@
     </div>
 
     <!-- Email -->
-    <div>
+    <div *ngIf="!isEditingName">
       <div class="flex items-center gap-5 font-bold text-xl">
         <img src="../../../assets/img/icons/mail.png" alt="" />
         <span>E-Mail-Adresse</span>
       </div>
       <div class="ml-[50px] mt-[15px] font-medium text-lg text-[#1381FF]">
         {{ currentUser?.email }}
+      </div>
+    </div>
+
+    <!-- Edit Mode -->
+    <div *ngIf="isEditingName" class="w-full">
+      <div class="flex items-center gap-3 mb-2">
+        <img
+          src="../../../assets/img/icons/account_circle.png"
+          alt="user icon"
+          class="w-6 h-6"
+        />
+        <span class="font-semibold text-lg">Full name</span>
+      </div>
+
+      <input
+        [(ngModel)]="editedName"
+        (ngModelChange)="validateName()"
+        name="editedName"
+        class="w-full p-2 rounded-full border-[0.5px] border-[#ADB0D9] focus:outline-none focus:border-[#444DF2] hover:border-[#444DF2] cursor-pointer placeholder:text-[#686868] px-[20px] py-[15px]"
+        type="text"
+        [placeholder]="currentUser?.name"
+      />
+      <div
+        class="text-red-500 text-sm mt-1 ml-5 transition-opacity duration-200 h-4"
+        [class.opacity-0]="!nameError"
+        [class.opacity-100]="nameError"
+      >
+        {{ nameError || " " }}
+      </div>
+
+      <!-- Save / Cancel Buttons -->
+      <div class="flex justify-center gap-4 mt-6">
+        <button
+          class="bg-gray-200 text-gray-700 px-4 py-2 rounded-xl font-medium hover:bg-gray-300"
+          (click)="closeProfileModal(); $event.stopPropagation()"
+        >
+          Cancel
+        </button>
+        <button
+          class="bg-[#535AF1] text-white px-4 py-2 rounded-xl font-semibold hover:bg-[#3c42c1]"
+          [ngClass]="{
+            'bg-[#535AF1] hover:bg-[#3c42c1]': !nameError,
+            'bg-gray-400 cursor-default': nameError
+          }"
+          [disabled]="!!nameError"
+          (click)="saveName()"
+        >
+          Save
+        </button>
       </div>
     </div>
   </div>
