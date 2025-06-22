@@ -50,6 +50,11 @@ export class LandingPageComponent {
     this.showProfileModal = true;
   }
 
+  closeProfileModal() {
+    this.showProfileModal = false;
+    this.showDropdown = true;
+  }
+
   closeModals() {
     this.showDropdown = false;
     this.showProfileModal = false;
