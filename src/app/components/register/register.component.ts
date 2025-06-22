@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../auth/auth.service'; // Du musst diesen Service noch erstellen
-import { UserService } from '../../user.service'; // Du musst diesen Service noch erstellen
+import { AuthService } from '../../auth/auth.service';
+import { firstValueFrom } from 'rxjs';
+import { UserService } from '../../user.service';
 
 @Component({
   selector: 'app-register',
@@ -47,18 +48,15 @@ export class RegisterComponent {
     const { name, email, password } = this.registerForm.value;
 
     try {
-      // Benutzer registrieren
-      const userCredential = await this.authService.register(email, password);
-      
-      // Benutzerdaten in Firestore speichern
+      const userCredential = await firstValueFrom(this.authService.register(email, password));
+
       await this.userService.createUser({
         uid: userCredential.user?.uid,
         name: name,
         email: email,
-        avatar: 'default-avatar' // Standard-Avatar
+        avatar: 'default-avatar'
       });
 
-      // Weiter zur Avatar-Auswahl
       this.router.navigate(['/choose-your-avatar']);
     } catch (error) {
       console.error('Registration error:', error);
@@ -71,7 +69,3 @@ export class RegisterComponent {
     }
   }
 }
-
-/* Kannst mir jetzt den html mit 
-ng FormsModule an passenden machen bitte damit es jetzt funktioniert bitte
- machen wir jetzt Einzel component bitte zu erst RegisterComponent.   hier */

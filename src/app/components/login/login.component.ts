@@ -52,10 +52,11 @@ export class LoginComponent {
     this.errorMessage = null;
 
     try {
-      const { user } = await this.authService.login(
+      const userCredential = await this.authService.login(
         this.credentials.email,
         this.credentials.password
-      );
+      ).toPromise();
+      const user = userCredential?.user;
       if (user) {
         const userData = await this.userService.getUser(user.uid);
         this.router.navigate([`/landingpage/${user.uid}`]); // Zum geschützten Bereich
@@ -67,4 +68,35 @@ export class LoginComponent {
       this.loading = false;
     }
   }
+
+  async loginWithGoogle() {
+    this.loading = true;
+    this.errorMessage = null;
+    
+    try {
+      const result = await this.authService.loginWithGoogle().toPromise();
+      if (result?.user) {
+        const userExists = await this.userService.getUser(result.user.uid);
+        
+        if (!userExists) {
+          await this.userService.createUser({
+            uid: result.user.uid,
+            name: result.user.displayName || 'Google User',
+            email: result.user.email || '',
+            avatar: result.user.photoURL || 'assets/img/profile.svg'
+          });
+        }
+        
+        // Prüfe ob es eine redirectUrl gibt
+        const redirectUrl = this.authService.redirectUrl || `/landingpage/${result.user.uid}`;
+        this.router.navigateByUrl(redirectUrl);
+      }
+    } catch (error: any) {
+      console.error('Google login error:', error);
+      this.errorMessage = error.message || 'Google-Anmeldung fehlgeschlagen.';
+    } finally {
+      this.loading = false;
+    }
+  }
+  
 }
