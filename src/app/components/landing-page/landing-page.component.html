@@ -10,7 +10,7 @@
     class="flex items-center gap-5 text-gray-700 w-1/3 justify-center"
   >
     <h2 class="font-bold text-xl">{{ currentUser.name }}</h2>
-    <div class="relative w-16 h-16" (click)="logout()">
+    <div class="relative w-16 h-16">
       <img
         [src]="currentUser.avatar || './assets/img/profile.svg'"
         alt="Profilbild"
@@ -20,11 +20,104 @@
         class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white"
       ></div>
     </div>
-    <img src="../assets/img/icons/arrow_down.png" alt="" />
+    <img
+      src="../assets/img/icons/arrow_down.png"
+      alt=""
+      class="cursor-pointer"
+      (click)="toggleDropdown(); $event.stopPropagation()"
+    />
   </div>
 </div>
 
-<div class="max-w-[1600px] mx-auto flex h-[calc(100vh-96px)] px-6 pb-6 gap-4">
+<!-- Backdrop -->
+<div
+  *ngIf="showProfileModal || showDropdown"
+  class="fixed inset-0 bg-black bg-opacity-40 z-40 transition-opacity duration-300"
+></div>
+
+<div
+  class="relative max-w-[1600px] mx-auto flex h-[calc(100vh-96px)] px-6 pb-6 gap-4"
+>
+  <!-- Dropdown Modal -->
+  <div
+    *ngIf="showDropdown"
+    class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md border z-50 transition duration-200 ease-out"
+  >
+    <button
+      (click)="openProfileModal(); $event.stopPropagation()"
+      class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+    >
+      Profile
+    </button>
+    <button
+      (click)="logout(); $event.stopPropagation()"
+      class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+    >
+      Logout
+    </button>
+  </div>
+
+  <!-- Profile Modal -->
+  <div
+    *ngIf="showProfileModal"
+    class="fixed z-50 top-1/2 left-1/2 w-80 bg-white shadow-xl rounded-xl border p-5 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center mb-4">
+      <span class="font-semibold text-lg">Profile</span>
+      <button
+        (click)="closeModals()"
+        class="text-gray-500 hover:text-gray-700 text-xl leading-none"
+      >
+        &times;
+      </button>
+    </div>
+
+    <!-- Avatar -->
+    <div class="flex justify-center mb-4">
+      <img
+        [src]="currentUser?.avatar || './assets/img/profile.svg'"
+        class="w-20 h-20 rounded-full object-cover"
+        alt="Avatar"
+      />
+    </div>
+
+    <!-- Name & Edit -->
+    <div class="flex justify-between items-center mb-2">
+      <span class="font-medium text-lg">{{ currentUser?.name }}</span>
+      <button class="text-blue-600 hover:underline text-sm">Edit</button>
+    </div>
+
+    <!-- Status -->
+    <div class="flex items-center gap-2 text-green-600 text-sm mb-4">
+      <div class="w-2 h-2 rounded-full bg-green-500"></div>
+      <span>Active</span>
+    </div>
+
+    <!-- Email -->
+    <div class="text-sm text-gray-700">
+      <div class="flex items-center gap-2 mb-1">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5 text-gray-500"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M16 12H8m8 0V8m0 4v4m0-4H8"
+          />
+        </svg>
+        <span>Email</span>
+      </div>
+      <div class="ml-7">{{ currentUser?.email }}</div>
+    </div>
+  </div>
+
   <div class="w-1/4 bg-white h-full shadow-sm rounded-[32px]">
     <app-user-list></app-user-list>
   </div>
