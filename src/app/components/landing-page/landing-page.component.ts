@@ -9,6 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 import { SearchbarComponent } from '../../components/searchbar/searchbar.component';
 import { UserListComponent } from '../../components/user-list/user-list.component';
 import { WorkspaceToggleButtonComponent } from '../../components/workspace-toggle-button/workspace-toggle-button.component';
+import { ChatComponent } from '../chat/chat.component';
 
 @Component({
   selector: 'app-landing-page',
@@ -19,6 +20,7 @@ import { WorkspaceToggleButtonComponent } from '../../components/workspace-toggl
     SearchbarComponent,
     UserListComponent,
     WorkspaceToggleButtonComponent,
+    ChatComponent,
   ],
   templateUrl: './landing-page.component.html',
   styleUrl: './landing-page.component.scss',

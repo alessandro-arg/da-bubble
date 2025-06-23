@@ -2,13 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Nunito";
+  src: url("./assets/fonts/nunito/Nunito-VariableFont_wght.ttf")
+    format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Nunito";
+  src: url("./assets/fonts/nunito/Nunito-VariableFont_wght.ttf")
+    format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Nunito";
+  src: url("./assets/fonts/nunito/Nunito-VariableFont_wght.ttf")
+    format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Nunito";
+  src: url("./assets/fonts/nunito/Nunito-VariableFont_wght.ttf")
+    format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
 html,
 body {
   height: 100%;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    background-color: #edeefe;
+  margin: 0;
+  padding: 0;
+  font-family: "Nunito", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #edeefe;
 }
