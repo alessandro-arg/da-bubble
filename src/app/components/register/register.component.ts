@@ -2,7 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
-import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { AuthService } from '../../auth/auth.service';
 import { firstValueFrom } from 'rxjs';
 import { UserService } from '../../user.service';
@@ -12,7 +17,7 @@ import { UserService } from '../../user.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, ReactiveFormsModule],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss'
+  styleUrl: './register.component.scss',
 })
 export class RegisterComponent {
   registerForm: FormGroup;
@@ -28,8 +33,11 @@ export class RegisterComponent {
     this.registerForm = new FormGroup({
       name: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required, Validators.minLength(6)]),
-      privacyPolicy: new FormControl(false, [Validators.requiredTrue])
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(6),
+      ]),
+      privacyPolicy: new FormControl(false, [Validators.requiredTrue]),
     });
   }
 
@@ -48,19 +56,22 @@ export class RegisterComponent {
     const { name, email, password } = this.registerForm.value;
 
     try {
-      const userCredential = await firstValueFrom(this.authService.register(email, password));
+      const userCredential = await firstValueFrom(
+        this.authService.register(email, password)
+      );
 
       await this.userService.createUser({
         uid: userCredential.user?.uid,
         name: name,
         email: email,
-        avatar: 'default-avatar'
+        avatar: 'default-avatar',
       });
 
       this.router.navigate(['/choose-your-avatar']);
     } catch (error) {
       console.error('Registration error:', error);
-      this.errorMessage = 'Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut.';
+      this.errorMessage =
+        'Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut.';
       if (error instanceof Error) {
         this.errorMessage = error.message;
       }
