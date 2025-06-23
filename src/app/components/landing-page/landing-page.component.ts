@@ -10,6 +10,7 @@ import { SearchbarComponent } from '../../components/searchbar/searchbar.compone
 import { UserListComponent } from '../../components/user-list/user-list.component';
 import { WorkspaceToggleButtonComponent } from '../../components/workspace-toggle-button/workspace-toggle-button.component';
 import { ChatComponent } from '../chat/chat.component';
+import { ThreadComponent } from '../thread/thread.component';
 
 @Component({
   selector: 'app-landing-page',
@@ -21,6 +22,7 @@ import { ChatComponent } from '../chat/chat.component';
     UserListComponent,
     WorkspaceToggleButtonComponent,
     ChatComponent,
+    ThreadComponent,
   ],
   templateUrl: './landing-page.component.html',
   styleUrl: './landing-page.component.scss',
