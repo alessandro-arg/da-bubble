@@ -1,4 +1,4 @@
-<div class="p-[30px] flex flex-col gap-6">
+<div class="px-[20px] py-[30px] flex flex-col gap-6">
   <div class="flex items-center w-full justify-between rounded-3xl">
     <div class="flex items-center gap-4 flex-1">
       <img src="../../../assets/img/workspace-logo.png" alt="Image" />
@@ -47,10 +47,13 @@
         </div>
       </div>
       <div class="w-full h-full flex flex-col gap-4">
-        <div class="ml-[25px] flex items-center gap-4 px-5 py-1">
+        <div
+          *ngFor="let user of users"
+          class="ml-[25px] flex items-center gap-4 px-5 py-1"
+        >
           <div class="relative w-13 h-13">
             <img
-              src="../../../assets/img/avatar.png"
+              [src]="user.avatar || '../../../assets/img/profile.svg'"
               alt="User"
               class="w-12 h-12 rounded-full object-cover"
             />
@@ -58,33 +61,10 @@
               class="absolute bottom-0 right-[-2px] w-4 h-4 bg-green-500 rounded-full border-2 border-white"
             ></div>
           </div>
-          <p>Frederik Beck (Du)</p>
-        </div>
-        <div class="ml-[25px] flex items-center gap-4 px-5 py-1">
-          <div class="relative w-13 h-13">
-            <img
-              src="../../../assets/img/avatar.png"
-              alt="User"
-              class="w-12 h-12 rounded-full object-cover"
-            />
-            <div
-              class="absolute bottom-0 right-[-2px] w-4 h-4 bg-green-500 rounded-full border-2 border-white"
-            ></div>
-          </div>
-          <p>Frederik Beck</p>
-        </div>
-        <div class="ml-[25px] flex items-center gap-4 px-5 py-1">
-          <div class="relative w-13 h-13">
-            <img
-              src="../../../assets/img/avatar.png"
-              alt="User"
-              class="w-12 h-12 rounded-full object-cover"
-            />
-            <div
-              class="absolute bottom-0 right-[-2px] w-4 h-4 bg-green-500 rounded-full border-2 border-white"
-            ></div>
-          </div>
-          <p>Frederik Beck</p>
+          <p class="font-normal text-base">
+            {{ user.name }}
+            <span *ngIf="user.uid === currentUserUid">(You)</span>
+          </p>
         </div>
       </div>
     </div>
