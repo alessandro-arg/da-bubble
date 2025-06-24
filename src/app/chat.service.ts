@@ -11,11 +11,13 @@ import {
   orderBy,
   serverTimestamp,
 } from '@angular/fire/firestore';
-import { Message, Chat } from './models/chat.model';
-import { Observable } from 'rxjs';
+import { Message } from './models/chat.model';
+import { of, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
+  readonly emptyStream: Observable<Message[]> = of([]);
+
   constructor(private firestore: Firestore) {}
 
   private getChatId(uid1: string, uid2: string): string {
