@@ -64,7 +64,7 @@ export class RegisterComponent {
         uid: userCredential.user?.uid,
         name: name,
         email: email,
-        avatar: 'default-avatar',
+        avatar: 'assets/img/charaters.svg', // Default avatar
       });
 
       this.router.navigate(['/choose-your-avatar']);
