@@ -8,11 +8,12 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChatService } from '../../chat.service';
-import { Message } from '../../models/chat.model';
-import { Observable } from 'rxjs';
-import { User } from '../../models/user.model';
 import { FormsModule } from '@angular/forms';
+import { ChatService } from '../../chat.service';
+import { UserService } from '../../user.service';
+import { Message } from '../../models/chat.model';
+import { User } from '../../models/user.model';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-chat',
@@ -29,11 +30,16 @@ export class ChatComponent implements AfterViewChecked, OnChanges {
   chatId: string | null = null;
   newMessage = '';
 
+  participantsMap: Record<string, User> = {};
+
   @ViewChild('chatContainer')
   private chatContainer!: ElementRef<HTMLDivElement>;
   private hasScrolledInitially = false;
 
-  constructor(private chatService: ChatService) {}
+  constructor(
+    private chatService: ChatService,
+    private userService: UserService
+  ) {}
 
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['chatPartner'] && this.chatPartner && this.currentUserUid) {
@@ -42,6 +48,14 @@ export class ChatComponent implements AfterViewChecked, OnChanges {
         this.chatPartner.uid
       );
       this.messages$ = this.chatService.getChatMessages(this.chatId);
+
+      const me = await this.userService.getUser(this.currentUserUid);
+      if (me) {
+        this.participantsMap = {
+          [me.uid!]: me,
+          [this.chatPartner.uid]: this.chatPartner,
+        };
+      }
     }
   }
 
