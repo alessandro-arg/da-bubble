@@ -71,7 +71,11 @@
           <div
             *ngFor="let user of users"
             (click)="onClick(user)"
-            class="ml-[25px] mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer"
+            class="ml-[25px] mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+            [ngClass]="{
+              'bg-[#ECEEFE]': user.uid === activeUserUid,
+              'hover:bg-[#ECEEFE]': user.uid !== activeUserUid
+            }"
           >
             <div class="relative w-12 h-12">
               <img
@@ -83,7 +87,13 @@
                 class="absolute bottom-0 right-[-2px] w-4 h-4 bg-[#92C83E] rounded-full border-2 border-white"
               ></div>
             </div>
-            <p class="font-normal text-base">
+            <p
+              class="text-base transition-colors duration-200"
+              [ngClass]="{
+                'font-bold text-[#535AF1]': user.uid === activeUserUid,
+                'font-normal text-black': user.uid !== activeUserUid
+              }"
+            >
               {{ user.name }}
               <span *ngIf="user.uid === currentUserUid">(You)</span>
             </p>

@@ -23,6 +23,7 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   users: User[] = [];
   currentUserUid: string | null = null;
+  activeUserUid: string | null = null;
   private authUnsub?: () => void;
   private usersSub?: Subscription;
 
@@ -57,6 +58,7 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   onClick(user: User) {
     if (user.uid !== this.currentUserUid) {
+      this.activeUserUid = user.uid;
       this.userSelected.emit(user);
     }
   }
