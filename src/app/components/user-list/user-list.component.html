@@ -1,4 +1,4 @@
-<div class="px-[20px] py-[30px] flex flex-col gap-6">
+<div class="px-[20px] py-[30px] flex flex-col gap-6 h-full">
   <div class="flex items-center w-full justify-between rounded-3xl">
     <div class="flex items-center gap-4 flex-1">
       <img src="../../../assets/img/workspace-logo.png" alt="Image" />
@@ -37,35 +37,57 @@
         <span>Channel hinzufügen</span>
       </div>
     </div>
-    <div class="w-full h-full gap-6 flex flex-col">
-      <div class="w-full flex gap-4 pr-3 py-1">
-        <img src="../../../assets/img/icons/arrow_drop_down.png" alt="" />
+    <div class="w-full flex flex-col flex-1 gap-[25px]">
+      <div
+        class="w-fit flex items-center gap-[15px] pr-3 py-1 cursor-pointer select-none hover:text-[#535AF1]"
+        (click)="toggleDropdown()"
+        (mouseenter)="accountHover = true; arrowHover = true"
+        (mouseleave)="accountHover = false; arrowHover = false"
+      >
+        <img
+          [src]="arrowSrc"
+          alt="Toggle"
+          class="cursor-pointer transform transition-transform duration-200"
+          [ngClass]="{
+            '-rotate-90': !dropdownOpen,
+            'scale-105': arrowHover
+          }"
+        />
 
-        <div class="w-full flex justify-start items-center gap-2">
-          <img src="../../../assets/img/icons/account_circle.png" alt="Icon" />
+        <div class="flex items-center gap-2">
+          <img [src]="accountSrc" alt="Users icon" />
           <h3 class="font-semibold text-[18px]">Direktnachrichten</h3>
         </div>
       </div>
-      <div class="w-full h-full flex flex-col gap-4">
-        <div
-          *ngFor="let user of users"
-          (click)="onClick(user)"
-          class="ml-[25px] flex items-center gap-4 px-5 py-1"
-        >
-          <div class="relative w-13 h-13">
-            <img
-              [src]="user.avatar || '../../../assets/img/profile.svg'"
-              alt="User"
-              class="w-12 h-12 rounded-full object-cover"
-            />
-            <div
-              class="absolute bottom-0 right-[-2px] w-4 h-4 bg-green-500 rounded-full border-2 border-white"
-            ></div>
+
+      <!-- collapsible list -->
+      <div
+        class="overflow-hidden transition-[max-height] duration-300 ease-in-out"
+        [ngClass]="
+          dropdownOpen ? 'max-h-[55%] sm:max-h-[50%] md:max-h-[55%]' : 'max-h-0'
+        "
+      >
+        <div class="flex flex-col gap-3 overflow-y-auto h-full">
+          <div
+            *ngFor="let user of users"
+            (click)="onClick(user)"
+            class="ml-[25px] mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer"
+          >
+            <div class="relative w-12 h-12">
+              <img
+                [src]="user.avatar || '../../../assets/img/profile.svg'"
+                alt="User"
+                class="w-full h-full rounded-full object-cover"
+              />
+              <div
+                class="absolute bottom-0 right-[-2px] w-4 h-4 bg-[#92C83E] rounded-full border-2 border-white"
+              ></div>
+            </div>
+            <p class="font-normal text-base">
+              {{ user.name }}
+              <span *ngIf="user.uid === currentUserUid">(You)</span>
+            </p>
           </div>
-          <p class="font-normal text-base">
-            {{ user.name }}
-            <span *ngIf="user.uid === currentUserUid">(You)</span>
-          </p>
         </div>
       </div>
     </div>

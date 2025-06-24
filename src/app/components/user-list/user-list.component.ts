@@ -26,6 +26,10 @@ export class UserListComponent implements OnInit, OnDestroy {
   private authUnsub?: () => void;
   private usersSub?: Subscription;
 
+  dropdownOpen = true;
+  arrowHover = false;
+  accountHover = false;
+
   constructor(private userService: UserService, private auth: Auth) {}
 
   ngOnInit() {
@@ -55,5 +59,22 @@ export class UserListComponent implements OnInit, OnDestroy {
     if (user.uid !== this.currentUserUid) {
       this.userSelected.emit(user);
     }
+  }
+
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  get arrowSrc() {
+    if (this.arrowHover) {
+      return 'assets/img/icons/arrow_drop_down_purple.png';
+    }
+    return 'assets/img/icons/arrow_drop_down.png';
+  }
+
+  get accountSrc() {
+    return this.accountHover
+      ? 'assets/img/icons/account_circle_purple.png'
+      : 'assets/img/icons/account_circle.png';
   }
 }
