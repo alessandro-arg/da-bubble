@@ -22,11 +22,15 @@ export class UserService {
 
     const userRef = doc(this.firestore, `users/${user.uid}`);
     await setDoc(userRef, {
-      uid: user.uid, // Wichtig: UID im Dokument speichern
-      name: user.name,
-      email: user.email,
+      uid: user.uid,
+      name: user.name || 'Unbekannter Gast',
+      email: user.email || '',
       avatar: user.avatar || 'assets/img/profile.svg',
-      createdAt: new Date(),
+      isGuest: user.isGuest || false,
+      createdAt: user.createdAt || new Date(),
+      displayName: user.name || '',
+      photoURL: user.avatar || 'assets/img/profile.svg',
+      lastSeen: new Date()
     });
   }
 

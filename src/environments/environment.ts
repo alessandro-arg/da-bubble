@@ -9,4 +9,10 @@ export const environment = {
     messagingSenderId: '1083530171367',
     appId: '1:1083530171367:web:96eb10747948bbb305e342',
   },
+  guestEmail: 'guest@dabubble.com',
+  guestPassword: 'guest1234',
+  guestSettings: {
+    defaultAvatar: 'assets/img/guest-avatar.svg',
+    namePrefix: 'Gast-'
+  }
 };

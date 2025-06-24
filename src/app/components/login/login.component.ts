@@ -4,6 +4,9 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { UserService } from '../../user.service';
+import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../environments/environment';
+
 
 @Component({
   selector: 'app-login',
@@ -31,19 +34,36 @@ export class LoginComponent {
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
-
+/*
   async guestLogin() {
     this.loading = true;
+    this.errorMessage = null;
+
     try {
-      await this.authService.login('guest@example.com', 'guestpassword');
-      this.router.navigate(['/AppComponent']);
-    } catch (error) {
+      const userCredential = await firstValueFrom(this.authService.guestLogin());
+
+      // Prüfe ob Gast bereits existiert, falls nicht erstellen
+      const userExists = await this.userService.getUser(userCredential.user.uid);
+      if (!userExists) {
+        await this.userService.createUser({
+          uid: userCredential.user.uid,
+          name: 'Gast',
+          email: userCredential.user.email || environment.guestEmail,
+          avatar: 'assets/img/avatar.png',
+          isGuest: true // Neue Eigenschaft für Gast-User
+        });
+      }
+
+      // Ändere die Weiterleitung zu einer existierenden Route
+      const redirectUrl = this.authService.redirectUrl || '/landingpage/gast';
+      this.router.navigateByUrl(redirectUrl);
+    } catch (error: any) {
       console.error('Guest login error:', error);
-      this.errorMessage = 'Gast-Login fehlgeschlagen.';
+      this.errorMessage = error.message || 'Gast-Login fehlgeschlagen.';
     } finally {
       this.loading = false;
     }
-  }
+  }*/
 
   async onSubmit(form: NgForm) {
     if (form.invalid) return;
@@ -84,7 +104,7 @@ export class LoginComponent {
             uid: result.user.uid,
             name: result.user.displayName || 'Google User',
             email: result.user.email || '',
-            avatar: result.user.photoURL || 'assets/img/profile.svg'
+            avatar: result.user.photoURL || 'assets/img/avater.png',
           });
         }
 
@@ -98,6 +118,59 @@ export class LoginComponent {
     } finally {
       this.loading = false;
     }
+  }
+
+
+
+  async guestLogin() {
+    this.loading = true;
+    this.errorMessage = null;
+  
+    try {
+      // 1. Anmeldung als Gast
+      const userCredential = await firstValueFrom(this.authService.guestLogin());
+      
+      // 2. Zufälligen Gastnamen generieren
+      const guestName = this.authService.generateRandomGuestName();
+      
+      // 3. Zufälligen Avatar auswählen
+      const randomAvatar = this.getRandomAvatar();
+      
+      // 4. Gast-Benutzer in Firestore erstellen/aktualisieren
+      const userData = {
+        uid: userCredential.user.uid,
+        name: guestName,
+        email: environment.guestEmail,
+        avatar: randomAvatar,
+        isGuest: true,
+        createdAt: new Date(),
+        displayName: guestName,
+        photoURL: randomAvatar
+      };
+  
+      await this.userService.createUser(userData);
+  
+      // 5. Weiterleitung mit Gast-spezifischer Route
+      const redirectUrl = this.authService.redirectUrl || `/landingpage/${userCredential.user.uid}`;
+      this.router.navigateByUrl(redirectUrl);
+    } catch (error: any) {
+      console.error('Guest login error:', error);
+      this.errorMessage = error.message || 'Gast-Login fehlgeschlagen.';
+    } finally {
+      this.loading = false;
+    }
+  }
+  
+  getRandomAvatar(): string {
+    const avatars = [
+      'assets/img/charaters.svg',
+      'assets/img/charaters(1).svg',
+      'assets/img/charaters(2).svg',
+      'assets/img/charaters(3).svg',
+      'assets/img/charaters(4).svg',
+      'assets/img/charaters(5).svg'
+    ];
+    return avatars[Math.floor(Math.random() * avatars.length)];
   }
 
 }

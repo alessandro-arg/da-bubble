@@ -138,7 +138,7 @@
       <div class="form-group flex justify-center items-center w-full">
         <button
             type="button"
-            class="w-full flex items-center justify-center gap-2 rounded-full py-2 px-4 hover:bg-gray-50 border-2 border-transparent hover:border-[#444DF2] text-[#444DF2]"
+            class="w-full flex items-center justify-center gap-2 rounded-full py-2 px-4 border-2 border-transparent hover:border-[#444DF2] text-[#444DF2] hover:font-bold"
           style="background-color:  #ECEEFE;"
           (click)="loginWithGoogle()"
         >
@@ -156,7 +156,7 @@
       <div class="flex justify-center items-center gap-4 w-full mt-4">
         <button
           type="submit"
-          [disabled]="!loginForm.form.valid || loading"
+          
           class="login-btn text-white py-2 px-6 rounded-full disabled:opacity-50"
         >
           <span *ngIf="!loading">Anmelden</span>

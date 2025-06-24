@@ -14,6 +14,7 @@ import { BehaviorSubject, Observable, from } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { UserCredential } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -94,4 +95,40 @@ export class AuthService {
       })
     );
   }
+
+
+
+  // Ändere die guestLogin-Methode wie folgt:
+  guestLogin(): Observable<UserCredential> {
+    const guestEmail = environment.guestEmail;
+    const guestPassword = environment.guestPassword;
+
+    return from(signInWithEmailAndPassword(this.auth, guestEmail, guestPassword)).pipe(
+      catchError((error: FirebaseError) => {
+        console.error('Guest login error:', error);
+        let errorMessage = 'Gast-Login fehlgeschlagen.';
+
+        switch (error.code) {
+          case 'auth/invalid-credential':
+            errorMessage = 'Ungültige Gast-Zugangsdaten.';
+            break;
+          case 'auth/too-many-requests':
+            errorMessage = 'Zu viele Login-Versuche. Bitte später erneut versuchen.';
+            break;
+        }
+
+        throw new Error(errorMessage);
+      })
+    );
+  }
+
+  // Füge diese Methode hinzu
+generateRandomGuestName(): string {
+  const adjectives = ['Freundlicher', 'Neugieriger', 'Glücklicher', 'Mutiger', 'Kreativer'];
+  const nouns = ['Besucher', 'Entdecker', 'Gast', 'Reisender', 'Teilnehmer'];
+  const randomAdj = adjectives[Math.floor(Math.random() * adjectives.length)];
+  const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+  return `${randomAdj} ${randomNoun}`;
+}
+
 }
