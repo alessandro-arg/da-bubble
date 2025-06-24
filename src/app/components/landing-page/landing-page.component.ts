@@ -1,4 +1,4 @@
-import { Component, HostListener, ElementRef } from '@angular/core';
+import { Component, HostListener, ElementRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../auth/auth.service';
@@ -11,6 +11,7 @@ import { UserListComponent } from '../../components/user-list/user-list.componen
 import { WorkspaceToggleButtonComponent } from '../../components/workspace-toggle-button/workspace-toggle-button.component';
 import { ChatComponent } from '../chat/chat.component';
 import { ThreadComponent } from '../thread/thread.component';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-landing-page',
@@ -27,7 +28,7 @@ import { ThreadComponent } from '../thread/thread.component';
   templateUrl: './landing-page.component.html',
   styleUrl: './landing-page.component.scss',
 })
-export class LandingPageComponent {
+export class LandingPageComponent implements OnInit {
   showDropdown = false;
   showProfileModal = false;
 
@@ -36,8 +37,12 @@ export class LandingPageComponent {
   editedName: string = '';
   nameError: string | null = null;
 
+  selectedUser: User | null = null;
+  currentUserUid: string | null = null;
+
   constructor(
     private authService: AuthService,
+    private auth: Auth,
     private userService: UserService,
     private router: Router,
     private route: ActivatedRoute,
@@ -49,6 +54,17 @@ export class LandingPageComponent {
         this.currentUser = await this.userService.getUser(uid);
       }
     });
+  }
+
+  ngOnInit() {
+    onAuthStateChanged(
+      this.auth,
+      (user) => (this.currentUserUid = user?.uid ?? null)
+    );
+  }
+
+  openChat(user: User) {
+    this.selectedUser = user;
   }
 
   toggleDropdown() {

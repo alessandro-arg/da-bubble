@@ -27,62 +27,70 @@
   </div>
 
   <!-- Thread Message -->
-  <div class="px-[40px] pt-6">
-    <div class="flex gap-4">
-      <img
-        src="../../../assets/img/charaters(1).svg"
-        class="w-10 h-10 rounded-full"
-        alt="Noah Braun"
-      />
-      <div>
-        <div class="flex items-center gap-2">
-          <p class="font-bold text-sm">Noah Braun</p>
-          <p class="text-xs text-gray-400">14:25 Uhr</p>
-        </div>
-        <div class="bg-[#ECEEFE] p-4 mt-1 rounded-[16px] max-w-[480px] text-sm">
-          Welche Version ist aktuell von Angular?
-        </div>
+  <div class="flex items-start my-2 gap-[15px] px-[40px] pt-[10px]">
+    <img
+      src="../../../assets/img/charaters(1).svg"
+      class="w-[70px] h-[70px] rounded-full"
+      alt="Noah avatar"
+    />
+    <div class="flex flex-col max-w-[80%] gap-1">
+      <div class="flex items-center gap-5">
+        <span class="font-bold text-base"> Noah Braun</span>
+        <span class="text-[#686868] font-normal text-xs">14:25 Uhr</span>
+      </div>
+      <div
+        class="bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px] p-[15px] text-sm"
+      >
+        Welche Version ist aktuell von Angular?
       </div>
     </div>
   </div>
 
   <!-- Separator -->
   <div class="px-[40px] py-4">
-    <div class="border-t border-[#E5E7EB] relative">
-      <span class="absolute left-0 -top-3 text-sm text-gray-500 bg-white px-2">
-        2 Antworten
-      </span>
+    <div class="flex items-center">
+      <span class="text-base text-[#ADB0D9] whitespace-nowrap"
+        >2 Antworten</span
+      >
+      <div class="flex-grow h-px bg-[#E5E7EB] ml-5"></div>
     </div>
   </div>
 
   <!-- Chat Body -->
   <div class="flex-1 overflow-y-auto flex flex-col gap-6 px-[35px] pb-[35px]">
     <!-- Sofia's Answer -->
-    <div class="flex gap-4">
+    <div class="flex items-start my-2 gap-[15px] pt-[10px]">
       <img
         src="../../../assets/img/charaters(4).svg"
-        class="w-10 h-10 rounded-full"
+        class="w-[70px] h-[70px] rounded-full"
         alt="Sofia Müller"
       />
-      <div>
-        <div class="flex items-center gap-2">
-          <p class="font-bold text-sm">Sofia Müller</p>
-          <p class="text-xs text-gray-400">14:30 Uhr</p>
+      <div class="flex flex-col max-w-[80%] gap-1">
+        <div class="flex items-center gap-5">
+          <span class="font-bold text-base">Sofia Müller</span>
+          <span class="text-[#686868] font-normal text-xs">14:30 Uhr</span>
         </div>
-        <div class="bg-[#ECEEFE] p-4 mt-1 rounded-[16px] max-w-[480px] text-sm">
+        <div
+          class="bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px] p-[15px] text-sm"
+        >
           Ich habe die gleiche Frage. Ich habe gegoogelt und es scheint, dass
           die aktuelle Version Angular 13 ist. Vielleicht weiß Frederik, ob es
           wahr ist.
         </div>
-        <div class="flex items-center gap-1 mt-2 text-sm text-gray-500">
+        <div class="flex gap-3 text-base font-normal items-center mt-1">
           <div
-            class="flex items-center gap-1 bg-[#F4F4F4] px-2 py-1 rounded-full"
+            class="flex gap-3 px-[10px] py-[5px] items-center border border-[#ADB0D9] rounded-[20px]"
           >
-            😲 1
+            <img
+              src="../../../assets/img/icons/happy_emoji.png"
+              class="w-6 h-6"
+              alt="like"
+            />
+            <span>1</span>
           </div>
           <img
-            src="../../../assets/img/icons/sentiment_satisfied.png"
-            class="w-5 h-5"
+            src="../../../assets/img/icons/add_reaction.png"
+            class="w-6 h-6"
             alt="emoji"
           />
         </div>
@@ -90,35 +98,50 @@
     </div>
 
     <!-- Frederik's Answer -->
-    <div class="flex gap-4">
-      <img
-        src="../../../assets/img/charaters(2).svg"
-        class="w-10 h-10 rounded-full"
-        alt="Frederik Beck"
-      />
-      <div>
-        <div class="flex items-center gap-2">
-          <p class="font-bold text-sm">Frederik Beck</p>
-          <p class="text-xs text-gray-400">15:06 Uhr</p>
+    <div class="flex justify-end my-2 gap-[15px]">
+      <!-- Message content area -->
+      <div class="flex flex-col items-end max-w-[80%] gap-1">
+        <!-- Name and time above the message, aligned with avatar -->
+        <div class="flex items-center justify-end">
+          <div class="text-right flex items-center gap-5">
+            <span class="text-[#686868] font-normal text-xs">15:06 Uhr</span>
+            <span class="font-bold text-base">Frederik Beck</span>
+          </div>
         </div>
-        <div
-          class="bg-[#797EF3] text-white p-4 mt-1 rounded-[16px] max-w-[320px] text-sm"
-        >
-          Ja das ist es.
-        </div>
-        <div class="flex items-center gap-1 mt-2 text-sm text-gray-100">
+        <div class="flex justify-end gap-2">
           <div
-            class="flex items-center gap-1 bg-[#5C61D9] px-2 py-1 rounded-full"
+            class="bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px] p-[15px] text-sm"
           >
-            👍 1
+            Ja das ist es.
+          </div>
+        </div>
+
+        <!-- Reactions aligned left under the message -->
+        <div
+          class="flex gap-3 text-sm font-normal items-center justify-end t mt-1"
+        >
+          <div
+            class="flex gap-3 px-[10px] py-[5px] items-center border border-[#ADB0D9] rounded-[20px]"
+          >
+            <img
+              src="../../../assets/img/icons/ok_emoji.png"
+              class="w-6 h-6"
+              alt="check"
+            />
+            <span>1</span>
           </div>
           <img
-            src="../../../assets/img/icons/sentiment_satisfied_white.png"
-            class="w-5 h-5"
+            src="../../../assets/img/icons/add_reaction.png"
+            class="w-6 h-6"
             alt="emoji"
           />
         </div>
       </div>
+      <img
+        src="../../../assets/img/charaters(2).svg"
+        class="w-[70px] h-[70px] rounded-full"
+        alt="Frederik avatar"
+      />
     </div>
   </div>
 

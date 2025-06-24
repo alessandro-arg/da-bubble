@@ -5,8 +5,13 @@ import {
   setDoc,
   getDoc,
   updateDoc,
+  collection,
+  getDocs,
+  CollectionReference,
+  collectionData,
 } from '@angular/fire/firestore';
 import { User } from '../app/models/user.model';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -32,6 +37,23 @@ export class UserService {
   async getUser(uid: string): Promise<User | null> {
     const userDoc = await getDoc(doc(this.firestore, 'users', uid));
     return userDoc.exists() ? (userDoc.data() as User) : null;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    const usersRef = collection(
+      this.firestore,
+      'users'
+    ) as CollectionReference<User>;
+    const querySnapshot = await getDocs(usersRef);
+    return querySnapshot.docs.map((doc) => doc.data());
+  }
+
+  getAllUsersLive(): Observable<User[]> {
+    const usersRef = collection(
+      this.firestore,
+      'users'
+    ) as CollectionReference<User>;
+    return collectionData(usersRef, { idField: 'uid' }) as Observable<User[]>;
   }
 
   async updateUser(uid: string, data: Partial<User>) {
