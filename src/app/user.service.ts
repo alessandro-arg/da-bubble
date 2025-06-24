@@ -28,8 +28,8 @@ export class UserService {
       avatar: user.avatar || 'assets/img/profile.svg',
       isGuest: user.isGuest || false,
       createdAt: user.createdAt || new Date(),
-      displayName: (user as any).displayName || user.name,
-      photoURL: (user as any).photoURL || user.avatar,
+      displayName: user.name || '',
+      photoURL: user.avatar || 'assets/img/profile.svg',
       lastSeen: new Date()
     });
   }
