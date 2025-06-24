@@ -45,6 +45,42 @@
     class="flex-1 overflow-y-auto flex flex-col px-[35px] pb-[35px] pt-5"
     #chatContainer
   >
+    <div *ngIf="!chatPartner" class="p-4 text-gray-500">
+      Wähle einen User, um den Chat zu starten.
+    </div>
+
+    <div *ngIf="chatPartner">
+      <ng-container *ngIf="messages$ | async as msgs">
+        <!-- Placeholder when no messages yet -->
+        <div *ngIf="msgs.length === 0" class="p-4 text-center text-gray-500">
+          Noch keine Nachrichten , sag Hallo und starte das Gespräch!
+        </div>
+        <div
+          *ngFor="let msg of msgs"
+          class="flex gap-2 my-2"
+          [ngClass]="{ 'justify-end': msg.sender === currentUserUid }"
+        >
+          <div class="max-w-[70%]">
+            <div
+              [ngClass]="{
+                'bg-blue-600 text-white rounded-tl-[30px] rounded-b-[30px]':
+                  msg.sender === currentUserUid,
+                'bg-gray-200 text-black rounded-tr-[30px] rounded-b-[30px]':
+                  msg.sender !== currentUserUid
+              }"
+              class="p-3 text-base"
+            >
+              {{ msg.text }}
+            </div>
+            <div class="text-xs text-gray-500 text-right mt-1">
+              {{ msg.createdAt?.toDate() | date : "HH:mm" }}
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- old one ------------------------------------------------------------------------------------- -->
     <div class="flex flex-col gap-6 min-h-full">
       <div class="mt-auto"></div>
       <!-- MESSAGES -->
@@ -157,15 +193,19 @@
         />
       </div>
     </div>
+    <!-- old one ------------------------------------------------------------------------------------- -->
   </div>
 
-  <!-- Input Field (fixed at bottom visually, but logically at top due to reverse scroll) -->
+  <!-- Input Field -->
   <div class="px-[35px] pb-[35px] bg-transparent">
     <div
       class="flex flex-col p-5 border border-[#ADB0D9] rounded-[20px] gap-[20px]"
     >
       <!-- Textarea at top -->
       <textarea
+        [(ngModel)]="newMessage"
+        (keyup.enter)="send()"
+        [disabled]="!chatPartner"
         placeholder="Nachricht an #Entwicklerteam"
         class="w-full resize-none border-none focus:outline-none text-lg placeholder-[#686868] bg-transparent pr-[30px]"
       ></textarea>
@@ -188,7 +228,7 @@
             />
           </button>
         </div>
-        <button class="p-2">
+        <button (click)="send()" [disabled]="!newMessage.trim()" class="p-2">
           <img
             src="../../../assets/img/icons/send.png"
             class="w-6 h-6"

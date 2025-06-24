@@ -1,4 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  Output,
+  EventEmitter,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
@@ -13,6 +19,8 @@ import { Subscription } from 'rxjs';
   styleUrl: './user-list.component.scss',
 })
 export class UserListComponent implements OnInit, OnDestroy {
+  @Output() userSelected = new EventEmitter<User>();
+
   users: User[] = [];
   currentUserUid: string | null = null;
   private authUnsub?: () => void;
@@ -27,6 +35,11 @@ export class UserListComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngOnDestroy(): void {
+    if (this.authUnsub) this.authUnsub();
+    if (this.usersSub) this.usersSub.unsubscribe();
+  }
+
   listenToUsers() {
     this.usersSub = this.userService.getAllUsersLive().subscribe((allUsers) => {
       const filtered = allUsers.filter((u) => u.name !== 'Gast');
@@ -38,8 +51,9 @@ export class UserListComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    if (this.authUnsub) this.authUnsub();
-    if (this.usersSub) this.usersSub.unsubscribe();
+  onClick(user: User) {
+    if (user.uid !== this.currentUserUid) {
+      this.userSelected.emit(user);
+    }
   }
 }

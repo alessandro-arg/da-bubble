@@ -49,6 +49,7 @@
       <div class="w-full h-full flex flex-col gap-4">
         <div
           *ngFor="let user of users"
+          (click)="onClick(user)"
           class="ml-[25px] flex items-center gap-4 px-5 py-1"
         >
           <div class="relative w-13 h-13">
