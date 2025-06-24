@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-//import { AuthService } from './auth/auth.service';
-//import { Router } from '@angular/router';
+import { AuthService } from './auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +17,6 @@ import { RouterOutlet } from '@angular/router';
 export class AppComponent {
   title = 'da-bubble';
 
-/*
   constructor(private authService: AuthService, private router: Router) {
     this.authService.currentUser$.subscribe(user => {
       if (!user) {
@@ -25,5 +24,4 @@ export class AppComponent {
       }
     });
   }
-  */
 }

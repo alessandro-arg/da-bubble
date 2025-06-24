@@ -37,6 +37,12 @@ export class ChooseYourAvatarComponent implements OnInit {
     this.authService.currentUser$.subscribe(async (firebaseUser) => {
       if (firebaseUser) {
         this.currentUser = await this.userService.getUser(firebaseUser.uid);
+
+         // Wenn Gast, automatisch Avatar auswählen
+         if (this.currentUser?.isGuest) {
+          this.selectedAvatar = this.currentUser.avatar;
+          this.confirmAvatar(); // Automatisch bestätigen
+        }
       }
     });
   }
