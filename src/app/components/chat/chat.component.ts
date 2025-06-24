@@ -1,19 +1,20 @@
 import {
-  AfterViewChecked,
   Component,
-  ElementRef,
-  ViewChild,
-  Input,
   OnChanges,
   SimpleChanges,
+  Input,
+  ViewChild,
+  ElementRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { take } from 'rxjs/operators';
+
 import { ChatService } from '../../chat.service';
 import { UserService } from '../../user.service';
+import { of, Observable } from 'rxjs';
 import { Message } from '../../models/chat.model';
 import { User } from '../../models/user.model';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-chat',
@@ -22,19 +23,18 @@ import { Observable } from 'rxjs';
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
 })
-export class ChatComponent implements AfterViewChecked, OnChanges {
+export class ChatComponent implements OnChanges {
   @Input() chatPartner!: User | null;
   @Input() currentUserUid!: string | null;
 
-  messages$!: Observable<Message[]>;
+  messages$ = this.chatService.emptyStream;
   chatId: string | null = null;
   newMessage = '';
 
   participantsMap: Record<string, User> = {};
 
-  @ViewChild('chatContainer')
-  private chatContainer!: ElementRef<HTMLDivElement>;
-  private hasScrolledInitially = false;
+  @ViewChild('chatContainer', { read: ElementRef })
+  private chatContainer!: ElementRef<HTMLElement>;
 
   constructor(
     private chatService: ChatService,
@@ -56,14 +56,16 @@ export class ChatComponent implements AfterViewChecked, OnChanges {
           [this.chatPartner.uid]: this.chatPartner,
         };
       }
+
+      this.messages$
+        .pipe(take(1))
+        .subscribe(() => setTimeout(() => this.scrollToBottom(), 0));
     }
   }
 
-  ngAfterViewChecked() {
-    if (!this.hasScrolledInitially) {
-      this.scrollToBottom();
-      this.hasScrolledInitially = true;
-    }
+  private scrollToBottom() {
+    const c = this.chatContainer.nativeElement;
+    c.scrollTop = c.scrollHeight;
   }
 
   async send() {
@@ -74,12 +76,28 @@ export class ChatComponent implements AfterViewChecked, OnChanges {
       this.newMessage.trim()
     );
     this.newMessage = '';
+    setTimeout(() => this.scrollToBottom(), 0);
   }
 
-  scrollToBottom() {
-    const el = this.chatContainer?.nativeElement;
-    if (el) {
-      el.scrollTop = el.scrollHeight;
+  sameDay(d1: Date, d2: Date): boolean {
+    return (
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate()
+    );
+  }
+
+  getSeparatorLabel(d: Date): string {
+    const today = new Date();
+    const diffMs = today.getTime() - d.getTime();
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+    if (this.sameDay(d, today)) {
+      return 'Heute';
+    } else if (diffDays < 7) {
+      return d.toLocaleDateString('de-DE', { weekday: 'long' });
+    } else {
+      return d.toLocaleDateString('de-DE');
     }
   }
 }

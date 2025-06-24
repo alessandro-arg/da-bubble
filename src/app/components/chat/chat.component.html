@@ -29,31 +29,6 @@
         {{ chatPartner.name }}
       </p>
     </div>
-
-    <!-- if the open chat is a group-->
-    <div *ngIf="!chatPartner" class="flex gap-2 items-center">
-      <div class="flex gap-2 px-[10px] py-[3px] items-center">
-        <div class="flex items-center">
-          <img
-            src="../../../assets/img/charaters(1).svg"
-            alt=""
-            class="w-10 h-10 border-2 border-white rounded-full"
-          />
-          <img
-            src="../../../assets/img/charaters(2).svg"
-            alt=""
-            class="w-10 h-10 border-2 border-white rounded-full -ml-3"
-          />
-          <img
-            src="../../../assets/img/charaters(3).svg"
-            alt=""
-            class="w-10 h-10 border-2 border-white rounded-full -ml-3"
-          />
-        </div>
-        <span class="font-semibold text-xl">3</span>
-      </div>
-      <img src="../../../assets/img/icons/add_members.png" alt="" />
-    </div>
   </div>
 
   <!-- Chat Body -->
@@ -61,17 +36,41 @@
     class="flex-1 overflow-y-auto flex flex-col px-[35px] pb-[35px] pt-5"
     #chatContainer
   >
-    <div *ngIf="chatPartner">
-      <div class="w-full flex flex-col gap-6 min-h-full">
-        <div class="mt-auto"></div>
-        <ng-container *ngIf="messages$ | async as msgs">
-          <!-- Placeholder when no messages yet -->
-          <div *ngIf="msgs.length === 0" class="p-4 text-center text-gray-500">
-            Noch keine Nachrichten , sag Hallo und starte das Gespräch!
-          </div>
+    <div *ngIf="chatPartner" class="w-full flex flex-col gap-6 min-h-full">
+      <!-- Push the messages block to the bottom when there's not enough content to scroll -->
+      <div class="mt-auto"></div>
+
+      <ng-container *ngIf="messages$ | async as msgs">
+        <!-- Placeholder when no messages yet -->
+        <div *ngIf="msgs.length === 0" class="p-4 text-center text-gray-500">
+          Noch keine Nachrichten , sag Hallo und starte das Gespräch!
+        </div>
+
+        <ng-container *ngFor="let msg of msgs; let i = index">
+          <!-- ── date separator when first message or new day ─────────── -->
           <div
-            *ngFor="let msg of msgs"
-            class="flex my-2 gap-[30px] px-[10px]"
+            *ngIf="
+              msg.createdAt &&
+              (i === 0 ||
+                (msgs[i - 1]?.createdAt &&
+                  !sameDay(
+                    msgs[i - 1].createdAt.toDate(),
+                    msg.createdAt.toDate()
+                  )))
+            "
+            class="flex items-center my-4"
+          >
+            <div class="flex-grow h-px bg-[#ADB0D9]"></div>
+            <span
+              class="bg-white px-4 py-1 text-base rounded-full border border-[#ADB0D9]"
+            >
+              {{ getSeparatorLabel(msg.createdAt.toDate()) }}
+            </span>
+            <div class="flex-grow h-px bg-[#ADB0D9]"></div>
+          </div>
+
+          <div
+            class="flex my-4 gap-[30px] px-[10px]"
             [ngClass]="{
               'justify-end': msg.sender === currentUserUid,
               'items-start': msg.sender !== currentUserUid
@@ -100,18 +99,20 @@
                 <span class="font-bold text-lg">
                   {{ participantsMap[msg.sender].name }}
                 </span>
-                <span class="text-[#686868] font-normal text-sm">
-                  {{ msg.createdAt?.toDate() | date : "HH:mm" }}
+                <span
+                  *ngIf="msg.createdAt"
+                  class="text-[#686868] font-normal text-sm"
+                >
+                  {{ msg.createdAt.toDate() | date : "HH:mm" }} Uhr
                 </span>
               </div>
               <div
                 class="p-[15px] text-base"
-                [ngClass]="{
-                  'bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px]':
-                    msg.sender === currentUserUid,
-                  'bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px]':
-                    msg.sender !== currentUserUid
-                }"
+                [ngClass]="
+                  msg.sender === currentUserUid
+                    ? 'bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px]'
+                    : 'bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px]'
+                "
               >
                 {{ msg.text }}
               </div>
@@ -125,127 +126,17 @@
             />
           </div>
         </ng-container>
-      </div>
+      </ng-container>
     </div>
 
-    <!-- old one ------------------------------------------------------------------------------------- -->
-    <div class="flex flex-col gap-6 min-h-full">
-      <div class="mt-auto"></div>
-      <!-- MESSAGES -->
-      <!-- Date Separator -->
-      <div class="flex items-center">
-        <div class="flex-grow h-px bg-[#ADB0D9]"></div>
-        <span
-          class="bg-white px-4 py-1 text-base rounded-full border border-[#ADB0D9]"
-        >
-          Dienstag, 14 Januar
-        </span>
-        <div class="flex-grow h-px bg-[#ADB0D9]"></div>
-      </div>
-
-      <!-- Noah Message -->
-      <div class="flex items-start my-2 gap-[30px] px-[10px]">
-        <img
-          src="../../../assets/img/charaters(1).svg"
-          class="w-[70px] h-[70px] rounded-full"
-          alt="Noah avatar"
-        />
-        <div class="flex flex-col max-w-[80%] gap-1">
-          <div class="flex items-center gap-5">
-            <span class="font-bold text-lg"> Noah Braun</span>
-            <span class="text-[#686868] font-normal text-sm">14:25 Uhr</span>
-          </div>
-          <div
-            class="bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px] p-[15px] text-base"
-          >
-            Welche Version ist aktuell von Angular?
-          </div>
-          <div
-            class="text-base text-[#535AF1] font-normal cursor-pointer flex items-center gap-5 mt-1"
-          >
-            2 Antworten
-            <p class="text-sm text-[#686868] cursor-default">
-              Letzte Antwort 14:56
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Date Separator Today -->
-      <div class="flex items-center">
-        <div class="flex-grow h-px bg-[#ADB0D9]"></div>
-        <span
-          class="bg-white px-4 py-1 text-base rounded-full border border-[#ADB0D9]"
-        >
-          Heute
-        </span>
-        <div class="flex-grow h-px bg-[#ADB0D9]"></div>
-      </div>
-
-      <!-- Frederik Message -->
-      <div class="flex justify-end my-2 gap-[30px] px-[10px]">
-        <!-- Message content area -->
-        <div class="flex flex-col items-end max-w-[80%] gap-1">
-          <!-- Name and time above the message, aligned with avatar -->
-          <div class="flex items-center justify-end">
-            <div class="text-right flex items-center gap-5">
-              <span class="text-[#686868] font-normal text-sm">15:06 Uhr</span>
-              <span class="font-bold text-lg">Frederik Beck</span>
-            </div>
-          </div>
-          <div class="flex justify-end gap-2">
-            <div
-              class="bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px] p-[15px] text-base"
-            >
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Pellentesque blandit odio efficitur lectus vestibulum, quis
-              accumsan ante vulputate.
-            </div>
-          </div>
-
-          <!-- Reactions aligned left under the message -->
-          <div
-            class="flex gap-3 text-base font-normal items-center justify-end t mt-1"
-          >
-            <div
-              class="flex gap-3 px-[10px] py-[5px] items-center border border-[#ADB0D9] rounded-[20px]"
-            >
-              <img
-                src="../../../assets/img/icons/rocket.png"
-                class="w-6 h-6"
-                alt="like"
-              />
-              <span>1</span>
-            </div>
-            <div
-              class="flex gap-3 px-[10px] py-[5px] items-center border border-[#ADB0D9] rounded-[20px]"
-            >
-              <img
-                src="../../../assets/img/icons/check_emoji.png"
-                class="w-6 h-6"
-                alt="check"
-              />
-              <span>1</span>
-            </div>
-            <img
-              src="../../../assets/img/icons/add_reaction.png"
-              class="w-6 h-6"
-              alt="emoji"
-            />
-          </div>
-        </div>
-        <img
-          src="../../../assets/img/charaters(2).svg"
-          class="w-[70px] h-[70px] rounded-full"
-          alt="Frederik avatar"
-        />
-      </div>
+    <!-- fallback if no chatPartner… -->
+    <div *ngIf="!chatPartner" class="flex-1 flex items-center justify-center">
+      Wähle einen Chat aus.
     </div>
-    <!-- old one ------------------------------------------------------------------------------------- -->
   </div>
 
   <!-- Input Field -->
-  <div class="px-[35px] pb-[35px] bg-transparent">
+  <div class="px-[35px] pb-[35px] pt-[15px] bg-transparent">
     <div
       class="flex flex-col p-5 border border-[#ADB0D9] rounded-[20px] gap-[20px]"
     >
