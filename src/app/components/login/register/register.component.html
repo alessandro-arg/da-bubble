@@ -9,7 +9,7 @@
   <div class="login-container container mx-auto p-8 md:p-16 flex flex-col items-center justify-center bg-white rounded-lg shadow-md w-full max-w-2xl">
     <div class="flex items-center justify-start w-full mb-6 gap-20">
       <a routerLink="/login" class="text-blue-500 hover:text-blue-700">
-        <img src="./../../../assets/img/arrow_back.svg" alt="Back" class="w-5 h-auto" />
+        <img src="assets/img/arrow_back.svg" alt="Back" class="w-5 h-auto" />
       </a>
       <h1 class="text-2xl font-bold"> Konto erstellen </h1>
     </div>
@@ -23,7 +23,7 @@
       <div class="form-group flex justify-center items-center rounded-full flex-col w-full px-4"
            style="background-color: #edeefe;">
         <div class="flex justify-center items-center w-full py-2 px-1">
-          <img src="./../../../assets/img/person_filled.svg" alt="" class="mr-2 w-5 h-5" />
+          <img src="assets/img/person_filled.svg" alt="" class="mr-2 w-5 h-5" />
           <input
             class="w-full focus:outline-none"
             type="text"
@@ -42,7 +42,7 @@
       <div class="form-group flex justify-center items-center rounded-full flex-col w-full px-4"
            style="background-color: #edeefe;">
         <div class="flex justify-center items-center w-full py-2 px-1">
-          <img src="./../../../assets/img/mail.svg" alt="Email" class="mr-2 w-5 h-5" />
+          <img src="assets/img/mail.svg" alt="Email" class="mr-2 w-5 h-5" />
           <input
             class="w-full focus:outline-none"
             type="email"
@@ -65,7 +65,7 @@
       <div class="form-group flex justify-center items-center flex-col w-full">
         <div class="flex justify-center items-center w-full py-2 rounded-full px-4"
              style="background-color: #edeefe;">
-          <img src="./../../../assets/img/lock.svg" alt="Password" class="mr-2 w-5 h-5" />
+          <img src="assets/img/lock.svg" alt="Password" class="mr-2 w-5 h-5" />
           <input
             class="w-full focus:outline-none"
             [type]="showPassword ? 'text' : 'password'"
@@ -74,9 +74,9 @@
             placeholder="Passwort"
           />
           <div class="flex ml-2" (click)="togglePasswordVisibility()">
-            <img *ngIf="!showPassword" src="./../../../assets/img/eye-icon-visibility-off.svg" 
+            <img *ngIf="!showPassword" src="assets/img/eye-icon-visibility-off.svg" 
                  alt="Hide password" class="w-5 h-5 cursor-pointer" />
-            <img *ngIf="showPassword" src="./../../../assets/img/eye-icon-visibility.svg" 
+            <img *ngIf="showPassword" src="assets/img/eye-icon-visibility.svg" 
                  alt="Show password" class="w-5 h-5 cursor-pointer" />
           </div>
         </div>
