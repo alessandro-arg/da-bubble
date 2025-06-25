@@ -46,3 +46,12 @@ body {
   font-family: "Nunito", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   background-color: #edeefe;
 }
+
+emoji-picker {
+  --background: white;
+  --border-color: #eceefe;
+  --border-size: 2px;
+  --border-radius: 30px;
+  --button-hover-background: #eceefe;
+  --emoji-padding: 12px;
+}

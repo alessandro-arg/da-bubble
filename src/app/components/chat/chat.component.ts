@@ -5,6 +5,9 @@ import {
   Input,
   ViewChild,
   ElementRef,
+  AfterViewInit,
+  HostListener,
+  CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,27 +15,29 @@ import { take } from 'rxjs/operators';
 
 import { ChatService } from '../../chat.service';
 import { UserService } from '../../user.service';
-import { of, Observable } from 'rxjs';
-import { Message } from '../../models/chat.model';
 import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-chat',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
 })
-export class ChatComponent implements OnChanges {
+export class ChatComponent implements OnChanges, AfterViewInit {
   @Input() chatPartner!: User | null;
   @Input() currentUserUid!: string | null;
 
   messages$ = this.chatService.emptyStream;
   chatId: string | null = null;
   newMessage = '';
+  showEmojiPicker = false;
 
   participantsMap: Record<string, User> = {};
 
+  @ViewChild('emojiBtn', { read: ElementRef }) emojiBtn!: ElementRef;
+  @ViewChild('picker', { read: ElementRef }) picker!: ElementRef;
   @ViewChild('chatContainer', { read: ElementRef })
   private chatContainer!: ElementRef<HTMLElement>;
 
@@ -40,6 +45,16 @@ export class ChatComponent implements OnChanges {
     private chatService: ChatService,
     private userService: UserService
   ) {}
+
+  async ngAfterViewInit() {
+    if (typeof window !== 'undefined') {
+      if (!('requestAnimationFrame' in window)) {
+        (window as any).requestAnimationFrame = (cb: FrameRequestCallback) =>
+          setTimeout(cb, 0);
+      }
+      await import('emoji-picker-element');
+    }
+  }
 
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['chatPartner'] && this.chatPartner && this.currentUserUid) {
@@ -60,6 +75,25 @@ export class ChatComponent implements OnChanges {
       this.messages$
         .pipe(take(1))
         .subscribe(() => setTimeout(() => this.scrollToBottom(), 0));
+    }
+  }
+
+  toggleEmojiPicker() {
+    this.showEmojiPicker = !this.showEmojiPicker;
+  }
+
+  addEmoji(event: any) {
+    this.newMessage += event.detail.unicode;
+  }
+
+  @HostListener('document:click', ['$event.target'])
+  onClickOutside(target: HTMLElement) {
+    if (
+      this.showEmojiPicker &&
+      !this.emojiBtn.nativeElement.contains(target) &&
+      !this.picker?.nativeElement.contains(target)
+    ) {
+      this.showEmojiPicker = false;
     }
   }
 
