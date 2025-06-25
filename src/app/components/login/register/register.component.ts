@@ -8,9 +8,9 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService } from '../../../auth/auth.service';
 import { firstValueFrom } from 'rxjs';
-import { UserService } from '../../user.service';
+import { UserService } from '../../../user.service';
 
 @Component({
   selector: 'app-register',

@@ -2,8 +2,8 @@ import { Routes } from '@angular/router';
 import { authGuard } from './auth.guard';
 import { LandingPageComponent } from './components/landing-page/landing-page.component';
 import { LoginComponent } from './components/login/login.component';
-import { RegisterComponent } from './components/register/register.component';
-import { ChooseYourAvatarComponent } from './components/register/choose-your-avatar/choose-your-avatar.component';
+import { RegisterComponent } from './components/login/register/register.component';
+import { ChooseYourAvatarComponent } from './components/login/register/choose-your-avatar/choose-your-avatar.component';
 
 export const routes: Routes = [
   {
