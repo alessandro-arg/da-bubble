@@ -27,9 +27,12 @@ export class UserListComponent implements OnInit, OnDestroy {
   private authUnsub?: () => void;
   private usersSub?: Subscription;
 
-  dropdownOpen = true;
-  arrowHover = false;
-  accountHover = false;
+  direktDropdownOpen = true;
+  direktArrowHover = false;
+  direktAccountHover = false;
+  channelsDropdownOpen = true;
+  channelsArrowHover = false;
+  channelsAccountHover = false;
 
   constructor(private userService: UserService, private auth: Auth) {}
 
@@ -63,19 +66,36 @@ export class UserListComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleDropdown() {
-    this.dropdownOpen = !this.dropdownOpen;
+  toggleDirektDropdown() {
+    this.direktDropdownOpen = !this.direktDropdownOpen;
   }
 
-  get arrowSrc() {
-    if (this.arrowHover) {
+  toggleChannelsDropdown() {
+    this.channelsDropdownOpen = !this.channelsDropdownOpen;
+  }
+
+  get direktArrowSrc() {
+    if (this.direktArrowHover) {
       return 'assets/img/icons/arrow_drop_down_purple.png';
     }
     return 'assets/img/icons/arrow_drop_down.png';
   }
 
-  get accountSrc() {
-    return this.accountHover
+  get direktAccountSrc() {
+    return this.direktAccountHover
+      ? 'assets/img/icons/account_circle_purple.png'
+      : 'assets/img/icons/account_circle.png';
+  }
+
+  get channelsArrowSrc() {
+    if (this.channelsArrowHover) {
+      return 'assets/img/icons/arrow_drop_down_purple.png';
+    }
+    return 'assets/img/icons/arrow_drop_down.png';
+  }
+
+  get channelsAccountSrc() {
+    return this.channelsAccountHover
       ? 'assets/img/icons/account_circle_purple.png'
       : 'assets/img/icons/account_circle.png';
   }
