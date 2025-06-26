@@ -34,6 +34,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   newMessage = '';
   messagesLoading = false;
   showEmojiPicker = false;
+  showProfileModal = false;
 
   participantsMap: Record<string, User> = {};
 
@@ -81,6 +82,14 @@ export class ChatComponent implements OnChanges, AfterViewInit {
         .pipe(take(1))
         .subscribe(() => setTimeout(() => this.scrollToBottom(), 0));
     }
+  }
+
+  openProfileModal() {
+    this.showProfileModal = true;
+  }
+
+  closeProfileModal() {
+    this.showProfileModal = false;
   }
 
   toggleEmojiPicker() {
