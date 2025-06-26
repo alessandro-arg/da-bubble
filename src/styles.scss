@@ -55,3 +55,23 @@ emoji-picker {
   --button-hover-background: #eceefe;
   --emoji-padding: 12px;
 }
+
+emoji-picker,
+emoji-picker * {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db white;
+}
+
+emoji-picker ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+emoji-picker ::-webkit-scrollbar-track {
+  background: white;
+  border-radius: 30px;
+}
+emoji-picker ::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 30px;
+  border: 2px solid white;
+}

@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { take } from 'rxjs/operators';
+import { take, tap } from 'rxjs/operators';
 
 import { ChatService } from '../../chat.service';
 import { UserService } from '../../user.service';
@@ -32,6 +32,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   messages$ = this.chatService.emptyStream;
   chatId: string | null = null;
   newMessage = '';
+  messagesLoading = false;
   showEmojiPicker = false;
 
   participantsMap: Record<string, User> = {};
@@ -58,11 +59,15 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['chatPartner'] && this.chatPartner && this.currentUserUid) {
+      this.messagesLoading = true;
       this.chatId = await this.chatService.ensureChat(
         this.currentUserUid,
         this.chatPartner.uid
       );
-      this.messages$ = this.chatService.getChatMessages(this.chatId);
+      this.messages$ = this.chatService.getChatMessages(this.chatId).pipe(
+        take(1),
+        tap(() => (this.messagesLoading = false))
+      );
 
       const me = await this.userService.getUser(this.currentUserUid);
       if (me) {
@@ -84,6 +89,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   addEmoji(event: any) {
     this.newMessage += event.detail.unicode;
+    this.showEmojiPicker = false;
   }
 
   @HostListener('document:click', ['$event.target'])
@@ -111,6 +117,13 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     );
     this.newMessage = '';
     setTimeout(() => this.scrollToBottom(), 0);
+  }
+
+  onTextareaKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && !event.altKey) {
+      event.preventDefault();
+      this.send();
+    }
   }
 
   sameDay(d1: Date, d2: Date): boolean {

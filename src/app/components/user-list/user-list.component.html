@@ -87,7 +87,7 @@
             <div
               *ngFor="let user of users"
               (click)="onClick(user)"
-              class="ml-[25px] mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+              class="w-max ml-4 mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
               [ngClass]="{
                 'bg-[#ECEEFE]': user.uid === activeUserUid,
                 'hover:bg-[#ECEEFE]': user.uid !== activeUserUid
