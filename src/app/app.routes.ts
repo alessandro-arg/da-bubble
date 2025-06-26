@@ -4,8 +4,8 @@ import { LandingPageComponent } from './components/landing-page/landing-page.com
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/login/register/register.component';
 import { ChooseYourAvatarComponent } from './components/login/register/choose-your-avatar/choose-your-avatar.component';
-import { SendEmailResetPasswordComponent } from './components/login/send-email-reset-password/send-email-reset-password.component';
-import { ResetPasswordComponent } from './components/login/send-email-reset-password/reset-password/reset-password.component';
+import { ResetPasswordComponent } from './components/login/reset-password/reset-password.component';
+import { ForgotPasswordComponent } from './components/login/forgot-password/forgot-password.component';
 
 export const routes: Routes = [
   {
@@ -32,9 +32,10 @@ export const routes: Routes = [
   },
 
   {
-    path: 'SendEmailResetPasswordComponent',
-    component: SendEmailResetPasswordComponent,
+    path: 'forgot-password',
+    component: ForgotPasswordComponent,
   },
+  
   {
     path: 'reset-password',
     component: ResetPasswordComponent,

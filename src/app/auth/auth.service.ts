@@ -14,6 +14,7 @@ import { BehaviorSubject, Observable, from } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { UserCredential } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
+import { sendPasswordResetEmail, confirmPasswordReset } from 'firebase/auth';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -98,7 +99,6 @@ export class AuthService {
 
 
 
-  // Ändere die guestLogin-Methode wie folgt:
   guestLogin(): Observable<UserCredential> {
     const guestEmail = environment.guestEmail;
     const guestPassword = environment.guestPassword;
@@ -122,13 +122,98 @@ export class AuthService {
     );
   }
 
-  // Füge diese Methode hinzu
-generateRandomGuestName(): string {
-  const adjectives = ['Freundlicher', 'Neugieriger', 'Glücklicher', 'Mutiger', 'Kreativer'];
-  const nouns = ['Besucher', 'Entdecker', 'Gast', 'Reisender', 'Teilnehmer'];
-  const randomAdj = adjectives[Math.floor(Math.random() * adjectives.length)];
-  const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
-  return `${randomAdj} ${randomNoun}`;
+  generateRandomGuestName(): string {
+    const adjectives = ['Freundlicher', 'Neugieriger', 'Glücklicher', 'Mutiger', 'Kreativer'];
+    const nouns = ['Besucher', 'Entdecker', 'Gast', 'Reisender', 'Teilnehmer'];
+    const randomAdj = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+    return `${randomAdj} ${randomNoun}`;
+  }
+
+
+
+  sendPasswordResetEmail(email: string): Observable<void> {
+    const actionCodeSettings = {
+      url: 'http://localhost:4200/reset-password',
+      handleCodeInApp: true
+    };
+  
+    return from(sendPasswordResetEmail(this.auth, email, actionCodeSettings)).pipe(
+      catchError((error: FirebaseError) => {
+        console.error('Password reset error:', error);
+        let errorMessage = 'Fehler beim Senden der Zurücksetzen-E-Mail.';
+  
+        switch (error.code) {
+          case 'auth/invalid-email':
+            errorMessage = 'Ungültige E-Mail-Adresse.';
+            break;
+          case 'auth/user-not-found':
+            errorMessage = 'Kein Benutzer mit dieser E-Mail-Adresse gefunden.';
+            break;
+          case 'auth/too-many-requests':
+            errorMessage = 'Zu viele Anfragen. Bitte versuchen Sie es später erneut.';
+            break;
+        }
+  
+        throw new Error(errorMessage);
+      })
+    );
+  }
+
+  
+
+  confirmPasswordReset(code: string, newPassword: string): Observable<void> {
+    return from(confirmPasswordReset(this.auth, code, newPassword)).pipe(
+      catchError((error: FirebaseError) => {
+        console.error('Password reset confirmation error:', error);
+        let errorMessage = 'Fehler beim Zurücksetzen des Passworts.';
+
+        switch (error.code) {
+          case 'auth/expired-action-code':
+            errorMessage = 'Der Zurücksetzen-Code ist abgelaufen.';
+            break;
+          case 'auth/invalid-action-code':
+            errorMessage = 'Ungültiger Zurücksetzen-Code.';
+            break;
+          case 'auth/user-disabled':
+            errorMessage = 'Dieser Benutzer ist deaktiviert.';
+            break;
+          case 'auth/user-not-found':
+            errorMessage = 'Kein Benutzer mit dieser E-Mail-Adresse gefunden.';
+            break;
+          case 'auth/weak-password':
+            errorMessage = 'Das Passwort ist zu schwach.';
+            break;
+        }
+
+        throw new Error(errorMessage);
+      })
+    );
+  }
 }
 
-}
+
+
+
+
+/*
+
+  const actionCodeSettings = {
+      url: 'https://ihre-domain.de/reset-password',
+      handleCodeInApp: true
+    };
+
+
+    und auf der Firebase-Konsole unter "Authentifizierung" > "E-Mail-Vorlagen" > "Passwort zurücksetzen" den Link anpassen:
+    <a href="https://ihre-domain.de/reset-password?oobCode={{code}}">Passwort zurücksetzen</a>
+    Dies stellt sicher, dass der Link korrekt funktioniert und die Benutzer nach dem Zurücksetzen des Passworts zur richtigen Seite weitergeleitet werden.
+
+
+
+    https://dabubble-db274.firebaseapp.com/__/auth/action?mode=action&oobCode=code
+
+
+
+    https://dabubble-db274.firebaseapp.com/__/auth/action?mode=action&oobCode=code
+
+*/
