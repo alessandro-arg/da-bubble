@@ -191,6 +191,7 @@
     <app-chat
       [chatPartner]="selectedUser"
       [currentUserUid]="currentUserUid"
+      (userSelected)="openChat($event)"
     ></app-chat>
   </div>
 

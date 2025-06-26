@@ -17,7 +17,7 @@
 
     <!-- if the open chat is a user -->
     <div
-      class="flex items-center gap-4 px-2 py-1 rounded-[35px] cursor-pointer hover:bg-[#ECEEFE]"
+      class="flex items-center gap-4 px-2 py-1 rounded-[35px] cursor-pointer hover:bg-[#ECEEFE] transition-colors duration-200"
       (click)="openProfileModal()"
     >
       <div class="relative">
@@ -192,7 +192,7 @@
           <span class="font-bold text-xl">Profile</span>
           <button
             (click)="closeProfileModal(); $event.stopPropagation()"
-            class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] group"
+            class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] group transition-colors duration-200"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -240,10 +240,11 @@
           </div>
         </div>
 
-        <!-- Send message -->
+        <!-- Message button -->
         <div class="w-full flex justify-center items-center">
           <button
             class="flex gap-2 items-center text-white font-semibold text-lg bg-[#444DF2] px-[25px] py-[12px] rounded-full hover:bg-[#797EF3]"
+            (click)="startChatWithPartner()"
           >
             <img
               src="../../../assets/img/icons/mode_comment.png"
@@ -279,9 +280,20 @@
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-1">
           <div class="relative">
-            <button #emojiBtn class="p-2" (click)="toggleEmojiPicker()">
+            <button
+              #emojiBtn
+              class="p-2 rounded-full transition-colors"
+              [ngClass]="{ 'bg-[#F0EDFF]': isEmojiHovered }"
+              (mouseenter)="isEmojiHovered = true"
+              (mouseleave)="isEmojiHovered = false"
+              (click)="toggleEmojiPicker()"
+            >
               <img
-                src="../../../assets/img/icons/sentiment_satisfied.png"
+                [src]="
+                  isEmojiHovered
+                    ? '../../../assets/img/icons/sentiment_satisfied_purple.png'
+                    : '../../../assets/img/icons/sentiment_satisfied.png'
+                "
                 class="w-6 h-6"
                 alt="emoji"
               />
@@ -294,15 +306,28 @@
               <emoji-picker (emoji-click)="addEmoji($event)"></emoji-picker>
             </div>
           </div>
-          <button class="p-2">
+          <button
+            class="p-2 rounded-full transition-colors"
+            [ngClass]="{ 'bg-[#F0EDFF]': isAttachHovered }"
+            (mouseenter)="isAttachHovered = true"
+            (mouseleave)="isAttachHovered = false"
+          >
             <img
-              src="../../../assets/img/icons/alternate_email.png"
+              [src]="
+                isAttachHovered
+                  ? '../../../assets/img/icons/alternate_email_purple.png'
+                  : '../../../assets/img/icons/alternate_email.png'
+              "
               class="w-6 h-6"
               alt="attachment"
             />
           </button>
         </div>
-        <button (click)="send()" [disabled]="!newMessage.trim()" class="p-2">
+        <button
+          (click)="send()"
+          [disabled]="!newMessage.trim()"
+          class="p-2 disabled:opacity-0 hover:opacity-70"
+        >
           <img
             src="../../../assets/img/icons/send.png"
             class="w-6 h-6"

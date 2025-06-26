@@ -8,6 +8,8 @@ import {
   AfterViewInit,
   HostListener,
   CUSTOM_ELEMENTS_SCHEMA,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -29,12 +31,17 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   @Input() chatPartner!: User | null;
   @Input() currentUserUid!: string | null;
 
+  @Output() userSelected = new EventEmitter<User>();
+
   messages$ = this.chatService.emptyStream;
   chatId: string | null = null;
   newMessage = '';
   messagesLoading = false;
   showEmojiPicker = false;
   showProfileModal = false;
+
+  isEmojiHovered = false;
+  isAttachHovered = false;
 
   participantsMap: Record<string, User> = {};
 
@@ -81,6 +88,13 @@ export class ChatComponent implements OnChanges, AfterViewInit {
       this.messages$
         .pipe(take(1))
         .subscribe(() => setTimeout(() => this.scrollToBottom(), 0));
+    }
+  }
+
+  startChatWithPartner() {
+    if (this.chatPartner) {
+      this.userSelected.emit(this.chatPartner);
+      this.closeProfileModal();
     }
   }
 
