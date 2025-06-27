@@ -10,6 +10,7 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   Output,
   EventEmitter,
+  NgZone,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -52,7 +53,8 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   constructor(
     private chatService: ChatService,
-    private userService: UserService
+    private userService: UserService,
+    private ngZone: NgZone
   ) {}
 
   async ngAfterViewInit() {
@@ -68,14 +70,18 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['chatPartner'] && this.chatPartner && this.currentUserUid) {
       this.messagesLoading = true;
+
       this.chatId = await this.chatService.ensureChat(
         this.currentUserUid,
         this.chatPartner.uid
       );
-      this.messages$ = this.chatService.getChatMessages(this.chatId).pipe(
-        take(1),
-        tap(() => (this.messagesLoading = false))
-      );
+      const messageStream$ = this.chatService.getChatMessages(this.chatId);
+      this.messages$ = messageStream$;
+
+      messageStream$.pipe(take(1)).subscribe(() => {
+        this.messagesLoading = false;
+        setTimeout(() => this.scrollToBottom(), 100);
+      });
 
       const me = await this.userService.getUser(this.currentUserUid);
       if (me) {
@@ -84,10 +90,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
           [this.chatPartner.uid]: this.chatPartner,
         };
       }
-
-      this.messages$
-        .pipe(take(1))
-        .subscribe(() => setTimeout(() => this.scrollToBottom(), 0));
     }
   }
 
