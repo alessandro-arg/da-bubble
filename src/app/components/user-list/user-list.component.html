@@ -59,13 +59,24 @@
         <div class="flex flex-col gap-3">
           <div
             *ngFor="let g of groups"
-            class="flex items-center gap-2 ml-[25px] w-max rounded-2xl py-1 px-5 bg-[#ECEEFE] cursor-pointer hover:bg-[#E0E2FF] transition-colors"
+            (click)="onGroupClick(g)"
+            class="flex items-center gap-2 ml-[25px] w-max rounded-2xl py-1 px-5 cursor-pointer transition-colors duration-200"
+            [ngClass]="{
+              'bg-[#ECEEFE]': activeGroupId === g.id,
+              'hover:bg-[#E0E2FF]': activeGroupId !== g.id
+            }"
           >
             <img src="../../../assets/img/icons/tag.png" alt="group icon" />
             <p>{{ g.name }}</p>
           </div>
-          <div class="w-full flex gap-2 ml-[25px] rounded-2xl py-1 px-5">
-            <img src="../../../assets/img/icons/add_circle.png" alt="" />
+          <div
+            class="w-full flex gap-2 ml-[25px] rounded-2xl py-1 px-5 cursor-pointer hover:bg-[#ECEEFE] transition-colors"
+            (click)="openAddGroupModal()"
+          >
+            <img
+              src="../../../assets/img/icons/add_circle.png"
+              alt="add channel"
+            />
             <span>Channel hinzufügen</span>
           </div>
         </div>

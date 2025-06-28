@@ -31,11 +31,13 @@ import { CreateGroupModalComponent } from './create-group-modal/create-group-mod
 })
 export class UserListComponent implements OnInit, OnDestroy {
   @Output() userSelected = new EventEmitter<User>();
+  @Output() groupSelected = new EventEmitter<string>();
 
   users: User[] = [];
   groups: Group[] = [];
   currentUserUid: string | null = null;
   activeUserUid: string | null = null;
+  activeGroupId: string | null = null;
 
   private authUnsub?: () => void;
   private usersSub?: Subscription;
@@ -105,6 +107,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   openAddGroupModal() {
     this.showAddGroupModal = true;
   }
+
   closeAddGroupModal() {
     this.showAddGroupModal = false;
   }
@@ -114,6 +117,12 @@ export class UserListComponent implements OnInit, OnDestroy {
       this.activeUserUid = user.uid;
       this.userSelected.emit(user);
     }
+  }
+
+  onGroupClick(g: Group) {
+    this.activeGroupId = g.id;
+    this.activeUserUid = null;
+    this.groupSelected.emit(g.id);
   }
 
   onGroupCreated(groupId: string) {

@@ -184,14 +184,18 @@
   </div>
 
   <div class="w-1/4 bg-white h-full shadow-sm rounded-[32px]">
-    <app-user-list (userSelected)="openChat($event)"></app-user-list>
+    <app-user-list
+      (userSelected)="openPrivateChat($event)"
+      (groupSelected)="openGroupChat($event)"
+    ></app-user-list>
   </div>
 
   <div class="w-2/4 bg-white h-full shadow-sm rounded-[32px]">
     <app-chat
       [chatPartner]="selectedUser"
       [currentUserUid]="currentUserUid"
-      (userSelected)="openChat($event)"
+      (userSelected)="openPrivateChat($event)"
+      [groupId]="selectedGroupId"
     ></app-chat>
   </div>
 

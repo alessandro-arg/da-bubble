@@ -30,6 +30,7 @@ import { User } from '../../models/user.model';
 export class ChatComponent implements OnChanges, AfterViewInit {
   @Input() chatPartner!: User | null;
   @Input() currentUserUid!: string | null;
+  @Input() groupId!: string | null;
 
   @Output() userSelected = new EventEmitter<User>();
 
@@ -66,29 +67,54 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   }
 
   async ngOnChanges(changes: SimpleChanges) {
+    this.messagesLoading = true;
+
     if (changes['chatPartner'] && this.chatPartner && this.currentUserUid) {
-      this.messagesLoading = true;
-
-      this.chatId = await this.chatService.ensureChat(
-        this.currentUserUid,
-        this.chatPartner.uid
-      );
-      const messageStream$ = this.chatService.getChatMessages(this.chatId);
-      this.messages$ = messageStream$;
-
-      messageStream$.pipe(take(1)).subscribe(() => {
-        this.messagesLoading = false;
-        setTimeout(() => this.scrollToBottom(), 100);
-      });
-
-      const me = await this.userService.getUser(this.currentUserUid);
-      if (me) {
-        this.participantsMap = {
-          [me.uid!]: me,
-          [this.chatPartner.uid]: this.chatPartner,
-        };
-      }
+      await this.loadPrivateChat(this.currentUserUid, this.chatPartner);
     }
+
+    if (changes['groupId'] && this.groupId) {
+      await this.loadGroupChat(this.groupId);
+    }
+  }
+
+  private async loadPrivateChat(meUid: string, them: User) {
+    this.chatId = await this.chatService.ensureChat(meUid, them.uid);
+    this.messages$ = this.chatService.getChatMessages(this.chatId);
+
+    const me = await this.userService.getUser(meUid);
+    if (!me) {
+      console.error(`Could not load current user ${meUid}`);
+      this.participantsMap = { [them.uid]: them };
+    } else {
+      this.participantsMap = {
+        [meUid]: me,
+        [them.uid]: them,
+      };
+    }
+
+    this.finishLoading();
+  }
+
+  private async loadGroupChat(groupId: string) {
+    this.chatId = groupId;
+    this.messages$ = this.chatService.getGroupMessages(groupId);
+
+    const users = await this.chatService.getGroupParticipants(groupId);
+    this.participantsMap = users.reduce(
+      (map, u) => ({ ...map, [u.uid!]: u }),
+      {} as Record<string, User>
+    );
+
+    this.finishLoading();
+  }
+
+  private finishLoading() {
+    // wait for first batch so spinner goes away
+    this.messages$.pipe(take(1)).subscribe(() => {
+      this.messagesLoading = false;
+      setTimeout(() => this.scrollToBottom(), 100);
+    });
   }
 
   startChatWithPartner() {
@@ -127,8 +153,8 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   }
 
   private scrollToBottom() {
-    const c = this.chatContainer.nativeElement;
-    c.scrollTop = c.scrollHeight;
+    const el = this.chatContainer.nativeElement;
+    el.scrollTop = el.scrollHeight;
   }
 
   async send() {

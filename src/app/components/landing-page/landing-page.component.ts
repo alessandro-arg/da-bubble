@@ -38,6 +38,7 @@ export class LandingPageComponent implements OnInit {
   nameError: string | null = null;
 
   selectedUser: User | null = null;
+  selectedGroupId: string | null = null;
   currentUserUid: string | null = null;
 
   constructor(
@@ -63,8 +64,14 @@ export class LandingPageComponent implements OnInit {
     );
   }
 
-  openChat(user: User) {
+  openPrivateChat(user: User) {
+    this.selectedGroupId = null;
     this.selectedUser = user;
+  }
+
+  openGroupChat(groupId: string) {
+    this.selectedUser = null;
+    this.selectedGroupId = groupId;
   }
 
   toggleDropdown() {

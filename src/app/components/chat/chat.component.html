@@ -1,42 +1,45 @@
 <div class="w-full h-full flex flex-col">
-  <div
-    class="w-full flex justify-between px-[45px] pt-[28px] pb-[16px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
-  >
-    <!-- if the open chat is a group-->
-    <div *ngIf="!chatPartner" class="flex gap-2 px-2 py-1 items-center">
-      <div class="flex gap-2 items-center py-2">
-        <img src="../../../assets/img/icons/tag.png" alt="" />
-        <p class="text-xl font-bold">Entwicklerteam</p>
-      </div>
-      <img
-        src="../../../assets/img/icons/arrow_down.png"
-        alt=""
-        class="w-[30px] h-[30px]"
-      />
-    </div>
-
-    <!-- if the open chat is a user -->
+  <!-- ── HEADER ─────────────────────────────────────────────────────── -->
+  <ng-container *ngIf="chatPartner || groupId; else noSelectionHeader">
+    <!-- private header -->
     <div
-      class="flex items-center gap-4 px-2 py-1 rounded-[35px] cursor-pointer hover:bg-[#ECEEFE] transition-colors duration-200"
-      (click)="openProfileModal()"
+      *ngIf="chatPartner; else groupHeader"
+      class="w-full flex justify-between px-[45px] pt-[28px] pb-[16px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
     >
-      <div class="relative">
+      <div
+        class="flex items-center gap-4 px-2 py-1 rounded-[35px] cursor-pointer hover:bg-[#ECEEFE]"
+        (click)="openProfileModal()"
+      >
         <img
-          *ngIf="chatPartner"
-          [src]="chatPartner.avatar"
-          alt="{{ chatPartner.name }}"
+          [src]="chatPartner!.avatar"
           class="w-[45px] h-[45px] rounded-full"
         />
-        <div
-          *ngIf="chatPartner"
-          class="absolute bottom-0 right-[-2px] w-4 h-4 bg-[#92C83E] rounded-full border-2 border-white"
-        ></div>
+        <p class="text-2xl font-bold">{{ chatPartner!.name }}</p>
       </div>
-      <p *ngIf="chatPartner" class="text-2xl font-bold">
-        {{ chatPartner.name }}
-      </p>
     </div>
-  </div>
+
+    <!-- group header -->
+    <ng-template #groupHeader>
+      <div
+        class="w-full flex justify-between px-[45px] pt-[28px] pb-[16px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
+      >
+        <div class="flex items-center gap-2 px-2 py-1">
+          <img src="../../../assets/img/icons/tag.png" class="w-6 h-6" />
+          <p class="text-xl font-bold">#{{ groupId }}</p>
+        </div>
+        <img
+          src="../../../assets/img/icons/arrow_down.png"
+          class="w-[30px] h-[30px]"
+        />
+      </div>
+    </ng-template>
+  </ng-container>
+
+  <ng-template #noSelectionHeader>
+    <div class="w-full px-[45px] pt-[28px] pb-[16px] text-center text-gray-400">
+      Wähle einen Nutzer oder Kanal, um zu chatten.
+    </div>
+  </ng-template>
 
   <!-- Chat Body -->
   <div
@@ -44,7 +47,7 @@
     #chatContainer
   >
     <div
-      *ngIf="chatPartner; else pickAChat"
+      *ngIf="chatPartner; else groupOrPick"
       class="w-full flex flex-col gap-6 min-h-full"
     >
       <!-- Push the messages block to the bottom when there's not enough content to scroll -->
@@ -171,11 +174,38 @@
       </ng-template>
     </div>
 
-    <!-- fallback if no chatPartner… -->
-    <ng-template #pickAChat>
-      <div class="flex-1 flex items-center justify-center">
-        Wähle einen Chat aus.
-      </div>
+    <!-- Group chat -->
+    <ng-template #groupOrPick>
+      <ng-container *ngIf="groupId; else pickAChat">
+        <!-- replace chatPartner references with a generic header -->
+        <div class="mb-4 flex items-center gap-4">
+          <h2 class="text-2xl font-bold">Channel: {{ groupId }}</h2>
+          <!-- (you could look up & show the group’s display name here if you store one) -->
+        </div>
+        <ng-container *ngIf="messagesLoading; else groupLoaded">
+          <div class="flex-1 flex items-center justify-center text-gray-400">
+            Nachrichten werden geladen…
+          </div>
+        </ng-container>
+        <ng-template #groupLoaded>
+          <ng-container *ngIf="messages$ | async as msgs">
+            <div *ngIf="msgs.length === 0" class="text-center text-gray-500">
+              Keine Nachrichten in diesem Kanal.
+            </div>
+            <ng-container *ngFor="let msg of msgs; let i = index">
+              <!-- you can reuse your message‐bubble markup here, since participantsMap is filled -->
+              <!-- … same as your private-chat loop … -->
+            </ng-container>
+          </ng-container>
+        </ng-template>
+      </ng-container>
+
+      <!-- NOTHING SELECTED -->
+      <ng-template #pickAChat>
+        <div class="flex-1 flex items-center justify-center text-gray-400">
+          Wähle einen Nutzer oder Kanal, um zu chatten.
+        </div>
+      </ng-template>
     </ng-template>
 
     <div
