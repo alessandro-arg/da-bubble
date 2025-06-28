@@ -49,6 +49,7 @@
       <app-create-group-modal
         *ngIf="showAddGroupModal"
         (close)="closeAddGroupModal()"
+        (created)="onGroupCreated($event)"
       ></app-create-group-modal>
 
       <div
@@ -57,16 +58,11 @@
       >
         <div class="flex flex-col gap-3">
           <div
-            class="flex items-center gap-2 ml-[25px] w-max rounded-2xl py-1 px-5 bg-[#ECEEFE]"
+            *ngFor="let g of groups"
+            class="flex items-center gap-2 ml-[25px] w-max rounded-2xl py-1 px-5 bg-[#ECEEFE] cursor-pointer hover:bg-[#E0E2FF] transition-colors"
           >
-            <img src="../../../assets/img/icons/tag.png" alt="" />
-            <p>Entwicklerteam</p>
-          </div>
-          <div
-            class="flex items-center gap-2 ml-[25px] w-max rounded-2xl py-1 px-5 bg-[#ECEEFE]"
-          >
-            <img src="../../../assets/img/icons/tag.png" alt="" />
-            <p>Coders</p>
+            <img src="../../../assets/img/icons/tag.png" alt="group icon" />
+            <p>{{ g.name }}</p>
           </div>
           <div class="w-full flex gap-2 ml-[25px] rounded-2xl py-1 px-5">
             <img src="../../../assets/img/icons/add_circle.png" alt="" />

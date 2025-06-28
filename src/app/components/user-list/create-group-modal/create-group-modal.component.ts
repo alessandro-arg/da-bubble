@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { GroupService } from '../../../group.service';
 
 @Component({
   selector: 'app-create-group-modal',
@@ -11,12 +12,15 @@ import { FormsModule } from '@angular/forms';
 })
 export class CreateGroupModalComponent {
   @Output() close = new EventEmitter<void>();
-  @Output() created = new EventEmitter<{ name: string; description: string }>();
+  @Output() created = new EventEmitter<string>();
 
   name = '';
   description = '';
   step = 1;
   addAll = true;
+  specificPeople = '';
+
+  constructor(private groupService: GroupService) {}
 
   stopPropagation(event: MouseEvent) {
     event.stopPropagation();
@@ -32,21 +36,40 @@ export class CreateGroupModalComponent {
     if (!this.name.trim()) {
       return;
     }
-    this.created.emit({
-      name: this.name.trim(),
-      description: this.description.trim(),
-    });
-    // advance to step 2
     this.step = 2;
-    console.log(this.name, 'and', this.description);
   }
 
   backToStep1() {
     this.step = 1;
   }
 
+  async onFinish() {
+    let groupId: string;
+    if (this.addAll) {
+      groupId = await this.groupService.createGroupWithAllUsers(
+        this.name,
+        this.description
+      );
+    } else {
+      const participants = this.specificPeople
+        .split(/[\s,;]+/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      groupId = await this.groupService.createGroup(
+        this.name,
+        this.description,
+        participants
+      );
+    }
+
+    this.created.emit(groupId); // <-- now matches EventEmitter<string>
+    this.onClose();
+  }
+
   private reset() {
     this.name = '';
     this.description = '';
+    this.addAll = true;
+    this.specificPeople = '';
   }
 }

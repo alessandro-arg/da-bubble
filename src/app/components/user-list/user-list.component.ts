@@ -8,8 +8,18 @@ import {
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
-import { Auth, onAuthStateChanged } from '@angular/fire/auth';
-import { Subscription } from 'rxjs';
+import { Group } from '../../models/group.model';
+import { Auth, onAuthStateChanged, user } from '@angular/fire/auth';
+import {
+  Firestore,
+  collection,
+  query,
+  where,
+  collectionData,
+  CollectionReference,
+  Query,
+} from '@angular/fire/firestore';
+import { Subscription, switchMap, filter } from 'rxjs';
 import { CreateGroupModalComponent } from './create-group-modal/create-group-modal.component';
 
 @Component({
@@ -23,10 +33,13 @@ export class UserListComponent implements OnInit, OnDestroy {
   @Output() userSelected = new EventEmitter<User>();
 
   users: User[] = [];
+  groups: Group[] = [];
   currentUserUid: string | null = null;
   activeUserUid: string | null = null;
+
   private authUnsub?: () => void;
   private usersSub?: Subscription;
+  private groupsSub?: Subscription;
 
   direktDropdownOpen = true;
   direktArrowHover = false;
@@ -35,21 +48,26 @@ export class UserListComponent implements OnInit, OnDestroy {
   channelsArrowHover = false;
   channelsAccountHover = false;
   addChannelHover = false;
-
   showAddGroupModal = false;
 
-  constructor(private userService: UserService, private auth: Auth) {}
+  constructor(
+    private userService: UserService,
+    private auth: Auth,
+    private firestore: Firestore
+  ) {}
 
   ngOnInit() {
     this.authUnsub = onAuthStateChanged(this.auth, (user) => {
       this.currentUserUid = user?.uid ?? null;
       this.listenToUsers();
+      this.listenToGroups();
     });
   }
 
   ngOnDestroy(): void {
-    if (this.authUnsub) this.authUnsub();
-    if (this.usersSub) this.usersSub.unsubscribe();
+    this.authUnsub?.();
+    this.usersSub?.unsubscribe();
+    this.groupsSub?.unsubscribe();
   }
 
   listenToUsers() {
@@ -61,6 +79,27 @@ export class UserListComponent implements OnInit, OnDestroy {
         return a.name.localeCompare(b.name);
       });
     });
+  }
+
+  listenToGroups() {
+    if (!this.currentUserUid) {
+      return;
+    }
+    const groupsRef = collection(
+      this.firestore,
+      'groups'
+    ) as CollectionReference<Group>;
+
+    const q: Query<Group> = query(
+      groupsRef,
+      where('participants', 'array-contains', this.currentUserUid)
+    );
+
+    this.groupsSub = collectionData<Group>(q, { idField: 'id' }).subscribe(
+      (groups) => {
+        this.groups = groups;
+      }
+    );
   }
 
   openAddGroupModal() {
@@ -75,6 +114,10 @@ export class UserListComponent implements OnInit, OnDestroy {
       this.activeUserUid = user.uid;
       this.userSelected.emit(user);
     }
+  }
+
+  onGroupCreated(groupId: string) {
+    console.log('new group chat:', groupId);
   }
 
   toggleDirektDropdown() {
