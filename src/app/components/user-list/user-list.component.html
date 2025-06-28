@@ -29,11 +29,30 @@
             <h3 class="font-semibold text-[18px]">Channels</h3>
           </div>
         </div>
-        <img src="../../../assets/img/icons/add.png" alt="Add" />
+        <button
+          class="w-[30px] h-[30px] rounded-full transition-colors flex justify-center items-center hover:bg-[#F0EDFF]"
+          (mouseenter)="addChannelHover = true"
+          (mouseleave)="addChannelHover = false"
+          (click)="openAddGroupModal()"
+        >
+          <img
+            [src]="
+              addChannelHover
+                ? '../../../assets/img/icons/add_purple.png'
+                : '../../../assets/img/icons/add.png'
+            "
+            alt="Add"
+          />
+        </button>
       </div>
 
+      <app-create-group-modal
+        *ngIf="showAddGroupModal"
+        (close)="closeAddGroupModal()"
+      ></app-create-group-modal>
+
       <div
-        class="overflow-hidden transition-[max-height] duration-300 ease-in-out mb-6"
+        class="overflow-hidden transition-[max-height] duration-300 ease-in-out mb-3 mt-3"
         [ngClass]="channelsDropdownOpen ? ' max-h-[100%]' : 'max-h-0'"
       >
         <div class="flex flex-col gap-3">

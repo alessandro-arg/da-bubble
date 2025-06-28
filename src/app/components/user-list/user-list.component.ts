@@ -10,11 +10,12 @@ import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { Subscription } from 'rxjs';
+import { CreateGroupModalComponent } from './create-group-modal/create-group-modal.component';
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, CreateGroupModalComponent],
   templateUrl: './user-list.component.html',
   styleUrl: './user-list.component.scss',
 })
@@ -33,6 +34,9 @@ export class UserListComponent implements OnInit, OnDestroy {
   channelsDropdownOpen = true;
   channelsArrowHover = false;
   channelsAccountHover = false;
+  addChannelHover = false;
+
+  showAddGroupModal = false;
 
   constructor(private userService: UserService, private auth: Auth) {}
 
@@ -57,6 +61,13 @@ export class UserListComponent implements OnInit, OnDestroy {
         return a.name.localeCompare(b.name);
       });
     });
+  }
+
+  openAddGroupModal() {
+    this.showAddGroupModal = true;
+  }
+  closeAddGroupModal() {
+    this.showAddGroupModal = false;
   }
 
   onClick(user: User) {
