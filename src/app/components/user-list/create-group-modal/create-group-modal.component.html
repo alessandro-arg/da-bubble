@@ -3,77 +3,150 @@
   (click)="close.emit()"
 >
   <div
-    class="bg-white rounded-[30px] w-full max-w-[872px] p-10 relative flex flex-col justify-between gap-[30px]"
+    class="bg-white rounded-[30px] w-full max-w-[872px] p-10 relative flex flex-col justify-between gap-[30px] shadow-xl"
     (click)="stopPropagation($event)"
   >
-    <!-- X button -->
-    <div class="flex justify-between items-center">
-      <!-- Header -->
-      <h2 class="text-2xl font-bold">Channel erstellen</h2>
-      <button
-        class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] group transition-colors duration-200"
-        (click)="close.emit()"
-        aria-label="Close modal"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="w-6 h-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
+    <ng-container *ngIf="step === 1">
+      <!-- X button -->
+      <div class="flex justify-between items-center">
+        <!-- Header -->
+        <h2 class="text-2xl font-bold">Channel erstellen</h2>
+        <button
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] group transition-colors duration-200"
+          (click)="close.emit()"
+          aria-label="Close modal"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <p class="text-lg font-normal">
+        Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
+        themenbezogen sein #marketing zum Beispiel.
+      </p>
+
+      <div class="flex flex-col gap-5">
+        <label class="text-lg font-bold">Channel-Name</label>
+        <div class="h-[60px] relative">
+          <img
+            src="assets/img/icons/tag_grey.png"
+            alt="Tag"
+            class="absolute left-6 top-1/2 transform -translate-y-1/2 inset-y-0 flex items-center select-none pointer-events-none"
           />
-        </svg>
-      </button>
-    </div>
-    <p class="text-lg font-normal">
-      Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
-      themenbezogen sein #marketing zum Beispiel.
-    </p>
-
-    <div class="flex flex-col gap-5">
-      <label class="text-lg font-bold">Channel-Name</label>
-      <div class="h-[60px] relative">
-        <img
-          src="assets/img/icons/tag_grey.png"
-          alt="Tag"
-          class="absolute left-6 top-1/2 transform -translate-y-1/2 inset-y-0 flex items-center select-none pointer-events-none"
-        />
-        <input
-          type="text"
-          placeholder="z. B. Kooperationsprojekte"
-          class="w-full h-full pl-[60px] pr-5 border border-[#ADB0D9] rounded-full text-lg cursor-pointer placeholder-[#686868] focus:outline-none focus:ring-1 focus:ring-[#535AF1] hover:border-[#797EF3] focus:border-transparent transition duration-200"
-        />
+          <input
+            [(ngModel)]="name"
+            name="channelName"
+            type="text"
+            placeholder="z. B. Kooperationsprojekte"
+            class="w-full h-full pl-[60px] pr-5 border border-[#ADB0D9] rounded-full text-lg cursor-pointer placeholder-[#686868] focus:outline-none focus:ring-1 focus:ring-[#535AF1] hover:border-[#797EF3] focus:border-transparent transition duration-200"
+          />
+        </div>
       </div>
-    </div>
 
-    <!-- Description -->
-    <div class="flex flex-col gap-5">
-      <label class="text-lg font-bold">
-        Beschreibung
-        <span class="text-lg text-[#686868] font-normal">(optional)</span>
-      </label>
-      <div class="h-[60px]">
-        <input
-          type="text"
-          placeholder="Dein Text hier"
-          class="w-full h-full pl-5 pr-5 border border-[#ADB0D9] rounded-full text-lg cursor-pointer placeholder-[#686868] focus:outline-none focus:ring-1 focus:ring-[#535AF1] hover:border-[#797EF3] focus:border-transparent transition duration-200"
-        />
+      <!-- Description -->
+      <div class="flex flex-col gap-5">
+        <label class="text-lg font-bold">
+          Beschreibung
+          <span class="text-lg text-[#686868] font-normal">(optional)</span>
+        </label>
+        <div class="h-[60px]">
+          <input
+            [(ngModel)]="description"
+            name="channelDescription"
+            type="text"
+            placeholder="Dein Text hier"
+            class="w-full h-full pl-5 pr-5 border border-[#ADB0D9] rounded-full text-lg cursor-pointer placeholder-[#686868] focus:outline-none focus:ring-1 focus:ring-[#535AF1] hover:border-[#797EF3] focus:border-transparent transition duration-200"
+          />
+        </div>
       </div>
-    </div>
 
-    <!-- Actions -->
-    <div class="flex justify-end">
-      <button
-        class="px-[25px] py-3 bg-[#444DF2] hover:bg-[#797EF3] text-white font-bold text-lg rounded-[25px] transition-colors duration-200"
-      >
-        Erstellen
-      </button>
-    </div>
+      <!-- Actions -->
+      <div class="flex justify-end">
+        <button
+          (click)="onCreate()"
+          [disabled]="!name.trim()"
+          class="px-[25px] py-3 bg-[#444DF2] hover:bg-[#797EF3] text-white font-bold text-lg rounded-[25px] disabled:bg-[#686868] transition-colors duration-200"
+        >
+          Erstellen
+        </button>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="step === 2">
+      <div class="flex justify-between items-center">
+        <!-- Header -->
+        <h2 class="text-2xl font-bold">Leute hinzufügen</h2>
+        <button
+          class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] group transition-colors duration-200"
+          (click)="close.emit()"
+          aria-label="Close modal"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-5">
+        <label class="flex items-center gap-3">
+          <input
+            type="radio"
+            name="addPeopleOption"
+            class="w-5 h-5 accent-[#444DF2]"
+            [(ngModel)]="addAll"
+            [value]="true"
+          />
+          <span class="text-lg">
+            Alle Mitglieder von
+            <a class="text-[#535AF1] cursor-default">OfficeTeam</a>
+            hinzufügen
+          </span>
+        </label>
+
+        <label class="flex items-center gap-3">
+          <input
+            type="radio"
+            name="addPeopleOption"
+            class="w-5 h-5 accent-[#444DF2]"
+            [(ngModel)]="addAll"
+            [value]="false"
+          />
+          <span class="text-lg">Bestimmte Leute hinzufügen</span>
+        </label>
+      </div>
+
+      <div class="flex justify-end">
+        <button
+          (click)="onClose()"
+          class="px-6 py-3 bg-[#444DF2] hover:bg-[#797EF3] text-white font-bold text-lg rounded-[25px] transition-colors duration-200"
+        >
+          Erstellen
+        </button>
+      </div>
+    </ng-container>
   </div>
 </div>

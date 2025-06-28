@@ -10,11 +10,10 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   Output,
   EventEmitter,
-  NgZone,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { take, tap } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 
 import { ChatService } from '../../chat.service';
 import { UserService } from '../../user.service';
@@ -53,8 +52,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   constructor(
     private chatService: ChatService,
-    private userService: UserService,
-    private ngZone: NgZone
+    private userService: UserService
   ) {}
 
   async ngAfterViewInit() {
@@ -141,7 +139,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
       this.newMessage.trim()
     );
     this.newMessage = '';
-    setTimeout(() => this.scrollToBottom(), 0);
+    setTimeout(() => this.scrollToBottom(), 50);
   }
 
   onTextareaKeydown(event: KeyboardEvent) {
