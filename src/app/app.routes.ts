@@ -6,17 +6,14 @@ import { RegisterComponent } from './components/login/register/register.componen
 import { ChooseYourAvatarComponent } from './components/login/register/choose-your-avatar/choose-your-avatar.component';
 import { ResetPasswordComponent } from './components/login/reset-password/reset-password.component';
 import { ForgotPasswordComponent } from './components/login/forgot-password/forgot-password.component';
+import { IntroComponent} from './components/intro/intro.component';
+
 
 export const routes: Routes = [
   {
     path: 'landingpage/:uid',
     component: LandingPageComponent,
     canActivate: [authGuard], // Geschützte Route
-  },
-  {
-    path: '',
-    redirectTo: '/login',
-    pathMatch: 'full',
   },
   {
     path: 'login',
@@ -39,5 +36,16 @@ export const routes: Routes = [
   {
     path: 'reset-password',
     component: ResetPasswordComponent,
-  }
+  },
+
+  {
+    path: 'intro',
+    component: IntroComponent,
+  },
+
+  {
+    path: '**',
+    redirectTo: '/intro',
+    pathMatch: 'full',
+  },
 ];

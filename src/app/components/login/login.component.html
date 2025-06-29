@@ -39,11 +39,7 @@
         style="background-color: #edeefe"
       >
         <div class="flex justify-center items-center w-full py-2 px-1">
-          <img
-            src="assets/img/mail.svg"
-            alt="Email"
-            class="mr-2 w-5 h-5"
-          />
+          <img src="assets/img/mail.svg" alt="Email" class="mr-2 w-5 h-5" />
           <input
             class="w-full focus:outline-none"
             type="email"
@@ -75,11 +71,7 @@
           class="flex justify-center items-center w-full py-2 rounded-full px-4"
           style="background-color: #edeefe"
         >
-          <img
-            src="assets/img/lock.svg"
-            alt="Password"
-            class="mr-2 w-5 h-5"
-          />
+          <img src="assets/img/lock.svg" alt="Password" class="mr-2 w-5 h-5" />
           <input
             class="w-full focus:outline-none"
             [type]="showPassword ? 'text' : 'password'"
@@ -137,16 +129,12 @@
       <!-- Google Login Button -->
       <div class="form-group flex justify-center items-center w-full">
         <button
-            type="button"
-            class="w-full flex items-center justify-center gap-2 rounded-full py-2 px-4 border-2 border-transparent hover:border-[#444DF2] text-[#444DF2] hover:font-bold"
-          style="background-color:  #ECEEFE;"
+          type="button"
+          class="w-full flex items-center justify-center gap-2 rounded-full py-2 px-4 border-2 border-transparent hover:border-[#444DF2] text-[#444DF2] hover:font-bold"
+          style="background-color: #eceefe"
           (click)="loginWithGoogle()"
         >
-          <img
-            src="assets/img/google-icon.svg"
-            alt="Google"
-            class="w-5 h-5"
-          />
+          <img src="assets/img/google-icon.svg" alt="Google" class="w-5 h-5" />
           <span *ngIf="!loading">Anmelden mit Google</span>
           <span *ngIf="loading">Wird geladen...</span>
         </button>
@@ -156,7 +144,6 @@
       <div class="flex justify-center items-center gap-4 w-full mt-4">
         <button
           type="submit"
-          
           class="login-btn text-white py-2 px-6 rounded-full disabled:opacity-50"
         >
           <span *ngIf="!loading">Anmelden</span>
