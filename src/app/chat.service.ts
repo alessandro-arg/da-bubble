@@ -21,10 +21,7 @@ import { User } from './models/user.model';
 export class ChatService {
   readonly emptyStream: Observable<Message[]> = of([]);
 
-  constructor(
-    private firestore: Firestore,
-    private userService: UserService // ← inject UserService here
-  ) {}
+  constructor(private firestore: Firestore, private userService: UserService) {}
 
   private getChatId(uid1: string, uid2: string): string {
     return [uid1, uid2].sort().join('_');
@@ -65,28 +62,37 @@ export class ChatService {
     await updateDoc(chatRef, { updatedAt: serverTimestamp() });
   }
 
-  /** stream of messages for a group */
+  async sendGroupMessage(
+    groupId: string,
+    senderUid: string,
+    text: string
+  ): Promise<void> {
+    const msgsRef = collection(this.firestore, `groups/${groupId}/messages`);
+    await addDoc(msgsRef, {
+      sender: senderUid,
+      text,
+      createdAt: serverTimestamp(),
+    });
+    const groupRef = doc(this.firestore, `groups/${groupId}`);
+    await updateDoc(groupRef, { updatedAt: serverTimestamp() });
+  }
+
   getGroupMessages(groupId: string): Observable<Message[]> {
     const msgsRef = collection(this.firestore, `groups/${groupId}/messages`);
     const q = query(msgsRef, orderBy('createdAt', 'asc'));
     return collectionData(q, { idField: 'id' }) as Observable<Message[]>;
   }
 
-  /** fetch the User objects of a group’s participants */
   async getGroupParticipants(groupId: string): Promise<User[]> {
     const groupRef = doc(this.firestore, `groups/${groupId}`);
     const snap = await getDoc(groupRef);
     const data = snap.data?.();
-    // use bracket‐access to satisfy TS’s “index signature” rule
     const uids: string[] = Array.isArray(data?.['participants'])
-      ? (data['participants'] as string[])
+      ? (data!['participants'] as string[])
       : [];
-
-    // fetch each user in parallel
     const users = await Promise.all(
       uids.map((uid) => this.userService.getUser(uid))
     );
-    // filter out any nulls so the return type is strictly User[]
     return users.filter((u): u is User => u !== null);
   }
 }
