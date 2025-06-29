@@ -10,12 +10,14 @@ import {
   serverTimestamp,
   getDoc,
   setDoc,
+  docData,
 } from '@angular/fire/firestore';
 import { Injectable } from '@angular/core';
 import { of, Observable } from 'rxjs';
 import { Message } from './models/chat.model';
 import { UserService } from './user.service';
 import { User } from './models/user.model';
+import { Group } from './models/group.model';
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
@@ -81,6 +83,11 @@ export class ChatService {
     const msgsRef = collection(this.firestore, `groups/${groupId}/messages`);
     const q = query(msgsRef, orderBy('createdAt', 'asc'));
     return collectionData(q, { idField: 'id' }) as Observable<Message[]>;
+  }
+
+  getGroup(groupId: string): Observable<Group> {
+    const groupRef = doc(this.firestore, `groups/${groupId}`);
+    return docData(groupRef, { idField: 'id' }) as Observable<Group>;
   }
 
   async getGroupParticipants(groupId: string): Promise<User[]> {

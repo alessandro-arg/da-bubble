@@ -1,7 +1,7 @@
 export interface Group {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   participants: string[];
   creator: string;
   createdAt: any;

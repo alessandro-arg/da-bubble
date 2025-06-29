@@ -28,7 +28,7 @@ export class GroupService {
       name,
       description,
       participants,
-      creator: currentUser.uid, // ← new
+      creator: currentUser.uid,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -39,12 +39,10 @@ export class GroupService {
     name: string,
     description: string
   ): Promise<string> {
-    // fetch all UIDs
     const usersRef = collection(this.firestore, 'users');
     const snapshot = await getDocs(usersRef);
     const allUids = snapshot.docs.map((d) => d.id);
 
-    // delegate to createGroup()
     return this.createGroup(name, description, allUids);
   }
 }

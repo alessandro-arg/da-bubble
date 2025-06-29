@@ -20,18 +20,20 @@
 
     <!-- group header -->
     <ng-template #groupHeader>
-      <div
-        class="w-full flex justify-between px-[45px] pt-[28px] pb-[16px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
-      >
-        <div class="flex items-center gap-2 px-2 py-1">
-          <img src="../../../assets/img/icons/tag.png" class="w-6 h-6" />
-          <p class="text-xl font-bold">{{ groupId }}</p>
+      <ng-container *ngIf="group$ | async as group">
+        <div
+          class="w-full flex justify-between px-[45px] pt-[28px] pb-[16px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
+        >
+          <div class="flex items-center gap-2 px-2 py-1">
+            <img src="../../../assets/img/icons/tag.png" class="w-6 h-6" />
+            <p class="text-xl font-bold">{{ group.name }}</p>
+          </div>
+          <img
+            src="../../../assets/img/icons/arrow_down.png"
+            class="w-[30px] h-[30px]"
+          />
         </div>
-        <img
-          src="../../../assets/img/icons/arrow_down.png"
-          class="w-[30px] h-[30px]"
-        />
-      </div>
+      </ng-container>
     </ng-template>
   </ng-container>
 
@@ -181,23 +183,135 @@
           *ngIf="groupId"
           class="w-full flex flex-col gap-6 min-h-full"
         >
-          <div class="mt-auto"></div>
-          <ng-container *ngIf="messagesLoading; else groupLoaded">
-            <div class="flex-1 flex items-center justify-center text-gray-400">
-              Nachrichten werden geladen…
-            </div>
-          </ng-container>
-
-          <ng-template #groupLoaded>
-            <ng-container *ngIf="messages$ | async as msgs">
-              <div *ngIf="msgs.length === 0" class="text-center text-gray-500">
-                Keine Nachrichten in diesem Kanal.
+          <ng-container *ngIf="group$ | async as group">
+            <div class="mt-auto"></div>
+            <ng-container *ngIf="messagesLoading; else groupLoaded">
+              <div
+                class="flex-1 flex items-center justify-center text-gray-400"
+              >
+                Nachrichten werden geladen…
               </div>
-              <ng-container *ngFor="let msg of msgs; let i = index">
-                <!-- … reuse your bubble markup … -->
-              </ng-container>
             </ng-container>
-          </ng-template>
+
+            <ng-template #groupLoaded>
+              <ng-container *ngIf="messages$ | async as msgs">
+                <!-- Placeholder when no messages yet -->
+                <div *ngIf="msgs.length === 0">
+                  <div class="w-full flex flex-col gap-6">
+                    <div class="flex gap-6 items-end cursor-pointer">
+                      <img
+                        src="../../../assets/img/icons/tag.png"
+                        [alt]="group.name"
+                        class="w-[32px] h-[33px] rounded-full"
+                      />
+                      <p class="h-max font-bold text-2xl hover:text-[#535AF1]">
+                        {{ group.name }}
+                      </p>
+                    </div>
+                    <p
+                      class="text-[#686868] font-normal text-xl whitespace-normal"
+                    >
+                      Dieser Channel ist am
+                      {{
+                        group.createdAt.toDate()
+                          | date : "longDate" : "" : "de-DE"
+                      }}
+                      erstellt worden, von {{ group.creator }}.
+                      <!-- <button
+                    class="inline text-[#535AF1] font-normal text-xl hover:font-bold whitespace-normal"
+                    (click)="openProfileModal()"
+                  >
+                    &#64;{{ chatPartner.name }}
+                  </button> -->
+                      Das is der Anfang des Channels
+                      <span class="text-[#535AF1]"># {{ group.name }}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <ng-container *ngFor="let msg of msgs; let i = index">
+                  <!-- ── date separator when first message or new day ─────────── -->
+                  <div
+                    *ngIf="
+                      msg.createdAt &&
+                      (i === 0 ||
+                        (msgs[i - 1]?.createdAt &&
+                          !sameDay(
+                            msgs[i - 1].createdAt.toDate(),
+                            msg.createdAt.toDate()
+                          )))
+                    "
+                    class="flex items-center my-4"
+                  >
+                    <div class="flex-grow h-px bg-[#ADB0D9]"></div>
+                    <span
+                      class="bg-white px-4 py-1 text-base rounded-full border border-[#ADB0D9]"
+                    >
+                      {{ getSeparatorLabel(msg.createdAt.toDate()) }}
+                    </span>
+                    <div class="flex-grow h-px bg-[#ADB0D9]"></div>
+                  </div>
+
+                  <div
+                    class="flex my-4 gap-[30px] px-[10px]"
+                    [ngClass]="{
+                      'justify-end': msg.sender === currentUserUid,
+                      'items-start': msg.sender !== currentUserUid
+                    }"
+                  >
+                    <img
+                      *ngIf="msg.sender !== currentUserUid"
+                      [src]="participantsMap[msg.sender].avatar"
+                      alt="{{ participantsMap[msg.sender].name }}"
+                      class="w-[70px] h-[70px] rounded-full"
+                    />
+
+                    <div
+                      class="flex flex-col max-w-[80%] gap-1"
+                      [ngClass]="{
+                        'items-end': msg.sender === currentUserUid,
+                        'items-start': msg.sender !== currentUserUid
+                      }"
+                    >
+                      <div
+                        class="flex items-center gap-5"
+                        [ngClass]="{
+                          'flex-row-reverse': msg.sender === currentUserUid
+                        }"
+                      >
+                        <span class="font-bold text-lg">
+                          {{ participantsMap[msg.sender].name }}
+                        </span>
+                        <span
+                          *ngIf="msg.createdAt"
+                          class="text-[#686868] font-normal text-sm"
+                        >
+                          {{ msg.createdAt.toDate() | date : "HH:mm" }} Uhr
+                        </span>
+                      </div>
+                      <div
+                        class="p-[15px] text-base"
+                        [ngClass]="
+                          msg.sender === currentUserUid
+                            ? 'bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px]'
+                            : 'bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px]'
+                        "
+                      >
+                        {{ msg.text }}
+                      </div>
+                    </div>
+
+                    <img
+                      *ngIf="msg.sender === currentUserUid"
+                      [src]="participantsMap[msg.sender].avatar"
+                      alt="{{ participantsMap[msg.sender].name }}"
+                      class="w-[70px] h-[70px] rounded-full"
+                    />
+                  </div>
+                </ng-container>
+              </ng-container>
+            </ng-template>
+          </ng-container>
         </ng-container>
       </ng-template>
     </ng-container>
@@ -302,7 +416,9 @@
         [placeholder]="
           chatPartner
             ? 'Nachricht an ' + chatPartner.name
-            : 'Nachricht an #' + groupId
+            : (group$ | async)?.name
+            ? 'Nachricht an #' + (group$ | async)?.name
+            : ''
         "
         class="w-full resize-none border-none focus:outline-none text-lg placeholder-[#686868] bg-transparent pr-[30px]"
       ></textarea>

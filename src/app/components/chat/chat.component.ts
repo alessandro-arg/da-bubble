@@ -13,11 +13,14 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { take } from 'rxjs/operators';
+import { filter, switchMap, take } from 'rxjs/operators';
 
 import { ChatService } from '../../chat.service';
+import { GroupService } from '../../group.service';
 import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
+import { Observable } from 'rxjs';
+import { Group } from '../../models/group.model';
 
 @Component({
   selector: 'app-chat',
@@ -34,6 +37,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   @Output() userSelected = new EventEmitter<User>();
 
+  group$!: Observable<Group>;
   messages$ = this.chatService.emptyStream;
   chatId: string | null = null;
   newMessage = '';
@@ -53,7 +57,8 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   constructor(
     private chatService: ChatService,
-    private userService: UserService
+    private userService: UserService,
+    private groupService: GroupService
   ) {}
 
   async ngAfterViewInit() {
@@ -100,6 +105,16 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     this.chatId = groupId;
     this.messages$ = this.chatService.getGroupMessages(groupId);
 
+    this.group$ = this.chatService.getGroup(groupId);
+    this.group$
+      .pipe(
+        filter((g) => !!g.creator),
+        switchMap((g) => this.userService.getUser(g.creator))
+      )
+      .subscribe((user) => {
+        if (user) this.participantsMap[user.uid!] = user;
+      });
+
     const users = await this.chatService.getGroupParticipants(groupId);
     this.participantsMap = users.reduce(
       (map, u) => ({ ...map, [u.uid!]: u }),
@@ -110,7 +125,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   }
 
   private finishLoading() {
-    // wait for first batch so spinner goes away
     this.messages$.pipe(take(1)).subscribe(() => {
       this.messagesLoading = false;
       setTimeout(() => this.scrollToBottom(), 100);
@@ -158,12 +172,23 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   }
 
   async send() {
-    if (!this.chatId || !this.newMessage.trim() || !this.currentUserUid) return;
-    await this.chatService.sendMessage(
-      this.chatId,
-      this.currentUserUid,
-      this.newMessage.trim()
-    );
+    if (!this.newMessage.trim() || !this.currentUserUid) return;
+    const text = this.newMessage.trim();
+
+    if (this.groupId) {
+      await this.chatService.sendGroupMessage(
+        this.groupId,
+        this.currentUserUid,
+        text
+      );
+    } else if (this.chatId) {
+      await this.chatService.sendMessage(
+        this.chatId,
+        this.currentUserUid,
+        text
+      );
+    }
+
     this.newMessage = '';
     setTimeout(() => this.scrollToBottom(), 50);
   }
