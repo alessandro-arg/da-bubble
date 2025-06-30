@@ -22,6 +22,7 @@ h1 {
 
 .login-btn {
     background-color: #3739C8;
+
     &:hover {
         background-color: #444DF2;
     }
@@ -41,4 +42,36 @@ h1 {
     font-size: 0.8rem;
     margin-top: 0.5rem;
     text-align: center;
+}
+
+
+.login-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+
+    .content {
+        flex: 1;
+    }
+
+    .footer {
+        margin-top: auto;
+        margin-bottom: 10px;
+        text-align: center;
+        font-family: 'Figtree', sans-serif;
+        font-weight: 400;
+        font-size: 18px;
+        color: #797EF3;
+       
+        a {
+            margin-top: 32px;
+            padding: 10px 15px;
+
+            &:hover {
+                border: #cbcbd1 1px solid;
+                color: #3739C8;
+            }
+        }
+
+    }
 }
