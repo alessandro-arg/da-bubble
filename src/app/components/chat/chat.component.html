@@ -216,7 +216,8 @@
                         group.createdAt.toDate()
                           | date : "longDate" : "" : "de-DE"
                       }}
-                      erstellt worden, von {{ group.creator }}.
+                      erstellt worden, von
+                      {{ participantsMap[group.creator].name }}.
                       <!-- <button
                     class="inline text-[#535AF1] font-normal text-xl hover:font-bold whitespace-normal"
                     (click)="openProfileModal()"
