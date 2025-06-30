@@ -62,7 +62,7 @@ h1 {
         font-weight: 400;
         font-size: 18px;
         color: #797EF3;
-       
+
         a {
             margin-top: 32px;
             padding: 10px 15px;
@@ -73,5 +73,33 @@ h1 {
             }
         }
 
+    }
+}
+
+.register-link-mobile{
+    display: none;
+}
+
+@media screen and (max-width: 430px) {
+    .register-link-destop {
+        display: none;
+    }
+    .logo-container {
+        justify-content: center;
+
+        p{
+            font-size: 2rem;
+        }
+    }
+
+    .register-link-mobile{
+        display: flex;
+    }
+
+
+    .login-page {
+        .footer {
+            display: none;
+        }
     }
 }
