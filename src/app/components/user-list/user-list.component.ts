@@ -115,6 +115,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   onClick(user: User) {
     if (user.uid !== this.currentUserUid) {
       this.activeUserUid = user.uid;
+      this.activeGroupId = null;
       this.userSelected.emit(user);
     }
   }
@@ -123,10 +124,6 @@ export class UserListComponent implements OnInit, OnDestroy {
     this.activeGroupId = g.id;
     this.activeUserUid = null;
     this.groupSelected.emit(g.id);
-  }
-
-  onGroupCreated(groupId: string) {
-    console.log('new group chat:', groupId);
   }
 
   toggleDirektDropdown() {
