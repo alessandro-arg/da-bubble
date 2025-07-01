@@ -4,9 +4,10 @@ import {
   collection,
   addDoc,
   serverTimestamp,
+  getDocs,
 } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
-import { getDocs } from 'firebase/firestore';
+import { User } from './models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -23,16 +24,28 @@ export class GroupService {
     if (!currentUser) {
       throw new Error('Not signed in');
     }
+    const participantSet = new Set(participants);
+    participantSet.add(currentUser.uid);
+    const finalParticipants = Array.from(participantSet);
     const groupsRef = collection(this.firestore, 'groups');
     const groupDoc = await addDoc(groupsRef, {
       name,
       description,
-      participants,
+      participants: finalParticipants,
       creator: currentUser.uid,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
     return groupDoc.id;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    const usersRef = collection(this.firestore, 'users');
+    const snap = await getDocs(usersRef);
+    return snap.docs.map((d) => ({
+      uid: d.id,
+      ...(d.data() as any),
+    }));
   }
 
   async createGroupWithAllUsers(
