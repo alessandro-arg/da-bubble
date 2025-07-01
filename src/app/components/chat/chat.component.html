@@ -45,7 +45,7 @@
 
   <!-- Chat Body -->
   <div
-    class="flex-1 overflow-y-auto flex flex-col px-[35px] pb-[35px] pt-5"
+    class="flex-1 overflow-y-auto flex flex-col px-0 pb-[35px] pt-5"
     #chatContainer
   >
     <ng-container *ngIf="chatPartner || groupId; else pickAChat">
@@ -66,9 +66,9 @@
           <ng-container *ngIf="messages$ | async as msgs">
             <!-- Placeholder when no messages yet -->
             <div *ngIf="msgs.length === 0">
-              <div class="w-full flex flex-col gap-6">
+              <div class="w-full flex flex-col gap-6 px-[45px]">
                 <div
-                  class="flex gap-6 items-end cursor-pointer"
+                  class="flex gap-6 items-end cursor-pointer w-max"
                   (click)="openProfileModal()"
                 >
                   <img
@@ -105,7 +105,7 @@
                         msg.createdAt.toDate()
                       )))
                 "
-                class="flex items-center my-4"
+                class="flex items-center my-4 px-[45px]"
               >
                 <div class="flex-grow h-px bg-[#ADB0D9]"></div>
                 <span
@@ -117,7 +117,7 @@
               </div>
 
               <div
-                class="flex my-4 gap-[30px] px-[10px]"
+                class="relative group flex my-2 gap-[30px] px-[45px] py-4 transition-colors duration-200 hover:bg-[#ECEEFE]"
                 [ngClass]="{
                   'justify-end': msg.sender === currentUserUid,
                   'items-start': msg.sender !== currentUserUid
@@ -154,14 +154,55 @@
                     </span>
                   </div>
                   <div
-                    class="p-[15px] text-base"
+                    class="p-[15px] text-base transition-colors duration-200"
                     [ngClass]="
                       msg.sender === currentUserUid
                         ? 'bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px]'
-                        : 'bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px]'
+                        : 'bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px] group-hover:bg-white'
                     "
                   >
                     {{ msg.text }}
+                  </div>
+
+                  <!-- hover‐menu for *other* people’s messages (left side) -->
+                  <div
+                    *ngIf="msg.sender !== currentUserUid"
+                    class="hidden group-hover:flex gap-1 absolute -top-2 right-48 px-[15px] py-[3px] items-center bg-white border border-[#ADB0D9] rounded-l-[25px] rounded-tr-[25px] transition-opacity duration-200 z-10"
+                  >
+                    <button class="p-[10px] rounded-[20px] hover:bg-gray-100">
+                      ✔️
+                    </button>
+                    <button class="p-[10px] rounded-[20px] hover:bg-gray-100">
+                      👍
+                    </button>
+                    <button class="p-[10px] rounded-[20px] hover:bg-gray-100">
+                      😊
+                    </button>
+                    <button class="p-[10px] rounded-[20px] hover:bg-gray-100">
+                      💬
+                    </button>
+                  </div>
+
+                  <!-- hover-menu for *your* messages (right side) -->
+                  <div
+                    *ngIf="msg.sender === currentUserUid"
+                    class="hidden group-hover:flex gap-1 absolute -top-2 left-48 px-[15px] py-[3px] items-center bg-white border border-[#ADB0D9] rounded-l-[25px] rounded-tr-[25px] transition-opacity duration-200 z-10"
+                  >
+                    <button class="p-[10px] rounded-[20px] hover:bg-gray-100">
+                      ✔️
+                    </button>
+                    <button class="p-[10px] rounded-[20px] hover:bg-gray-100">
+                      👍
+                    </button>
+                    <button class="p-[10px] rounded-[20px] hover:bg-gray-100">
+                      😊
+                    </button>
+                    <button class="p-[10px] rounded-[20px] hover:bg-gray-100">
+                      💬
+                    </button>
+                    <button class="p-[10px] rounded-[20px] hover:bg-gray-100">
+                      💬
+                    </button>
                   </div>
                 </div>
 
@@ -217,14 +258,8 @@
                           | date : "longDate" : "" : "de-DE"
                       }}
                       erstellt worden, von
-                      {{ participantsMap[group.creator].name }}.
-                      <!-- <button
-                    class="inline text-[#535AF1] font-normal text-xl hover:font-bold whitespace-normal"
-                    (click)="openProfileModal()"
-                  >
-                    &#64;{{ chatPartner.name }}
-                  </button> -->
-                      Das is der Anfang des Channels
+                      {{ participantsMap[group.creator].name }}. Das is der
+                      Anfang des Channels
                       <span class="text-[#535AF1]"># {{ group.name }}</span>
                     </p>
                   </div>
