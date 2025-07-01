@@ -138,21 +138,50 @@
           <span class="text-lg">Bestimmte Leute hinzufügen</span>
         </label>
 
-        <div *ngIf="!addAll" class="mt-4">
+        <div *ngIf="!addAll" class="mt-4 relative">
           <input
             type="text"
             placeholder="Name eingeben"
-            [(ngModel)]="specificPeople"
-            name="specificPeople"
+            [(ngModel)]="searchTerm"
             class="w-full px-5 py-3 border border-[#ADB0D9] rounded-full text-lg placeholder-[#686868] focus:outline-none focus:ring-1 focus:ring-[#535AF1] hover:border-[#797EF3] transition duration-200"
+            (click)="stopPropagation($event)"
           />
+
+          <ul
+            *ngIf="filteredUsers.length"
+            class="absolute z-10 mt-1 w-full bg-white border rounded shadow-lg max-h-48 overflow-auto"
+          >
+            <li
+              *ngFor="let u of filteredUsers"
+              (click)="addUser(u)"
+              class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            >
+              {{ u.name }}
+              <small class="text-gray-500">({{ u.email }})</small>
+            </li>
+          </ul>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mt-2">
+          <span
+            *ngFor="let u of selectedUsers"
+            class="flex items-center bg-[#E0E7FF] px-3 py-1 rounded-full text-sm"
+          >
+            {{ u.name }}
+            <button
+              (click)="removeUser(u)"
+              class="ml-2 text-gray-600 hover:text-gray-800"
+            >
+              &times;
+            </button>
+          </span>
         </div>
       </div>
 
       <div class="flex justify-end">
         <button
           (click)="onFinish()"
-          [disabled]="!addAll"
+          [disabled]="!addAll && selectedUsers.length === 0"
           class="px-6 py-3 bg-[#444DF2] hover:bg-[#797EF3] text-white font-bold text-lg rounded-[25px] disabled:bg-[#686868] transition-colors duration-200"
         >
           Erstellen
