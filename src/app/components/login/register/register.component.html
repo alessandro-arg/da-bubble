@@ -1,27 +1,40 @@
-<div class="login-page container mx-auto p-5 flex flex-col items-center justify-center min-h-screen">
-  <div class="logo-container flex justify-between items-center w-full max-w-2xl mb-8">
+<div
+  class="login-page container mx-auto p-5 flex flex-col items-center justify-center min-h-screen"
+>
+  <div
+    class="logo-container flex justify-between items-center w-full max-w-2xl mt-24"
+  >
     <div class="logo flex items-center gap-2">
       <img src="assets/img/logo.svg" alt="DABubble Logo" class="w-11 h-auto" />
       <p class="text-lg font-bold">DABubble</p>
     </div>
   </div>
 
-  <div class="login-container container mx-auto p-8 md:p-16 flex flex-col items-center justify-center bg-white rounded-lg shadow-md w-full max-w-2xl">
+  <div
+    class="login-container container mx-auto p-8 md:p-16 flex flex-col items-center justify-center bg-white rounded-lg shadow-md w-full max-w-2xl mt-8"
+  >
     <div class="flex items-center justify-start w-full mb-6 gap-20">
       <a routerLink="/login" class="text-blue-500 hover:text-blue-700">
         <img src="assets/img/arrow_back.svg" alt="Back" class="w-5 h-auto" />
       </a>
-      <h1 class="text-2xl font-bold"> Konto erstellen </h1>
+      <h1 class="text-2xl font-bold">Konto erstellen</h1>
     </div>
-    
+
     <p class="text-center mb-6 text-gray-600">
-      Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.
+      Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues
+      DABubble-Konto.
     </p>
-    
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex justify-center flex-col gap-4 w-full">
+
+    <form
+      [formGroup]="registerForm"
+      (ngSubmit)="onSubmit()"
+      class="flex justify-center flex-col gap-4 w-full"
+    >
       <!-- Name Field -->
-      <div class="form-group flex justify-center items-center rounded-full flex-col w-full px-4"
-           style="background-color: #edeefe;">
+      <div
+        class="form-group flex justify-center items-center rounded-full flex-col w-full px-4"
+        style="background-color: #edeefe"
+      >
         <div class="flex justify-center items-center w-full py-2 px-1">
           <img src="assets/img/person_filled.svg" alt="" class="mr-2 w-5 h-5" />
           <input
@@ -33,14 +46,18 @@
           />
         </div>
       </div>
-      <p *ngIf="registerForm.get('name')?.errors?.['required'] && registerForm.get('name')?.touched" 
-         class="error text-red-500 text-sm mt-1">
+      <p
+        *ngIf="registerForm.get('name')?.errors?.['required'] && registerForm.get('name')?.touched"
+        class="error text-red-500 text-sm mt-1"
+      >
         Bitte schreiben Sie einen Namen.
       </p>
 
       <!-- Email Field -->
-      <div class="form-group flex justify-center items-center rounded-full flex-col w-full px-4"
-           style="background-color: #edeefe;">
+      <div
+        class="form-group flex justify-center items-center rounded-full flex-col w-full px-4"
+        style="background-color: #edeefe"
+      >
         <div class="flex justify-center items-center w-full py-2 px-1">
           <img src="assets/img/mail.svg" alt="Email" class="mr-2 w-5 h-5" />
           <input
@@ -52,19 +69,25 @@
           />
         </div>
       </div>
-      <p *ngIf="registerForm.get('email')?.errors?.['required'] && registerForm.get('email')?.touched" 
-         class="error text-red-500 text-sm mt-1">
+      <p
+        *ngIf="registerForm.get('email')?.errors?.['required'] && registerForm.get('email')?.touched"
+        class="error text-red-500 text-sm mt-1"
+      >
         Bitte geben Sie eine E-Mail-Adresse ein.
       </p>
-      <p *ngIf="registerForm.get('email')?.errors?.['email'] && registerForm.get('email')?.touched" 
-         class="error text-red-500 text-sm mt-1">
+      <p
+        *ngIf="registerForm.get('email')?.errors?.['email'] && registerForm.get('email')?.touched"
+        class="error text-red-500 text-sm mt-1"
+      >
         Diese E-Mail-Adresse ist leider ungültig.
       </p>
-      
+
       <!-- Password Field -->
       <div class="form-group flex justify-center items-center flex-col w-full">
-        <div class="flex justify-center items-center w-full py-2 rounded-full px-4"
-             style="background-color: #edeefe;">
+        <div
+          class="flex justify-center items-center w-full py-2 rounded-full px-4"
+          style="background-color: #edeefe"
+        >
           <img src="assets/img/lock.svg" alt="Password" class="mr-2 w-5 h-5" />
           <input
             class="w-full focus:outline-none"
@@ -74,44 +97,70 @@
             placeholder="Passwort"
           />
           <div class="flex ml-2" (click)="togglePasswordVisibility()">
-            <img *ngIf="!showPassword" src="assets/img/eye-icon-visibility-off.svg" 
-                 alt="Hide password" class="w-5 h-5 cursor-pointer" />
-            <img *ngIf="showPassword" src="assets/img/eye-icon-visibility.svg" 
-                 alt="Show password" class="w-5 h-5 cursor-pointer" />
+            <img
+              *ngIf="!showPassword"
+              src="assets/img/eye-icon-visibility-off.svg"
+              alt="Hide password"
+              class="w-5 h-5 cursor-pointer"
+            />
+            <img
+              *ngIf="showPassword"
+              src="assets/img/eye-icon-visibility.svg"
+              alt="Show password"
+              class="w-5 h-5 cursor-pointer"
+            />
           </div>
         </div>
-        <p *ngIf="registerForm.get('password')?.errors?.['required'] && registerForm.get('password')?.touched" 
-           class="error text-red-500 text-sm mt-1">
+        <p
+          *ngIf="registerForm.get('password')?.errors?.['required'] && registerForm.get('password')?.touched"
+          class="error text-red-500 text-sm mt-1"
+        >
           Bitte geben Sie ein Passwort ein.
         </p>
-        <p *ngIf="registerForm.get('password')?.errors?.['minlength'] && registerForm.get('password')?.touched" 
-           class="error text-red-500 text-sm mt-1">
+        <p
+          *ngIf="registerForm.get('password')?.errors?.['minlength'] && registerForm.get('password')?.touched"
+          class="error text-red-500 text-sm mt-1"
+        >
           Das Passwort muss mindestens 6 Zeichen lang sein.
         </p>
       </div>
-  
+
       <!-- Privacy Policy Checkbox -->
       <div class="flex items-center justify-start w-full mt-4">
-        <input type="checkbox" id="privacyPolicy" formControlName="privacyPolicy" class="mr-2" />
+        <input
+          type="checkbox"
+          id="privacyPolicy"
+          formControlName="privacyPolicy"
+          class="mr-2"
+        />
         <div>
           <label for="privacyPolicy" class="text-sm text-gray-600">
-            Ich stimme der <a routerLink="/impressum" class="text-blue-500 hover:text-blue-700">Datenschutzerklärung</a> zu.
+            Ich stimme der
+            <a routerLink="/impressum" class="text-blue-500 hover:text-blue-700"
+              >Datenschutzerklärung</a
+            >
+            zu.
           </label>
         </div>
       </div>
-      <p *ngIf="registerForm.get('privacyPolicy')?.errors?.['requiredTrue'] && registerForm.get('privacyPolicy')?.touched" 
-         class="error text-red-500 text-sm mt-1">
+      <p
+        *ngIf="registerForm.get('privacyPolicy')?.errors?.['requiredTrue'] && registerForm.get('privacyPolicy')?.touched"
+        class="error text-red-500 text-sm mt-1"
+      >
         Sie müssen der Datenschutzerklärung zustimmen.
       </p>
 
       <!-- Error Message -->
-      <p *ngIf="errorMessage" class="error text-red-500 text-sm mt-1 text-center">
+      <p
+        *ngIf="errorMessage"
+        class="error text-red-500 text-sm mt-1 text-center"
+      >
         {{ errorMessage }}
       </p>
-  
+
       <!-- Submit Button -->
       <div class="flex justify-end items-center w-full mt-6">
-        <button 
+        <button
           type="submit"
           class="next-btn text-white py-2 px-6 rounded-full"
           [disabled]="registerForm.invalid || loading"
@@ -122,9 +171,11 @@
       </div>
     </form>
   </div>
-  
-  <div class="flex justify-center items-center gap-8 mt-8 text-sm text-gray-500">
-    <a routerLink="/impressum" class="hover:text-gray-700">Impressum</a>
-    <a routerLink="/datenschutz" class="hover:text-gray-700">Datenschutz</a>
+
+  <div
+    class="footer flex justify-center items-center gap-4 mt-8 font-Figtree weight-light"
+  >
+    <a routerLink="/impressum" class="hover:rounded-full">Impressum</a>
+    <a routerLink="/datenschutz" class="hover:rounded-full">Datenschutz</a>
   </div>
 </div>
