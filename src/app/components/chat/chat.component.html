@@ -1,6 +1,6 @@
 <div class="w-full h-full flex flex-col">
   <!-- ── HEADER ─────────────────────────────────────────────────────── -->
-  <ng-container *ngIf="chatPartner || groupId; else noSelectionHeader">
+  <ng-container *ngIf="chatPartner || groupId">
     <!-- private header -->
     <div
       *ngIf="chatPartner; else groupHeader"
@@ -22,9 +22,9 @@
     <ng-template #groupHeader>
       <ng-container *ngIf="group$ | async as group">
         <div
-          class="w-full flex justify-between px-[45px] pt-[28px] pb-[16px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
+          class="w-full flex gap-[10px] px-[45px] pt-[28px] pb-[16px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
         >
-          <div class="flex items-center gap-2 px-2 py-1">
+          <div class="flex items-center gap-[10px] py-1">
             <img src="../../../assets/img/icons/tag.png" class="w-6 h-6" />
             <p class="text-xl font-bold">{{ group.name }}</p>
           </div>
@@ -36,12 +36,6 @@
       </ng-container>
     </ng-template>
   </ng-container>
-
-  <ng-template #noSelectionHeader>
-    <div class="w-full px-[45px] pt-[28px] pb-[16px] text-center text-gray-400">
-      Wähle einen Nutzer oder Kanal, um zu chatten.
-    </div>
-  </ng-template>
 
   <!-- Chat Body -->
   <div
@@ -117,7 +111,7 @@
               </div>
 
               <div
-                class="relative group flex my-2 gap-[30px] px-[45px] py-4 transition-colors duration-200 hover:bg-[#ECEEFE]"
+                class="relative group flex my-3 gap-[30px] px-[45px] py-4 transition-colors duration-200 hover:bg-[#ECEEFE]"
                 [ngClass]="{
                   'justify-end': msg.sender === currentUserUid,
                   'items-start': msg.sender !== currentUserUid
@@ -167,7 +161,7 @@
                   <!-- hover‐menu for *other* people’s messages (left side) -->
                   <div
                     *ngIf="msg.sender !== currentUserUid"
-                    class="hidden group-hover:flex gap-1 absolute -top-2 right-48 px-[15px] py-[3px] items-center bg-white border border-[#ADB0D9] rounded-l-[25px] rounded-tr-[25px] transition-opacity duration-200 z-10"
+                    class="hidden group-hover:flex gap-1 absolute -top-4 right-[45px] px-[15px] py-[3px] items-center bg-white border border-[#ADB0D9] rounded-l-[25px] rounded-tr-[25px] transition-opacity duration-200 z-10"
                   >
                     <button class="p-[10px] rounded-[20px] hover:bg-gray-100">
                       ✔️
@@ -186,7 +180,7 @@
                   <!-- hover-menu for *your* messages (right side) -->
                   <div
                     *ngIf="msg.sender === currentUserUid"
-                    class="hidden group-hover:flex gap-1 absolute -top-2 left-48 px-[15px] py-[3px] items-center bg-white border border-[#ADB0D9] rounded-l-[25px] rounded-tr-[25px] transition-opacity duration-200 z-10"
+                    class="hidden group-hover:flex gap-1 absolute -top-4 left-[45px] px-[15px] py-[3px] items-center bg-white border border-[#ADB0D9] rounded-l-[25px] rounded-tr-[25px] transition-opacity duration-200 z-10"
                   >
                     <button class="p-[10px] rounded-[20px] hover:bg-gray-100">
                       ✔️
