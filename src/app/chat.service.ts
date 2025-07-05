@@ -11,10 +11,11 @@ import {
   getDoc,
   setDoc,
   docData,
+  arrayUnion,
 } from '@angular/fire/firestore';
 import { Injectable } from '@angular/core';
 import { of, Observable } from 'rxjs';
-import { Message } from './models/chat.model';
+import { Message, Reaction } from './models/chat.model';
 import { UserService } from './user.service';
 import { User } from './models/user.model';
 import { Group } from './models/group.model';
@@ -101,5 +102,25 @@ export class ChatService {
       uids.map((uid) => this.userService.getUser(uid))
     );
     return users.filter((u): u is User => u !== null);
+  }
+
+  /**
+   * Append a reaction to a chat or group message.
+   * @param isGroup  true for /groups, false for /chats
+   */
+  addReaction(
+    id: string,
+    messageId: string,
+    reaction: Reaction,
+    isGroup: boolean
+  ): Promise<void> {
+    const basePath = isGroup ? 'groups' : 'chats';
+    const msgRef = doc(
+      this.firestore,
+      `${basePath}/${id}/messages/${messageId}`
+    );
+    return updateDoc(msgRef, {
+      reactions: arrayUnion(reaction),
+    });
   }
 }

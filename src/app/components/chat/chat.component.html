@@ -158,6 +158,34 @@
                     {{ msg.text }}
                   </div>
 
+                  <!-- ─── reactions bar ──────────────────────────────────── -->
+                  <div class="flex items-center px-[45px] mt-1">
+                    <ng-container
+                      *ngFor="let r of summarizeReactions(msg.reactions)"
+                    >
+                      <span
+                        class="px-2 py-1 mr-1 text-sm bg-gray-200 rounded-full"
+                      >
+                        {{ r.emoji }} {{ r.count }}
+                      </span>
+                    </ng-container>
+                    <button
+                      class="ml-auto p-2 hover:bg-gray-100 rounded-full"
+                      (click)="toggleMessagePicker(msg.id)"
+                      aria-label="Add reaction"
+                    >
+                      😊
+                    </button>
+                  </div>
+
+                  <div *ngIf="messagePicker[msg.id]" class="absolute z-50">
+                    <emoji-picker
+                      (emoji-click)="
+                        onMessageEmojiSelect(msg, $event.detail.unicode!)
+                      "
+                    ></emoji-picker>
+                  </div>
+
                   <!-- hover‐menu for *other* people’s messages (left side) -->
                   <div
                     *ngIf="msg.sender !== currentUserUid"

@@ -21,6 +21,7 @@ import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
 import { Observable } from 'rxjs';
 import { Group } from '../../models/group.model';
+import { Reaction, Message } from '../../models/chat.model';
 
 @Component({
   selector: 'app-chat',
@@ -34,7 +35,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   @Input() chatPartner!: User | null;
   @Input() currentUserUid!: string | null;
   @Input() groupId!: string | null;
-
   @Output() userSelected = new EventEmitter<User>();
 
   group$!: Observable<Group>;
@@ -45,10 +45,11 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   showEmojiPicker = false;
   showProfileModal = false;
 
+  messagePicker: Record<string, boolean> = {};
+  participantsMap: Record<string, User> = {};
+
   isEmojiHovered = false;
   isAttachHovered = false;
-
-  participantsMap: Record<string, User> = {};
 
   @ViewChild('emojiBtn', { read: ElementRef }) emojiBtn!: ElementRef;
   @ViewChild('picker', { read: ElementRef }) picker!: ElementRef;
@@ -220,5 +221,48 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     } else {
       return d.toLocaleDateString('de-DE');
     }
+  }
+
+  /**
+   * Toggle the emoji‐picker for a single message.
+   */
+  toggleMessagePicker(msgId: string) {
+    Object.keys(this.messagePicker).forEach(
+      (id) => (this.messagePicker[id] = false)
+    );
+    this.messagePicker[msgId] = !this.messagePicker[msgId];
+  }
+
+  /**
+   * Called when user picks an emoji from the pop‐up.
+   */
+  async onMessageEmojiSelect(msg: Message, emoji: string) {
+    if (!msg.id || !this.currentUserUid) return;
+
+    const reaction: Reaction = {
+      emoji,
+      userId: this.currentUserUid,
+      createdAt: new Date(),
+    };
+
+    // use groupId truthiness to decide path
+    const isGroup = !!this.groupId;
+    const targetId = isGroup ? this.groupId! : this.chatId!;
+
+    await this.chatService.addReaction(targetId, msg.id, reaction, isGroup);
+
+    // immediately close the picker
+    this.messagePicker[msg.id] = false;
+  }
+
+  /**
+   * Collapse duplicates: [{🙂,a},{🙂,b},{😃,c}] → [{🙂,2},{😃,1}]
+   */
+  summarizeReactions(
+    reactions: Reaction[] = []
+  ): { emoji: string; count: number }[] {
+    const counter: Record<string, number> = {};
+    reactions.forEach((r) => (counter[r.emoji] = (counter[r.emoji] || 0) + 1));
+    return Object.entries(counter).map(([emoji, count]) => ({ emoji, count }));
   }
 }
