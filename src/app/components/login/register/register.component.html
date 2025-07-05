@@ -43,6 +43,7 @@
             id="name"
             formControlName="name"
             placeholder="Name und Nachname"
+            pattern="[A-Za-zÄÖÜäöüß]+"
           />
         </div>
       </div>
@@ -50,7 +51,7 @@
         *ngIf="registerForm.get('name')?.errors?.['required'] && registerForm.get('name')?.touched"
         class="error text-red-500 text-sm mt-1"
       >
-        Bitte schreiben Sie einen Namen.
+        Bitte schreiben Sie einen Namen und nur Buchstaben erlaubt.
       </p>
 
       <!-- Email Field -->
