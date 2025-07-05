@@ -47,11 +47,10 @@ export class IntroComponent implements AfterViewInit {
   private playAnimation(): void {
     console.log('Playing animation...');
 
-    const letters = ['D', 'A', 'B', 'u', 'b', 'b', 'l', 'e'];
+    const letters = [' DABubble '];
     const element = this.animatedTitle.nativeElement;
     element.innerHTML = '';
 
-    // Animation parameters
     const charDelay = 100;
     const initialOffset = -100; // Startposition weiter links
     const spacing = 30;
@@ -65,7 +64,7 @@ export class IntroComponent implements AfterViewInit {
       span.style.transform = `translateX(${initialOffset}px)`;
       span.style.transition = `opacity 300ms ease-out, transform 500ms ease-out`;
       span.style.position = 'relative';
-      span.style.zIndex = '0'; // Unter dem Logo
+      span.style.zIndex = '0';
 
       setTimeout(() => {
         span.style.opacity = '1';
@@ -95,40 +94,9 @@ export class IntroComponent implements AfterViewInit {
         .catch(err => console.error('Navigation error:', err));
     });
 
-    // Optional: Local Storage leeren, falls benötigt
     if (isPlatformBrowser(this.platformId)) {
       localStorage.clear();
       console.log('Local storage cleared');
     }
   }
 }
-
-
-
-/*
-
-
-  private startIntroSequence(): void {
-    setTimeout(() => {
-      if (isPlatformBrowser(this.platformId)) {
-        // Nur im Browser ausführen
-        const introAlreadyShown = localStorage.getItem('introShown');
-        if (introAlreadyShown) {
-          this.navigateToLogin();
-        } else {
-          localStorage.setItem('introShown', 'true');
-          this.playAnimation();
-          localStorage.clear(); // Leeren des Local Storage
-          console.log('Intro animation played and local storage cleared');
-        }
-      } else {
-        // SSR-Fallback
-        this.navigateToLogin();
-        console.log('SSR detected, navigating to login');
-      }
-    }, 100);
-  }
-
-  
-
-*/
