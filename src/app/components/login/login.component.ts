@@ -117,6 +117,9 @@ export class LoginComponent {
       this.errorMessage = error.message || 'Google-Anmeldung fehlgeschlagen.';
     } finally {
       this.loading = false;
+          setTimeout(() => {
+            window.location.reload(); // Optional: Seite neu laden, um UI zu aktualisieren
+          }, 10); // Optional: Verzögerung für bessere UX
     }
   }
 
