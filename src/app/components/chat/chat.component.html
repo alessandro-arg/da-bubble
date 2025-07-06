@@ -158,6 +158,34 @@
                     {{ msg.text }}
                   </div>
 
+                  <!-- ─── reactions bar ──────────────────────────────────── -->
+                  <div class="flex items-center px-[45px] mt-1">
+                    <ng-container
+                      *ngFor="let r of summarizeReactions(msg.reactions)"
+                    >
+                      <span
+                        class="px-2 py-1 mr-1 text-sm bg-gray-200 rounded-full"
+                      >
+                        {{ r.emoji }} {{ r.count }}
+                      </span>
+                    </ng-container>
+                    <button
+                      class="ml-auto p-2 hover:bg-gray-100 rounded-full"
+                      (click)="toggleMessagePicker(msg.id)"
+                      aria-label="Add reaction"
+                    >
+                      😊
+                    </button>
+                  </div>
+
+                  <div *ngIf="messagePicker[msg.id]" class="absolute z-50">
+                    <emoji-picker
+                      (emoji-click)="
+                        onMessageEmojiSelect(msg, $event.detail.unicode!)
+                      "
+                    ></emoji-picker>
+                  </div>
+
                   <!-- hover‐menu for *other* people’s messages (left side) -->
                   <div
                     *ngIf="msg.sender !== currentUserUid"
@@ -232,8 +260,8 @@
               <ng-container *ngIf="messages$ | async as msgs">
                 <!-- Placeholder when no messages yet -->
                 <div *ngIf="msgs.length === 0">
-                  <div class="w-full flex flex-col gap-6">
-                    <div class="flex gap-6 items-end cursor-pointer">
+                  <div class="w-full flex flex-col gap-6 px-[45px]">
+                    <div class="flex gap-6 items-end cursor-pointer w-max">
                       <img
                         src="../../../assets/img/icons/tag.png"
                         [alt]="group.name"
@@ -271,7 +299,7 @@
                             msg.createdAt.toDate()
                           )))
                     "
-                    class="flex items-center my-4"
+                    class="flex items-center my-4 px-[45px]"
                   >
                     <div class="flex-grow h-px bg-[#ADB0D9]"></div>
                     <span
@@ -283,7 +311,7 @@
                   </div>
 
                   <div
-                    class="flex my-4 gap-[30px] px-[10px]"
+                    class="relative group flex my-3 gap-[30px] px-[45px] py-4 transition-colors duration-200 hover:bg-[#ECEEFE]"
                     [ngClass]="{
                       'justify-end': msg.sender === currentUserUid,
                       'items-start': msg.sender !== currentUserUid
@@ -320,7 +348,7 @@
                         </span>
                       </div>
                       <div
-                        class="p-[15px] text-base"
+                        class="p-[15px] text-base transition-colors duration-200"
                         [ngClass]="
                           msg.sender === currentUserUid
                             ? 'bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px]'
@@ -328,6 +356,65 @@
                         "
                       >
                         {{ msg.text }}
+                      </div>
+
+                      <!-- hover‐menu for *other* people’s messages (left side) -->
+                      <div
+                        *ngIf="msg.sender !== currentUserUid"
+                        class="hidden group-hover:flex gap-1 absolute -top-4 right-[45px] px-[15px] py-[3px] items-center bg-white border border-[#ADB0D9] rounded-l-[25px] rounded-tr-[25px] transition-opacity duration-200 z-10"
+                      >
+                        <button
+                          class="p-[10px] rounded-[20px] hover:bg-gray-100"
+                        >
+                          ✔️
+                        </button>
+                        <button
+                          class="p-[10px] rounded-[20px] hover:bg-gray-100"
+                        >
+                          👍
+                        </button>
+                        <button
+                          class="p-[10px] rounded-[20px] hover:bg-gray-100"
+                        >
+                          😊
+                        </button>
+                        <button
+                          class="p-[10px] rounded-[20px] hover:bg-gray-100"
+                        >
+                          💬
+                        </button>
+                      </div>
+
+                      <!-- hover-menu for *your* messages (right side) -->
+                      <div
+                        *ngIf="msg.sender === currentUserUid"
+                        class="hidden group-hover:flex gap-1 absolute -top-4 left-[45px] px-[15px] py-[3px] items-center bg-white border border-[#ADB0D9] rounded-l-[25px] rounded-tr-[25px] transition-opacity duration-200 z-10"
+                      >
+                        <button
+                          class="p-[10px] rounded-[20px] hover:bg-gray-100"
+                        >
+                          ✔️
+                        </button>
+                        <button
+                          class="p-[10px] rounded-[20px] hover:bg-gray-100"
+                        >
+                          👍
+                        </button>
+                        <button
+                          class="p-[10px] rounded-[20px] hover:bg-gray-100"
+                        >
+                          😊
+                        </button>
+                        <button
+                          class="p-[10px] rounded-[20px] hover:bg-gray-100"
+                        >
+                          💬
+                        </button>
+                        <button
+                          class="p-[10px] rounded-[20px] hover:bg-gray-100"
+                        >
+                          💬
+                        </button>
                       </div>
                     </div>
 

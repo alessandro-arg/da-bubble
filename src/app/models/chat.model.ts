@@ -1,12 +1,19 @@
 export interface Message {
-  id?: string;
+  id: string;
   sender: string;
   text: string;
   createdAt: any;
+  reactions?: Reaction[];
 }
 
 export interface Chat {
   id: string;
   participants: string[];
   updatedAt: any;
+}
+
+export interface Reaction {
+  emoji: string;
+  userId: string;
+  createdAt: any;
 }
