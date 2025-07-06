@@ -34,36 +34,36 @@ export class LoginComponent {
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
-/*
-  async guestLogin() {
-    this.loading = true;
-    this.errorMessage = null;
-
-    try {
-      const userCredential = await firstValueFrom(this.authService.guestLogin());
-
-      // Prüfe ob Gast bereits existiert, falls nicht erstellen
-      const userExists = await this.userService.getUser(userCredential.user.uid);
-      if (!userExists) {
-        await this.userService.createUser({
-          uid: userCredential.user.uid,
-          name: 'Gast',
-          email: userCredential.user.email || environment.guestEmail,
-          avatar: 'assets/img/avatar.png',
-          isGuest: true // Neue Eigenschaft für Gast-User
-        });
+  /*
+    async guestLogin() {
+      this.loading = true;
+      this.errorMessage = null;
+  
+      try {
+        const userCredential = await firstValueFrom(this.authService.guestLogin());
+  
+        // Prüfe ob Gast bereits existiert, falls nicht erstellen
+        const userExists = await this.userService.getUser(userCredential.user.uid);
+        if (!userExists) {
+          await this.userService.createUser({
+            uid: userCredential.user.uid,
+            name: 'Gast',
+            email: userCredential.user.email || environment.guestEmail,
+            avatar: 'assets/img/avatar.png',
+            isGuest: true // Neue Eigenschaft für Gast-User
+          });
+        }
+  
+        // Ändere die Weiterleitung zu einer existierenden Route
+        const redirectUrl = this.authService.redirectUrl || '/landingpage/gast';
+        this.router.navigateByUrl(redirectUrl);
+      } catch (error: any) {
+        console.error('Guest login error:', error);
+        this.errorMessage = error.message || 'Gast-Login fehlgeschlagen.';
+      } finally {
+        this.loading = false;
       }
-
-      // Ändere die Weiterleitung zu einer existierenden Route
-      const redirectUrl = this.authService.redirectUrl || '/landingpage/gast';
-      this.router.navigateByUrl(redirectUrl);
-    } catch (error: any) {
-      console.error('Guest login error:', error);
-      this.errorMessage = error.message || 'Gast-Login fehlgeschlagen.';
-    } finally {
-      this.loading = false;
-    }
-  }*/
+    }*/
 
   async onSubmit(form: NgForm) {
     if (form.invalid) return;
@@ -117,9 +117,9 @@ export class LoginComponent {
       this.errorMessage = error.message || 'Google-Anmeldung fehlgeschlagen.';
     } finally {
       this.loading = false;
-          setTimeout(() => {
-            window.location.reload(); // Optional: Seite neu laden, um UI zu aktualisieren
-          }, 10); // Optional: Verzögerung für bessere UX
+      setTimeout(() => {
+        window.location.reload(); // Optional: Seite neu laden, um UI zu aktualisieren
+      }, 10); // Optional: Verzögerung für bessere UX
     }
   }
 
@@ -128,17 +128,17 @@ export class LoginComponent {
   async guestLogin() {
     this.loading = true;
     this.errorMessage = null;
-  
+
     try {
       // 1. Anmeldung als Gast
       const userCredential = await firstValueFrom(this.authService.guestLogin());
-      
+
       // 2. Zufälligen Gastnamen generieren
       const guestName = this.authService.generateRandomGuestName();
-      
+
       // 3. Zufälligen Avatar auswählen
       const randomAvatar = this.getRandomAvatar();
-      
+
       // 4. Gast-Benutzer in Firestore erstellen/aktualisieren
       const userData = {
         uid: userCredential.user.uid,
@@ -150,9 +150,9 @@ export class LoginComponent {
         displayName: guestName,
         photoURL: randomAvatar
       };
-  
+
       await this.userService.createUser(userData);
-  
+
       // 5. Weiterleitung mit Gast-spezifischer Route
       const redirectUrl = this.authService.redirectUrl || `/landingpage/${userCredential.user.uid}`;
       this.router.navigateByUrl(redirectUrl);
@@ -163,7 +163,7 @@ export class LoginComponent {
       this.loading = false;
     }
   }
-  
+
   getRandomAvatar(): string {
     const avatars = [
       'assets/img/charaters.svg',
