@@ -203,14 +203,6 @@
                     ></emoji-picker>
                   </div>
 
-                  <div *ngIf="messagePicker[msg.id]" class="absolute z-50">
-                    <emoji-picker
-                      (emoji-click)="
-                        onMessageEmojiSelect(msg, $event.detail.unicode!)
-                      "
-                    ></emoji-picker>
-                  </div>
-
                   <!-- hover‐menu for *other* people’s messages (left side) -->
                   <div
                     *ngIf="msg.sender !== currentUserUid"
@@ -384,23 +376,42 @@
                       </div>
 
                       <!-- ─── reactions bar ──────────────────────────────────── -->
-                      <div class="flex items-center px-[45px] mt-1">
-                        <ng-container
-                          *ngFor="let r of summarizeReactions(msg.reactions)"
-                        >
-                          <span
-                            class="px-2 py-1 mr-1 text-sm bg-gray-200 rounded-full"
-                          >
-                            {{ r.emoji }} {{ r.count }}
-                          </span>
-                        </ng-container>
+                      <div
+                        class="flex items-center mt-1 px-[45px]"
+                        [ngClass]="{
+                          'pr-0 flex-row-reverse':
+                            msg.sender === currentUserUid,
+                          'pl-0': msg.sender !== currentUserUid
+                        }"
+                      >
+                        <!-- emoji-picker button -->
                         <button
-                          class="ml-auto p-2 hover:bg-gray-100 rounded-full"
+                          class="p-2 hover:bg-gray-100 rounded-full"
                           (click)="toggleMessagePicker(msg.id)"
-                          aria-label="Add reaction"
                         >
-                          😊
+                          <img
+                            src="../../../assets/img/icons/add_reaction.png"
+                            alt="emoji picker"
+                          />
                         </button>
+
+                        <!-- reactions group -->
+                        <div
+                          class="flex items-center gap-1"
+                          [ngClass]="{
+                            'space-x-reverse': msg.sender === currentUserUid
+                          }"
+                        >
+                          <ng-container
+                            *ngFor="let r of summarizeReactions(msg.reactions)"
+                          >
+                            <span
+                              class="px-2 py-1 text-sm bg-gray-200 rounded-full"
+                            >
+                              {{ r.emoji }} {{ r.count }}
+                            </span>
+                          </ng-container>
+                        </div>
                       </div>
 
                       <div *ngIf="messagePicker[msg.id]" class="absolute z-50">
