@@ -234,28 +234,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   }
 
   /**
-   * Called when user picks an emoji from the pop‐up.
-   */
-  async onMessageEmojiSelect(msg: Message, emoji: string) {
-    if (!msg.id || !this.currentUserUid) return;
-
-    const reaction: Reaction = {
-      emoji,
-      userId: this.currentUserUid,
-      createdAt: new Date(),
-    };
-
-    // use groupId truthiness to decide path
-    const isGroup = !!this.groupId;
-    const targetId = isGroup ? this.groupId! : this.chatId!;
-
-    await this.chatService.addReaction(targetId, msg.id, reaction, isGroup);
-
-    // immediately close the picker
-    this.messagePicker[msg.id] = false;
-  }
-
-  /**
    * Collapse duplicates: [{🙂,a},{🙂,b},{😃,c}] → [{🙂,2},{😃,1}]
    */
   summarizeReactions(
@@ -264,5 +242,37 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     const counter: Record<string, number> = {};
     reactions.forEach((r) => (counter[r.emoji] = (counter[r.emoji] || 0) + 1));
     return Object.entries(counter).map(([emoji, count]) => ({ emoji, count }));
+  }
+
+  /**
+   * Toggle a reaction: if currentUser has reacted already, remove it;
+   * otherwise add it.
+   */
+  async onReactionClick(msg: Message, emoji: string) {
+    if (!msg.id || !this.currentUserUid) return;
+    const isGroup = !!this.groupId;
+    const targetId = isGroup ? this.groupId! : this.chatId!;
+    const reactions = msg.reactions ?? [];
+    const already = reactions.some(
+      (r) => r.userId === this.currentUserUid && r.emoji === emoji
+    );
+
+    if (already) {
+      await this.chatService.removeReaction(
+        targetId,
+        msg.id,
+        emoji,
+        this.currentUserUid,
+        isGroup
+      );
+    } else {
+      const reaction: Reaction = {
+        emoji,
+        userId: this.currentUserUid,
+        createdAt: new Date(),
+      };
+      await this.chatService.addReaction(targetId, msg.id, reaction, isGroup);
+    }
+    this.messagePicker[msg.id] = false;
   }
 }

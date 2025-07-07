@@ -187,7 +187,9 @@
                         *ngFor="let r of summarizeReactions(msg.reactions)"
                       >
                         <span
-                          class="px-2 py-1 text-sm bg-gray-200 rounded-full"
+                          class="px-2 py-1 text-sm bg-gray-200 rounded-full cursor-pointer hover:bg-gray-400"
+                          title="Click to toggle your reaction"
+                          (click)="onReactionClick(msg, r.emoji)"
                         >
                           {{ r.emoji }} {{ r.count }}
                         </span>
@@ -198,7 +200,7 @@
                   <div *ngIf="messagePicker[msg.id]" class="absolute z-50">
                     <emoji-picker
                       (emoji-click)="
-                        onMessageEmojiSelect(msg, $event.detail.unicode!)
+                        onReactionClick(msg, $event.detail.unicode!)
                       "
                     ></emoji-picker>
                   </div>
@@ -406,7 +408,9 @@
                             *ngFor="let r of summarizeReactions(msg.reactions)"
                           >
                             <span
-                              class="px-2 py-1 text-sm bg-gray-200 rounded-full"
+                              class="px-2 py-1 text-sm bg-gray-200 rounded-full cursor-pointer"
+                              title="Click to toggle your reaction"
+                              (click)="onReactionClick(msg, r.emoji)"
                             >
                               {{ r.emoji }} {{ r.count }}
                             </span>
@@ -417,7 +421,7 @@
                       <div *ngIf="messagePicker[msg.id]" class="absolute z-50">
                         <emoji-picker
                           (emoji-click)="
-                            onMessageEmojiSelect(msg, $event.detail.unicode!)
+                            onReactionClick(msg, $event.detail.unicode!)
                           "
                         ></emoji-picker>
                       </div>

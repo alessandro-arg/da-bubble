@@ -123,4 +123,29 @@ export class ChatService {
       reactions: arrayUnion(reaction),
     });
   }
+
+  /**
+   * Remove all reactions matching (userId, emoji) from a message.
+   */
+  async removeReaction(
+    id: string,
+    messageId: string,
+    emoji: string,
+    userId: string,
+    isGroup: boolean
+  ): Promise<void> {
+    const basePath = isGroup ? 'groups' : 'chats';
+    const msgRef = doc(
+      this.firestore,
+      `${basePath}/${id}/messages/${messageId}`
+    );
+    const snap = await getDoc(msgRef);
+    const current: Reaction[] = snap.exists()
+      ? (snap.data() as any).reactions || []
+      : [];
+    const updated = current.filter(
+      (r) => !(r.userId === userId && r.emoji === emoji)
+    );
+    return updateDoc(msgRef, { reactions: updated });
+  }
 }
