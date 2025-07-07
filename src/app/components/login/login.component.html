@@ -35,7 +35,7 @@
     >
       <!-- Email Field -->
       <div
-        class="form-group flex justify-center items-center rounded-full flex-col w-full px-4"
+        class="form-group form-group-input-div  flex justify-center items-center rounded-full flex-col w-full px-4"
         style="background-color: #edeefe"
       >
         <div class="flex justify-center items-center w-full py-2 px-1">
@@ -66,9 +66,9 @@
       </p>
 
       <!-- Password Field -->
-      <div class="form-group flex justify-center items-center flex-col w-full">
+      <div class="form-group flex justify-center items-center hover:border-solid flex-col w-full">
         <div
-          class="flex justify-center items-center w-full py-2 rounded-full px-4"
+          class="form-group-input-div hover:border-[#444DF2] flex justify-center items-center w-full py-2 rounded-full px-4"
           style="background-color: #edeefe"
         >
           <img src="assets/img/lock.svg" alt="Password" class="mr-2 w-5 h-5" />
@@ -98,7 +98,7 @@
         </div>
         <p
           *ngIf="loginForm.form.controls['password']?.errors?.['required'] && loginForm.form.controls['password']?.touched"
-          class="error text-red-500 text-sm mt-1"
+          class="error text-red-500 text-sm mt-1 w-full justify-start"
         >
           Bitte geben Sie ein Passwort ein.
         </p>
@@ -115,7 +115,7 @@
       <div class="form-group flex justify-center items-center">
         <a
           routerLink="/forgot-password"
-          class="text-blue-500 hover:text-blue-700 text-sm"
+            class="text-blue-500 hover:text-blue-700 hover:bg-gray-300 *:hover:underline rounded-full py-2 px-4"
           >Passwort vergessen?</a
         >
       </div>
@@ -144,7 +144,8 @@
       <div class="flex justify-center items-center gap-4 w-full mt-4">
         <button
           type="submit"
-          class="login-btn text-white py-2 px-6 rounded-full disabled:opacity-50"
+          class="login-btn text-white py-2 px-6 rounded-full disabled:opacity-50 hover:bg-[#444DF2] bg-[#3739C8]"
+          [disabled]="loading || !loginForm.valid"
         >
           <span *ngIf="!loading">Anmelden</span>
           <span *ngIf="loading">Anmeldung läuft...</span>
