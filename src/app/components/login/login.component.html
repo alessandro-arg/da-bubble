@@ -54,7 +54,7 @@
       </div>
       <p
         *ngIf="loginForm.form.controls['email']?.errors?.['required'] && loginForm.form.controls['email']?.touched"
-        class="error text-red-500 text-sm mt-1"
+        class="error text-red-500 text-sm mt-1 flex"
       >
         Bitte geben Sie eine E-Mail-Adresse ein.
       </p>
@@ -98,7 +98,7 @@
         </div>
         <p
           *ngIf="loginForm.form.controls['password']?.errors?.['required'] && loginForm.form.controls['password']?.touched"
-          class="error text-red-500 text-sm mt-1 w-full justify-start"
+          class="error text-red-500 text-sm mt-1 w-full flex"
         >
           Bitte geben Sie ein Passwort ein.
         </p>
