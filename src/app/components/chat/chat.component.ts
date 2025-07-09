@@ -275,18 +275,4 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     }
     this.messagePicker[msg.id] = false;
   }
-
-  /**
-   * Return the display names of everyone who reacted
-   * with a given emoji on a particular message.
-   */
-  getReactors(msg: Message, emoji: string): string[] {
-    const list = (msg.reactions || [])
-      .filter((r) => r.emoji === emoji)
-      .map((r) => {
-        const user = this.participantsMap[r.userId];
-        return user ? user.name : 'Unknown';
-      });
-    return Array.from(new Set(list));
-  }
 }
