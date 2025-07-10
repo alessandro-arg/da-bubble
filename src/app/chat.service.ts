@@ -148,4 +148,25 @@ export class ChatService {
     );
     return updateDoc(msgRef, { reactions: updated });
   }
+
+  /**
+   * Edit the text of a chat or group message.
+   * @param id         chatId or groupId
+   * @param messageId  the message.document ID
+   * @param newText    the updated text
+   * @param isGroup    true if this is a group message
+   */
+  async updateMessage(
+    id: string,
+    messageId: string,
+    newText: string,
+    isGroup: boolean
+  ): Promise<void> {
+    const base = isGroup ? 'groups' : 'chats';
+    const msgRef = doc(this.firestore, `${base}/${id}/messages/${messageId}`);
+    await updateDoc(msgRef, {
+      text: newText,
+      editedAt: serverTimestamp(),
+    });
+  }
 }

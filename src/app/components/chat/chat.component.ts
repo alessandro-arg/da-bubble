@@ -54,10 +54,16 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   maxVisible = 9;
   expandedMessages = new Set<string>();
 
+  editingMsgId: string | null = null;
+  editText = '';
+
   @ViewChild('emojiBtn', { read: ElementRef }) emojiBtn!: ElementRef;
   @ViewChild('picker', { read: ElementRef }) picker!: ElementRef;
   @ViewChild('chatContainer', { read: ElementRef })
   private chatContainer!: ElementRef<HTMLElement>;
+
+  @ViewChild('editInput', { read: ElementRef })
+  editInput?: ElementRef<HTMLTextAreaElement>;
 
   constructor(
     private chatService: ChatService,
@@ -131,7 +137,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   private finishLoading() {
     this.messages$.pipe(take(1)).subscribe(() => {
       this.messagesLoading = false;
-      setTimeout(() => this.scrollToBottom(), 100);
+      setTimeout(() => this.scrollToBottom(), 150);
     });
   }
 
@@ -306,5 +312,34 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   displayedReactions(msg: Message) {
     const all = this.summarizeReactions(msg.reactions);
     return this.isExpanded(msg.id!) ? all : all.slice(0, this.maxVisible);
+  }
+
+  startEdit(msg: Message) {
+    this.editingMsgId = msg.id!;
+    this.editText = msg.text;
+    setTimeout(() => this.editInput?.nativeElement.focus(), 0);
+  }
+
+  cancelEdit() {
+    this.editingMsgId = null;
+    this.editText = '';
+  }
+
+  saveEdit(msg: Message) {
+    if (!this.editingMsgId || !this.chatId) return;
+
+    const isGroup = !!this.groupId;
+    this.chatService
+      .updateMessage(this.chatId, msg.id!, this.editText, isGroup)
+      .then(() => {
+        this.editingMsgId = null;
+        this.editText = '';
+      })
+      .catch((err) => console.error('Failed to update message', err));
+  }
+
+  autoGrow(textarea: HTMLTextAreaElement) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
   }
 }
