@@ -275,4 +275,14 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     }
     this.messagePicker[msg.id] = false;
   }
+
+  getReactionUserNames(msg: Message, emoji: string): string[] {
+    return (msg.reactions || [])
+      .filter((r) => r.emoji === emoji)
+      .map((r) =>
+        r.userId === this.currentUserUid
+          ? 'You'
+          : this.participantsMap[r.userId]?.name || 'Unknown'
+      );
+  }
 }
