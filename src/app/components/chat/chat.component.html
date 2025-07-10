@@ -397,16 +397,29 @@
                           alt="Thread"
                         />
                       </button>
-                      <button
-                        class="p-[10px] rounded-[20px] hover:bg-gray-100"
-                        title="Edit message"
-                        (click)="startEdit(msg)"
-                      >
-                        <img
-                          src="../../../assets/img/icons/more_vert.png"
-                          alt="Edit"
-                        />
-                      </button>
+                      <div class="relative">
+                        <button
+                          class="options-button p-[10px] rounded-[20px] hover:bg-gray-100"
+                          title="Options"
+                          (click)="toggleOptions(msg.id!, $event)"
+                        >
+                          <img
+                            src="../../../assets/img/icons/more_vert.png"
+                            alt="Options"
+                          />
+                        </button>
+                        <div
+                          *ngIf="optionsOpen[msg.id]"
+                          class="options-popup relative"
+                        >
+                          <button
+                            class="absolute px-3 py-1 bg-[#797EF3] text-white rounded-full shadow hover:bg-[#5F5CD6]"
+                            (click)="openEditFromOptions(msg, $event)"
+                          >
+                            Edit User
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </ng-template>

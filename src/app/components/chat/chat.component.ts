@@ -56,6 +56,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   editingMsgId: string | null = null;
   editText = '';
+  optionsOpen: Record<string, boolean> = {};
 
   @ViewChild('emojiBtn', { read: ElementRef }) emojiBtn!: ElementRef;
   @ViewChild('picker', { read: ElementRef }) picker!: ElementRef;
@@ -341,5 +342,27 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   autoGrow(textarea: HTMLTextAreaElement) {
     textarea.style.height = 'auto';
     textarea.style.height = textarea.scrollHeight + 'px';
+  }
+
+  toggleOptions(msgId: string, event: MouseEvent) {
+    event.stopPropagation();
+    this.optionsOpen[msgId] = !this.optionsOpen[msgId];
+  }
+
+  openEditFromOptions(msg: Message, event: MouseEvent) {
+    event.stopPropagation();
+    this.optionsOpen[msg.id!] = false;
+    this.startEdit(msg);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocClick(event: MouseEvent) {
+    if (!Object.values(this.optionsOpen).some((v) => v)) return;
+    const target = event.target as HTMLElement;
+    if (target.closest('.options-button') || target.closest('.options-popup')) {
+      return;
+    }
+
+    this.optionsOpen = {};
   }
 }
