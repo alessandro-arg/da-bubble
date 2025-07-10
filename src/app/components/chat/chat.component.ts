@@ -161,13 +161,10 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   @HostListener('document:click', ['$event.target'])
   onClickOutside(target: HTMLElement) {
-    if (
-      this.showEmojiPicker &&
-      !this.emojiBtn.nativeElement.contains(target) &&
-      !this.picker?.nativeElement.contains(target)
-    ) {
-      this.showEmojiPicker = false;
-    }
+    if (target.closest('.emoji-input-container')) return;
+    if (target.closest('.picker-container')) return;
+    this.showEmojiPicker = false;
+    this.messagePicker = {};
   }
 
   private scrollToBottom() {
@@ -230,10 +227,11 @@ export class ChatComponent implements OnChanges, AfterViewInit {
    * Toggle the emoji‐picker for a single message.
    */
   toggleMessagePicker(msgId: string) {
-    Object.keys(this.messagePicker).forEach(
-      (id) => (this.messagePicker[id] = false)
-    );
-    this.messagePicker[msgId] = !this.messagePicker[msgId];
+    const wasOpen = !!this.messagePicker[msgId];
+    this.messagePicker = {};
+    if (!wasOpen) {
+      this.messagePicker[msgId] = true;
+    }
   }
 
   /**

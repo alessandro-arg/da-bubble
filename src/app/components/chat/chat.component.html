@@ -183,7 +183,10 @@
 
                       <div
                         *ngIf="messagePicker[msg.id]"
-                        class="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 z-50"
+                        class="absolute bottom-full z-50"
+                        [ngClass]="
+                          msg.sender === currentUserUid ? 'right-0' : 'left-0'
+                        "
                       >
                         <emoji-picker
                           (emoji-click)="
@@ -659,30 +662,32 @@
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-1">
           <div class="relative">
-            <button
-              #emojiBtn
-              class="p-2 rounded-full transition-colors"
-              [ngClass]="{ 'bg-[#F0EDFF]': isEmojiHovered }"
-              (mouseenter)="isEmojiHovered = true"
-              (mouseleave)="isEmojiHovered = false"
-              (click)="toggleEmojiPicker()"
-            >
-              <img
-                [src]="
-                  isEmojiHovered
-                    ? '../../../assets/img/icons/sentiment_satisfied_purple.png'
-                    : '../../../assets/img/icons/sentiment_satisfied.png'
-                "
-                class="w-6 h-6"
-                alt="emoji"
-              />
-            </button>
-            <div
-              *ngIf="showEmojiPicker"
-              #picker
-              class="absolute z-50 bottom-10 left-0"
-            >
-              <emoji-picker (emoji-click)="addEmoji($event)"></emoji-picker>
+            <div class="relative emoji-input-container">
+              <button
+                #emojiBtn
+                class="p-2 rounded-full transition-colors"
+                [ngClass]="{ 'bg-[#F0EDFF]': isEmojiHovered }"
+                (mouseenter)="isEmojiHovered = true"
+                (mouseleave)="isEmojiHovered = false"
+                (click)="toggleEmojiPicker()"
+              >
+                <img
+                  [src]="
+                    isEmojiHovered
+                      ? '../../../assets/img/icons/sentiment_satisfied_purple.png'
+                      : '../../../assets/img/icons/sentiment_satisfied.png'
+                  "
+                  class="w-6 h-6"
+                  alt="emoji"
+                />
+              </button>
+              <div
+                *ngIf="showEmojiPicker"
+                #picker
+                class="absolute z-50 bottom-10 left-0"
+              >
+                <emoji-picker (emoji-click)="addEmoji($event)"></emoji-picker>
+              </div>
             </div>
           </div>
           <button
