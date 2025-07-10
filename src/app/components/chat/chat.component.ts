@@ -51,6 +51,9 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   isEmojiHovered = false;
   isAttachHovered = false;
 
+  maxVisible = 9;
+  expandedMessages = new Set<string>();
+
   @ViewChild('emojiBtn', { read: ElementRef }) emojiBtn!: ElementRef;
   @ViewChild('picker', { read: ElementRef }) picker!: ElementRef;
   @ViewChild('chatContainer', { read: ElementRef })
@@ -273,7 +276,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
       };
       await this.chatService.addReaction(targetId, msg.id, reaction, isGroup);
     }
-    this.messagePicker[msg.id] = false;
   }
 
   getReactionUserNames(msg: Message, emoji: string): string[] {
@@ -284,5 +286,27 @@ export class ChatComponent implements OnChanges, AfterViewInit {
           ? 'You'
           : this.participantsMap[r.userId]?.name || 'Unknown'
       );
+  }
+
+  toggleReactions(msgId: string) {
+    if (this.expandedMessages.has(msgId)) {
+      this.expandedMessages.delete(msgId);
+    } else {
+      this.expandedMessages.add(msgId);
+    }
+  }
+
+  isExpanded(msgId: string): boolean {
+    return this.expandedMessages.has(msgId);
+  }
+
+  extraCount(msg: Message): number {
+    const total = this.summarizeReactions(msg.reactions).length;
+    return total > this.maxVisible ? total - this.maxVisible : 0;
+  }
+
+  displayedReactions(msg: Message) {
+    const all = this.summarizeReactions(msg.reactions);
+    return this.isExpanded(msg.id!) ? all : all.slice(0, this.maxVisible);
   }
 }
