@@ -202,9 +202,11 @@
 
   <div class="w-1/4 bg-white h-full shadow-sm rounded-[32px]">
     <app-thread
+      *ngIf="threadGroupId && threadMessageId"
       [groupId]="threadGroupId"
       [messageId]="threadMessageId"
       [currentUserUid]="currentUserUid"
+      (closeThread)="onCloseThread()"
     ></app-thread>
   </div>
 </div>

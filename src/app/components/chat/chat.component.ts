@@ -19,7 +19,7 @@ import { ChatService } from '../../chat.service';
 import { GroupService } from '../../group.service';
 import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Group } from '../../models/group.model';
 import { Reaction, Message } from '../../models/chat.model';
 
@@ -53,6 +53,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   participantsMap: Record<string, User> = {};
 
   threadStreams: Record<string, Observable<Message[]>> = {};
+  private messagesSub?: Subscription;
 
   isEmojiHovered = false;
   isAttachHovered = false;
@@ -91,6 +92,14 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   async ngOnChanges(changes: SimpleChanges) {
     this.messagesLoading = true;
 
+    if (changes['groupId']) {
+      if (!this.groupId) {
+        this.messagesSub?.unsubscribe();
+        this.threadStreams = {};
+        this.messages$ = this.chatService.emptyStream;
+      }
+    }
+
     if (changes['chatPartner'] && this.chatPartner && this.currentUserUid) {
       await this.loadPrivateChat(this.currentUserUid, this.chatPartner);
     }
@@ -119,6 +128,8 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   }
 
   private async loadGroupChat(groupId: string) {
+    this.messagesSub?.unsubscribe();
+
     this.chatId = groupId;
     this.messages$ = this.chatService.getGroupMessages(groupId);
 
@@ -140,7 +151,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
     this.finishLoading();
 
-    this.messages$.pipe(take(1)).subscribe((msgs) => {
+    this.messagesSub = this.messages$.pipe(take(1)).subscribe((msgs) => {
       this.threadStreams = {};
       msgs.forEach((m) => {
         if (m.id) {

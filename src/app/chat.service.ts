@@ -149,6 +149,44 @@ export class ChatService {
     return updateDoc(msgRef, { reactions: updated });
   }
 
+  /** Append a reaction to a thread‐reply */
+  addThreadReaction(
+    groupId: string,
+    parentMessageId: string,
+    threadId: string,
+    reaction: Reaction
+  ): Promise<void> {
+    const threadRef = doc(
+      this.firestore,
+      `groups/${groupId}/messages/${parentMessageId}/threads/${threadId}`
+    );
+    return updateDoc(threadRef, {
+      reactions: arrayUnion(reaction),
+    });
+  }
+
+  /** Remove a reaction from a thread‐reply */
+  async removeThreadReaction(
+    groupId: string,
+    parentMessageId: string,
+    threadId: string,
+    emoji: string,
+    userId: string
+  ): Promise<void> {
+    const threadRef = doc(
+      this.firestore,
+      `groups/${groupId}/messages/${parentMessageId}/threads/${threadId}`
+    );
+    const snap = await getDoc(threadRef);
+    const current: Reaction[] = snap.exists()
+      ? (snap.data() as any).reactions || []
+      : [];
+    const updated = current.filter(
+      (r) => !(r.userId === userId && r.emoji === emoji)
+    );
+    return updateDoc(threadRef, { reactions: updated });
+  }
+
   /**
    * Edit the text of a chat or group message.
    * @param id         chatId or groupId

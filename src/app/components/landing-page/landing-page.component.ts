@@ -70,16 +70,25 @@ export class LandingPageComponent implements OnInit {
   openPrivateChat(user: User) {
     this.selectedGroupId = null;
     this.selectedUser = user;
+    this.threadGroupId = null;
+    this.threadMessageId = null;
   }
 
   openGroupChat(groupId: string) {
     this.selectedUser = null;
     this.selectedGroupId = groupId;
+    this.threadGroupId = null;
+    this.threadMessageId = null;
   }
 
   onThreadSelected(ev: { groupId: string; messageId: string }) {
     this.threadGroupId = ev.groupId;
     this.threadMessageId = ev.messageId;
+  }
+
+  onCloseThread() {
+    this.threadGroupId = null;
+    this.threadMessageId = null;
   }
 
   toggleDropdown() {
