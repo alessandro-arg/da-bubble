@@ -169,4 +169,46 @@ export class ChatService {
       editedAt: serverTimestamp(),
     });
   }
+
+  getGroupMessage(groupId: string, messageId: string): Observable<Message> {
+    const ref = doc(this.firestore, `groups/${groupId}/messages/${messageId}`);
+    return docData(ref, { idField: 'id' }) as Observable<Message>;
+  }
+
+  /** Stream replies in the group-thread sub-collection */
+  getGroupThreadMessages(
+    groupId: string,
+    messageId: string
+  ): Observable<Message[]> {
+    const threadsRef = collection(
+      this.firestore,
+      `groups/${groupId}/messages/${messageId}/threads`
+    );
+    const q = query(threadsRef, orderBy('createdAt', 'asc'));
+    return collectionData(q, { idField: 'id' }) as Observable<Message[]>;
+  }
+
+  /** Post a new reply into a group's thread */
+  async sendGroupThreadMessage(
+    groupId: string,
+    messageId: string,
+    senderUid: string,
+    text: string
+  ): Promise<void> {
+    const threadsRef = collection(
+      this.firestore,
+      `groups/${groupId}/messages/${messageId}/threads`
+    );
+    await addDoc(threadsRef, {
+      sender: senderUid,
+      text,
+      createdAt: serverTimestamp(),
+    });
+    // bump updatedAt on the parent message if desired:
+    const parentRef = doc(
+      this.firestore,
+      `groups/${groupId}/messages/${messageId}`
+    );
+    await updateDoc(parentRef, { updatedAt: serverTimestamp() });
+  }
 }

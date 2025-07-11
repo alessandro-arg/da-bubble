@@ -194,13 +194,18 @@
     <app-chat
       [chatPartner]="selectedUser"
       [currentUserUid]="currentUserUid"
-      (userSelected)="openPrivateChat($event)"
       [groupId]="selectedGroupId"
+      (userSelected)="openPrivateChat($event)"
+      (threadSelected)="onThreadSelected($event)"
     ></app-chat>
   </div>
 
   <div class="w-1/4 bg-white h-full shadow-sm rounded-[32px]">
-    <app-thread></app-thread>
+    <app-thread
+      [groupId]="threadGroupId"
+      [messageId]="threadMessageId"
+      [currentUserUid]="currentUserUid"
+    ></app-thread>
   </div>
 </div>
 

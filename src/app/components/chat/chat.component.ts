@@ -36,6 +36,10 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   @Input() currentUserUid!: string | null;
   @Input() groupId!: string | null;
   @Output() userSelected = new EventEmitter<User>();
+  @Output() threadSelected = new EventEmitter<{
+    groupId: string;
+    messageId: string;
+  }>();
 
   group$!: Observable<Group>;
   messages$ = this.chatService.emptyStream;
@@ -147,6 +151,15 @@ export class ChatComponent implements OnChanges, AfterViewInit {
       this.userSelected.emit(this.chatPartner);
       this.closeProfileModal();
     }
+  }
+
+  openThread(msg: Message) {
+    console.log('openThread clicked', msg.id); // just to verify it runs
+    if (!this.groupId || !msg.id) return;
+    this.threadSelected.emit({
+      groupId: this.groupId,
+      messageId: msg.id,
+    });
   }
 
   openProfileModal() {

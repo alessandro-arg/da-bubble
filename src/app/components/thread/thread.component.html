@@ -1,187 +1,37 @@
-<div class="w-full h-full flex flex-col">
-  <div
-    class="flex justify-between px-[40px] py-[32px] items-center shadow-[0px_2px_10px_0px_#00000014] rounded-t-[32px]"
-  >
-    <div class="flex gap-1 items-center">
-      <p class="text-xl font-bold">Thread</p>
-      <p class="text-sm font-normal text-[#797EF3]"># Entwicklerteam</p>
+<div class="p-4 border-b">
+  <ng-container *ngIf="originalMessage$ | async as msg">
+    <div class="font-bold">{{ msg.sender }}</div>
+    <div class="text-sm text-gray-600">
+      {{ msg.createdAt?.toDate() | date : "short" }}
     </div>
-    <button
-      class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] group"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="w-6 h-6 text-black group-hover:text-[#535AF1]"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M6 18L18 6M6 6l12 12"
-        />
-      </svg>
-    </button>
-  </div>
+    <div class="mt-2 p-3 bg-gray-100 rounded">{{ msg.text }}</div>
+  </ng-container>
+</div>
 
-  <!-- Thread Message -->
-  <div class="flex items-start my-2 gap-[15px] px-[40px] pt-[10px]">
-    <img
-      src="../../../assets/img/charaters(1).svg"
-      class="w-[70px] h-[70px] rounded-full"
-      alt="Noah avatar"
-    />
-    <div class="flex flex-col max-w-[80%] gap-1">
-      <div class="flex items-center gap-5">
-        <span class="font-bold text-base"> Noah Braun</span>
-        <span class="text-[#686868] font-normal text-xs">14:25 Uhr</span>
-      </div>
-      <div
-        class="bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px] p-[15px] text-sm"
-      >
-        Welche Version ist aktuell von Angular?
+<div class="p-4 space-y-3 overflow-auto h-[60vh]">
+  <div *ngFor="let reply of threadMessages$ | async">
+    <div class="flex items-center gap-2">
+      <div class="font-semibold">{{ reply.sender }}</div>
+      <div class="text-xs text-gray-500">
+        {{ reply.createdAt?.toDate() | date : "HH:mm" }}
       </div>
     </div>
-  </div>
-
-  <!-- Separator -->
-  <div class="px-[40px] py-4">
-    <div class="flex items-center">
-      <span class="text-base text-[#ADB0D9] whitespace-nowrap"
-        >2 Antworten</span
-      >
-      <div class="flex-grow h-px bg-[#E5E7EB] ml-5"></div>
-    </div>
-  </div>
-
-  <!-- Chat Body -->
-  <div class="flex-1 overflow-y-auto flex flex-col gap-6 px-[35px] pb-[35px]">
-    <!-- Sofia's Answer -->
-    <div class="flex items-start my-2 gap-[15px] pt-[10px]">
-      <img
-        src="../../../assets/img/charaters(4).svg"
-        class="w-[70px] h-[70px] rounded-full"
-        alt="Sofia Müller"
-      />
-      <div class="flex flex-col max-w-[80%] gap-1">
-        <div class="flex items-center gap-5">
-          <span class="font-bold text-base">Sofia Müller</span>
-          <span class="text-[#686868] font-normal text-xs">14:30 Uhr</span>
-        </div>
-        <div
-          class="bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px] p-[15px] text-sm"
-        >
-          Ich habe die gleiche Frage. Ich habe gegoogelt und es scheint, dass
-          die aktuelle Version Angular 13 ist. Vielleicht weiß Frederik, ob es
-          wahr ist.
-        </div>
-        <div class="flex gap-3 text-base font-normal items-center mt-1">
-          <div
-            class="flex gap-3 px-[10px] py-[5px] items-center border border-[#ADB0D9] rounded-[20px]"
-          >
-            <img
-              src="../../../assets/img/icons/happy_emoji.png"
-              class="w-6 h-6"
-              alt="like"
-            />
-            <span>1</span>
-          </div>
-          <img
-            src="../../../assets/img/icons/add_reaction.png"
-            class="w-6 h-6"
-            alt="emoji"
-          />
-        </div>
-      </div>
-    </div>
-
-    <!-- Frederik's Answer -->
-    <div class="flex justify-end my-2 gap-[15px]">
-      <!-- Message content area -->
-      <div class="flex flex-col items-end max-w-[80%] gap-1">
-        <!-- Name and time above the message, aligned with avatar -->
-        <div class="flex items-center justify-end">
-          <div class="text-right flex items-center gap-5">
-            <span class="text-[#686868] font-normal text-xs">15:06 Uhr</span>
-            <span class="font-bold text-base">Frederik Beck</span>
-          </div>
-        </div>
-        <div class="flex justify-end gap-2">
-          <div
-            class="bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px] p-[15px] text-sm"
-          >
-            Ja das ist es.
-          </div>
-        </div>
-
-        <!-- Reactions aligned left under the message -->
-        <div
-          class="flex gap-3 text-sm font-normal items-center justify-end t mt-1"
-        >
-          <div
-            class="flex gap-3 px-[10px] py-[5px] items-center border border-[#ADB0D9] rounded-[20px]"
-          >
-            <img
-              src="../../../assets/img/icons/ok_emoji.png"
-              class="w-6 h-6"
-              alt="check"
-            />
-            <span>1</span>
-          </div>
-          <img
-            src="../../../assets/img/icons/add_reaction.png"
-            class="w-6 h-6"
-            alt="emoji"
-          />
-        </div>
-      </div>
-      <img
-        src="../../../assets/img/charaters(2).svg"
-        class="w-[70px] h-[70px] rounded-full"
-        alt="Frederik avatar"
-      />
-    </div>
-  </div>
-
-  <!-- Input Field (fixed at bottom visually, but logically at top due to reverse scroll) -->
-  <div class="px-[35px] pb-[35px] bg-transparent">
-    <div
-      class="flex flex-col p-5 border border-[#ADB0D9] rounded-[20px] gap-[20px]"
-    >
-      <!-- Textarea at top -->
-      <textarea
-        placeholder="Antworten"
-        class="w-full resize-none border-none focus:outline-none text-lg placeholder-[#686868] bg-transparent pr-[30px]"
-      ></textarea>
-
-      <!-- Icon row at bottom -->
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-1">
-          <button class="p-2">
-            <img
-              src="../../../assets/img/icons/sentiment_satisfied.png"
-              class="w-6 h-6"
-              alt="emoji"
-            />
-          </button>
-          <button class="p-2">
-            <img
-              src="../../../assets/img/icons/alternate_email.png"
-              class="w-6 h-6"
-              alt="attachment"
-            />
-          </button>
-        </div>
-        <button class="p-2">
-          <img
-            src="../../../assets/img/icons/send.png"
-            class="w-6 h-6"
-            alt="send"
-          />
-        </button>
-      </div>
-    </div>
+    <div class="ml-8 p-2 bg-white rounded shadow-sm">{{ reply.text }}</div>
   </div>
 </div>
+
+<form (ngSubmit)="sendThread()" class="p-4 flex gap-2 border-t">
+  <input
+    [(ngModel)]="threadText"
+    name="threadText"
+    placeholder="Write a reply…"
+    class="flex-1 p-2 border rounded"
+  />
+  <button
+    type="submit"
+    class="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
+    [disabled]="!threadText.trim()"
+  >
+    Send
+  </button>
+</form>

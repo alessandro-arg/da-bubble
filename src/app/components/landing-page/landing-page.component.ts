@@ -41,6 +41,9 @@ export class LandingPageComponent implements OnInit {
   selectedGroupId: string | null = null;
   currentUserUid: string | null = null;
 
+  threadGroupId: string | null = null;
+  threadMessageId: string | null = null;
+
   constructor(
     private authService: AuthService,
     private auth: Auth,
@@ -72,6 +75,11 @@ export class LandingPageComponent implements OnInit {
   openGroupChat(groupId: string) {
     this.selectedUser = null;
     this.selectedGroupId = groupId;
+  }
+
+  onThreadSelected(ev: { groupId: string; messageId: string }) {
+    this.threadGroupId = ev.groupId;
+    this.threadMessageId = ev.messageId;
   }
 
   toggleDropdown() {
