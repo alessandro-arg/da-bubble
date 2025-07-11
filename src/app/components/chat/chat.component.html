@@ -487,7 +487,9 @@
                   </div>
                 </div>
 
-                <ng-container *ngFor="let msg of msgs; let i = index">
+                <ng-container
+                  *ngFor="let msg of msgs; let i = index; trackBy: trackById"
+                >
                   <!-- ── date separator when first message or new day ─────────── -->
                   <div
                     *ngIf="

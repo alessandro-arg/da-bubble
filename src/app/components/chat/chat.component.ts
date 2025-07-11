@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { filter, switchMap, take } from 'rxjs/operators';
+import { filter, shareReplay, switchMap, take } from 'rxjs/operators';
 
 import { ChatService } from '../../chat.service';
 import { GroupService } from '../../group.service';
@@ -109,6 +109,10 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     }
   }
 
+  trackById(_idx: number, msg: Message) {
+    return msg.id;
+  }
+
   private async loadPrivateChat(meUid: string, them: User) {
     this.chatId = await this.chatService.ensureChat(meUid, them.uid);
     this.messages$ = this.chatService.getChatMessages(this.chatId);
@@ -155,10 +159,9 @@ export class ChatComponent implements OnChanges, AfterViewInit {
       this.threadStreams = {};
       msgs.forEach((m) => {
         if (m.id) {
-          this.threadStreams[m.id] = this.chatService.getGroupThreadMessages(
-            groupId,
-            m.id
-          );
+          this.threadStreams[m.id] = this.chatService
+            .getGroupThreadMessages(groupId, m.id)
+            .pipe(shareReplay({ bufferSize: 1, refCount: true }));
         }
       });
     });
