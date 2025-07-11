@@ -636,6 +636,30 @@
                           {{ msg.text }}
                         </div>
 
+                        <!-- ── thread summary (only for group chats) ── -->
+                        <ng-container *ngIf="groupId && msg.id">
+                          <ng-container
+                            *ngIf="threadStreams[msg.id] | async as threads"
+                          >
+                            <div
+                              *ngIf="threads.length > 0"
+                              class="ml-8 mb-1 text-xs text-gray-500 flex items-center gap-2"
+                            >
+                              <span (click)="openThread(msg)"
+                                >{{ threads.length }} Answers</span
+                              >
+                              <span>
+                                · Last reply
+                                {{
+                                  threads[
+                                    threads.length - 1
+                                  ].createdAt?.toDate() | date : "HH:mm"
+                                }}
+                              </span>
+                            </div>
+                          </ng-container>
+                        </ng-container>
+
                         <!-- ─── reactions bar ──────────────────────────────────── -->
                         <div
                           class="flex items-center mt-1 px-[45px] gap-1"

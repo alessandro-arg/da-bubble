@@ -2,7 +2,7 @@
   <ng-container *ngIf="originalMessage$ | async as msg">
     <div class="font-bold">{{ msg.sender }}</div>
     <div class="text-sm text-gray-600">
-      {{ msg.createdAt?.toDate() | date : "short" }}
+      {{ msg.createdAt?.toDate() | date : "dd/MM/yyyy" }}
     </div>
     <div class="mt-2 p-3 bg-gray-100 rounded">{{ msg.text }}</div>
   </ng-container>

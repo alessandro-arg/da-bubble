@@ -52,6 +52,8 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   messagePicker: Record<string, boolean> = {};
   participantsMap: Record<string, User> = {};
 
+  threadStreams: Record<string, Observable<Message[]>> = {};
+
   isEmojiHovered = false;
   isAttachHovered = false;
 
@@ -71,7 +73,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   editInput?: ElementRef<HTMLTextAreaElement>;
 
   constructor(
-    private chatService: ChatService,
+    public chatService: ChatService,
     private userService: UserService,
     private groupService: GroupService
   ) {}
@@ -137,6 +139,18 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     );
 
     this.finishLoading();
+
+    this.messages$.pipe(take(1)).subscribe((msgs) => {
+      this.threadStreams = {};
+      msgs.forEach((m) => {
+        if (m.id) {
+          this.threadStreams[m.id] = this.chatService.getGroupThreadMessages(
+            groupId,
+            m.id
+          );
+        }
+      });
+    });
   }
 
   private finishLoading() {
@@ -154,7 +168,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   }
 
   openThread(msg: Message) {
-    console.log('openThread clicked', msg.id); // just to verify it runs
     if (!this.groupId || !msg.id) return;
     this.threadSelected.emit({
       groupId: this.groupId,
