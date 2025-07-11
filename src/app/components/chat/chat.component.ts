@@ -166,12 +166,20 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     this.showEmojiPicker = false;
   }
 
-  @HostListener('document:click', ['$event.target'])
-  onClickOutside(target: HTMLElement) {
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
     if (target.closest('.emoji-input-container')) return;
     if (target.closest('.picker-container')) return;
     this.showEmojiPicker = false;
     this.messagePicker = {};
+
+    if (!Object.values(this.optionsOpen).some((v) => v)) return;
+    if (target.closest('.options-button') || target.closest('.options-popup')) {
+      return;
+    }
+
+    this.optionsOpen = {};
   }
 
   private scrollToBottom() {
@@ -355,14 +363,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     this.startEdit(msg);
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocClick(event: MouseEvent) {
-    if (!Object.values(this.optionsOpen).some((v) => v)) return;
-    const target = event.target as HTMLElement;
-    if (target.closest('.options-button') || target.closest('.options-popup')) {
-      return;
-    }
-
-    this.optionsOpen = {};
+  addEmojiToEdit(emoji: string) {
+    this.editText += emoji;
   }
 }
