@@ -27,6 +27,7 @@ export class ChooseYourAvatarComponent implements OnInit {
   currentUser: User | null = null;
   loading = false;
   successMessage: string | null = null;
+  errorMessage: string | null = null;
 
   constructor(
     private authService: AuthService,
@@ -52,7 +53,7 @@ export class ChooseYourAvatarComponent implements OnInit {
 
   async confirmAvatar() {
     if (!this.selectedAvatar || !this.currentUser?.uid) {
-      alert('Bitte wählen Sie einen Avatar aus');
+      this.errorMessage = ('Bitte wählen Sie einen Avatar aus');
       return;
     }
     this.loading = true;
@@ -73,7 +74,7 @@ export class ChooseYourAvatarComponent implements OnInit {
 
     } catch (error) {
       console.error('Avatar Update Error:', error);
-      alert(`Fehler: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`);
+      this.errorMessage = (`Fehler: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`);
     } finally {
       this.loading = false;
     }

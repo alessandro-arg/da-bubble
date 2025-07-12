@@ -1,17 +1,23 @@
 <div
   class="login-page container mx-auto p-5 flex flex-col items-center justify-center min-h-screen"
 >
-  <div
-    class="logo-container flex justify-between items-center w-full max-w-2xl mt-24"
+  <!-- Logo Section -->
+  <header
+    class="logo-container flex justify-between items-center w-full max-w-[1920px] mt-24"
   >
-    <div class="logo flex items-center gap-2">
-      <img src="assets/img/logo.svg" alt="DABubble Logo" class="w-11 h-auto" />
-      <p class="text-lg font-bold">DABubble</p>
+    <div class="logo w-full flex gap-2" aria-label="DABubble Logo">
+      <img
+        src="assets/img/logo.svg"
+        alt=""
+        class="w-11 h-auto"
+        aria-hidden="true"
+      />
+      <h1 class="text-lg font-bold">DABubble</h1>
     </div>
-  </div>
+  </header>
 
   <div
-    class="login-container container mx-auto p-8 md:p-16 flex flex-col items-center justify-center bg-white rounded-lg shadow-md w-full max-w-2xl mt-8"
+    class="login-container container mx-auto p-8 md:p-16 flex flex-col items-center justify-center bg-white rounded-3xl shadow-lg w-full max-w-2xl mt-8"
   >
     <div class="flex justify-center flex-col items-center w-full mt-4">
       <div class="flex items-center justify-start w-full mb-6 gap-5">
@@ -50,6 +56,10 @@
         />
       </div>
 
+      <p *ngIf="errorMessage" class=" text-red-500 text-sm mt-4">
+        {{ errorMessage }}
+      </p>
+
       <!-- Fehlermeldung, falls kein Avatar ausgewählt -->
       <p
         *ngIf="!selectedAvatar && currentUser"
@@ -63,7 +73,7 @@
         <button
           (click)="confirmAvatar()"
           [disabled]="!selectedAvatar || loading"
-          class="next-btn text-white py-2 px-6 rounded-full disabled:opacity-50"
+          class=" bg-[#444DF2] hover:bg-[#3739C8] text-white py-2 px-6 rounded-full disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-[#686868] transition-colors"
         >
           <span *ngIf="!loading">Weiter</span>
           <span *ngIf="loading">Wird gespeichert...</span>
@@ -82,10 +92,19 @@
     </p>
   </div>
 
-  <div
-    class="footer flex justify-center items-center gap-4 mt-8 font-Figtree weight-light"
-  >
-    <a routerLink="/impressum" class="hover:rounded-full">Impressum</a>
-    <a routerLink="/datenschutz" class="hover:rounded-full">Datenschutz</a>
-  </div>
+  <!-- Footer Links -->
+  <footer class="footer flex justify-center items-center gap-4 mt-auto mb-2">
+    <a
+      routerLink="/impressum"
+      class="mt-8 px-4 py-2 text-[18px] font-normal text-[#797EF3] hover:rounded-full hover:border hover:border-[#cbcbd1] hover:text-[#3739C8]"
+    >
+      Impressum
+    </a>
+    <a
+      routerLink="/datenschutz"
+      class="mt-8 px-4 py-2 text-[18px] font-normal text-[#797EF3] hover:rounded-full hover:border hover:border-[#cbcbd1] hover:text-[#3739C8]"
+    >
+      Datenschutz</a
+    >
+  </footer>
 </div>
