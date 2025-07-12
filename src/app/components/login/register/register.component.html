@@ -202,16 +202,16 @@
         <div class="flex items-start">
           <div class="relative">
             <img
-              src="./../../../../assets/img/check_box.svg"
+              src="assets/img/check_box.svg"
               alt="Nicht ausgewählt"
-              class=" mr-2 cursor-pointer hover:bg-[#edeefe]"
+              class="mr-2 cursor-pointer hover:bg-[#edeefe]"
               *ngIf="!registerForm.get('privacyPolicy')?.value"
               (click)="togglePrivacyPolicy()"
             />
             <img
-              src="./../../../../assets/img/check_box-Checked.svg"
+              src="assets/img/check_box-Checked.svg"
               alt="Ausgewählt"
-              class=" mr-2 cursor-pointer hover:bg-[#edeefe]"
+              class="mr-2 cursor-pointer hover:bg-[#edeefe]"
               *ngIf="registerForm.get('privacyPolicy')?.value"
               (click)="togglePrivacyPolicy()"
             />
