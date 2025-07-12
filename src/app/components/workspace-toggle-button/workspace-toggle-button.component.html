@@ -2,17 +2,18 @@
   (click)="toggle()"
   (mouseenter)="onMouseEnter()"
   (mouseleave)="onMouseLeave()"
-  class="rotated-btn"
+  class="fixed -rotate-90 bottom-[300px] bg-white rounded-b-[30px] shadow-xl text-black px-5 py-5 flex items-center gap-2 hover:text-[#535AF1] font-medium text-xl whitespace-nowrap"
+  [ngClass]="{
+    'w-[310px] -left-[125px]': !isOpen,
+    'w-[340px] -left-[140px]': isOpen
+  }"
 >
-  <span>Workspace-Menü {{ isOpen ? "schließen" : "öffnen" }}</span>
+  <span> Workspace-Menü {{ isOpen ? "schließen" : "öffnen" }} </span>
+
   <img
-    [src]="
-      isHovered
-        ? '/assets/img/icons/toggle_purple.png'
-        : '/assets/img/icons/toggle.png'
-    "
+    [src]="iconSrc"
     alt="Toggle"
     class="w-8 h-8 transition-transform duration-300 ease-in-out"
-    [style.transform]="'rotate(' + (!isOpen ? 180 : 0) + 'deg)'"
+    [class.rotate-180]="!isOpen"
   />
 </button>

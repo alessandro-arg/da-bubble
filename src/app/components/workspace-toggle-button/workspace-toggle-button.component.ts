@@ -15,10 +15,18 @@ export class WorkspaceToggleButtonComponent {
   toggle() {
     this.isOpen = !this.isOpen;
   }
+
   onMouseEnter() {
     this.isHovered = true;
   }
+
   onMouseLeave() {
     this.isHovered = false;
+  }
+
+  get iconSrc() {
+    return this.isHovered
+      ? 'assets/img/icons/toggle_purple.png'
+      : 'assets/img/icons/toggle.png';
   }
 }
