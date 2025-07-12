@@ -203,9 +203,12 @@
     <div
       class="bg-white h-full shadow-sm rounded-[32px] transition-all duration-300 ease-in-out"
       [ngClass]="{
-        'w-2/4 ml-4': !isCollapsed,
-        'w-3/4': isCollapsed
+        'w-2/4': !isCollapsed && threadVisible,
+        'w-3/4':
+          (isCollapsed && threadVisible) || (!isCollapsed && !threadVisible),
+        'w-full': isCollapsed && !threadVisible
       }"
+      [class.ml-4]="!isCollapsed"
     >
       <app-chat
         [chatPartner]="selectedUser"
@@ -216,9 +219,15 @@
       ></app-chat>
     </div>
 
-    <div class="ml-4 w-1/4 bg-white h-full shadow-sm rounded-[32px]">
+    <div
+      class="ml-4 bg-white h-full shadow-sm rounded-[32px] overflow-hidden transition-all duration-300 ease-in-out"
+      [ngClass]="{
+        'w-1/4': threadVisible,
+        'w-0': !threadVisible
+      }"
+    >
       <app-thread
-        *ngIf="threadGroupId && threadMessageId"
+        *ngIf="threadVisible"
         [groupId]="threadGroupId"
         [messageId]="threadMessageId"
         [currentUserUid]="currentUserUid"

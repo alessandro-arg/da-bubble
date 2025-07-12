@@ -45,6 +45,7 @@ export class LandingPageComponent implements OnInit {
   threadMessageId: string | null = null;
 
   isCollapsed = false;
+  threadVisible = false;
 
   constructor(
     private authService: AuthService,
@@ -74,6 +75,7 @@ export class LandingPageComponent implements OnInit {
     this.selectedUser = user;
     this.threadGroupId = null;
     this.threadMessageId = null;
+    this.threadVisible = false;
   }
 
   openGroupChat(groupId: string) {
@@ -81,20 +83,23 @@ export class LandingPageComponent implements OnInit {
     this.selectedGroupId = groupId;
     this.threadGroupId = null;
     this.threadMessageId = null;
+    this.threadVisible = false;
   }
 
   onThreadSelected(ev: { groupId: string; messageId: string }) {
     this.threadGroupId = ev.groupId;
     this.threadMessageId = ev.messageId;
-  }
-
-  toggleWorkspace() {
-    this.isCollapsed = !this.isCollapsed;
+    this.threadVisible = true;
   }
 
   onCloseThread() {
     this.threadGroupId = null;
     this.threadMessageId = null;
+    this.threadVisible = false;
+  }
+
+  toggleWorkspace() {
+    this.isCollapsed = !this.isCollapsed;
   }
 
   toggleDropdown() {
