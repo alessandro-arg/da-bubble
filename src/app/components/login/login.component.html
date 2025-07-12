@@ -2,14 +2,14 @@
   class="login-page container mx-auto p-5 flex flex-col justify-center min-h-screen relative"
 >
   <div
-    class="logo-container flex justify-between items-center w-full max-w-2xl "
+    class="logo-container flex justify-between items-center w-full max-w-[1920px] mt-[75px]"
   >
     <div class="logo flex items-center gap-2">
       <img src="assets/img/logo.svg" alt="DABubble Logo" class="w-11 h-auto" />
       <p class="text-lg font-bold">DABubble</p>
     </div>
 
-    <div class="register-link-destop mt-6 text-center">
+    <div class="register-link-destop text-[18px] text-center">
       <div class="text-gray-600">
         <p>Neu bei DABubble?</p>
         <a routerLink="/register" class="text-blue-500 hover:text-blue-700">
@@ -20,7 +20,7 @@
   </div>
 
   <div
-    class="login-container container mx-auto p-8 md:p-16 flex flex-col items-center justify-center mt-8 bg-white rounded-lg shadow-md w-full max-w-2xl"
+    class="login-container container mx-auto p-8 md:p-16 flex flex-col items-center justify-center mt-8 bg-white rounded-[30px] shadow-md w-full max-w-2xl"
   >
     <h1 class="text-2xl font-bold mb-4">Anmeldung</h1>
     <p class="text-center mb-6 text-gray-600">
@@ -35,13 +35,12 @@
     >
       <!-- Email Field -->
       <div
-        class="form-group form-group-input-div  flex justify-center items-center rounded-full flex-col w-full px-4"
-        style="background-color: #edeefe"
+        class="form-group form-group-input-div bg-[#edeefe] flex justify-center items-center rounded-full flex-col w-full px-4"
       >
-        <div class="flex justify-center items-center w-full py-2 px-1">
+        <div class="flex justify-center items-center w-full py-4 px-1">
           <img src="assets/img/mail.svg" alt="Email" class="mr-2 w-5 h-5" />
           <input
-            class="w-full focus:outline-none"
+            class="w-full bg-[#edeefe] text-[18px] focus:outline-none"
             type="email"
             id="email"
             name="email"
@@ -66,14 +65,15 @@
       </p>
 
       <!-- Password Field -->
-      <div class="form-group flex justify-center items-center hover:border-solid flex-col w-full">
+      <div
+        class="form-group flex justify-center items-center hover:border-solid flex-col w-full"
+      >
         <div
-          class="form-group-input-div hover:border-[#444DF2] flex justify-center items-center w-full py-2 rounded-full px-4"
-          style="background-color: #edeefe"
+          class="form-group-input-div bg-[#edeefe] hover:border-[#444DF2] flex justify-center items-center w-full py-4 rounded-full px-4"
         >
           <img src="assets/img/lock.svg" alt="Password" class="mr-2 w-5 h-5" />
           <input
-            class="w-full focus:outline-none"
+            class="w-full bg-[#edeefe] text-[18px] focus:outline-none"
             [type]="showPassword ? 'text' : 'password'"
             id="password"
             name="password"
@@ -115,7 +115,7 @@
       <div class="form-group flex justify-center items-center">
         <a
           routerLink="/forgot-password"
-            class="text-blue-500 hover:text-blue-700 hover:bg-gray-300 *:hover:underline rounded-full py-2 px-4"
+          class="text-blue-500 hover:text-blue-700 hover:bg-[#edeefe] *:hover:underline rounded-full py-2 px-4"
           >Passwort vergessen?</a
         >
       </div>
@@ -144,7 +144,7 @@
       <div class="flex justify-center items-center gap-4 w-full mt-4">
         <button
           type="submit"
-          class="login-btn text-white py-2 px-6 rounded-full disabled:opacity-50 hover:bg-[#444DF2] bg-[#3739C8]"
+          class="login-btn text-white py-2 px-6 rounded-full disabled:opacity-80 hover:bg-[#444DF2] bg-[#3739C8]"
           [disabled]="loading || !loginForm.valid"
         >
           <span *ngIf="!loading">Anmelden</span>
@@ -163,21 +163,33 @@
     </form>
   </div>
 
-
   <div class="register-link-mobile mt-6 text-center w-full">
-    <div class="text-gray-600 w-full flex gap-5 flex-col justify-center items-center">
+    <div
+      class="text-gray-600 w-full flex gap-5 flex-col justify-center items-center"
+    >
       <p>Neu bei DABubble?</p>
-      <a routerLink="/register" class="text-blue-700 border border-blue-700 rounded-full py-2 px-4">
+      <a
+        routerLink="/register"
+        class="text-blue-700 border border-blue-700 rounded-full py-2 px-4"
+      >
         Konto erstellen
       </a>
     </div>
   </div>
 
-  <div
-    class="footer flex justify-center items-center gap-4 mt-8 font-Figtree weight-light"
-  >
-    <a routerLink="/impressum" class="hover:rounded-full" >Impressum</a>
-    <a routerLink="/datenschutz" class="hover:rounded-full" >Datenschutz</a>
-  </div>
+  <!-- Footer Links -->
+  <footer class="footer flex justify-center items-center gap-4 mt-auto mb-2">
+    <a
+      routerLink="/impressum"
+      class="mt-8 px-4 py-2 text-[18px] font-normal text-[#797EF3] hover:rounded-full hover:border hover:border-[#cbcbd1] hover:text-[#3739C8]"
+    >
+      Impressum
+    </a>
+    <a
+      routerLink="/datenschutz"
+      class="mt-8 px-4 py-2 text-[18px] font-normal text-[#797EF3] hover:rounded-full hover:border hover:border-[#cbcbd1] hover:text-[#3739C8]"
+    >
+      Datenschutz</a
+    >
+  </footer>
 </div>
- 
