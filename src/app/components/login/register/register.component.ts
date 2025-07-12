@@ -45,6 +45,13 @@ export class RegisterComponent {
     this.showPassword = !this.showPassword;
   }
 
+  // Füge diese Methode zur Klasse hinzu
+togglePrivacyPolicy() {
+  const currentValue = this.registerForm.get('privacyPolicy')?.value;
+  this.registerForm.get('privacyPolicy')?.setValue(!currentValue);
+  this.registerForm.get('privacyPolicy')?.markAsTouched();
+}
+
   async onSubmit() {
     if (this.registerForm.invalid) {
       return;

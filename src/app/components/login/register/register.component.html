@@ -200,19 +200,30 @@
       <!-- Privacy Policy Checkbox -->
       <div class="form-group">
         <div class="flex items-start">
-          <input
-            type="checkbox"
-            id="privacyPolicy"
-            formControlName="privacyPolicy"
-            class="mt-1 mr-2"
-            required
-            aria-describedby="privacy-error"
-          />
-          <label for="privacyPolicy" class="text-sm text-gray-600">
+          <div class="relative">
+            <img
+              src="./../../../../assets/img/check_box.svg"
+              alt="Nicht ausgewählt"
+              class=" mr-2 cursor-pointer hover:bg-[#edeefe]"
+              *ngIf="!registerForm.get('privacyPolicy')?.value"
+              (click)="togglePrivacyPolicy()"
+            />
+            <img
+              src="./../../../../assets/img/check_box-Checked.svg"
+              alt="Ausgewählt"
+              class=" mr-2 cursor-pointer hover:bg-[#edeefe]"
+              *ngIf="registerForm.get('privacyPolicy')?.value"
+              (click)="togglePrivacyPolicy()"
+            />
+          </div>
+          <label
+            class="text-[16px] text-gray-600 cursor-pointer"
+            (click)="togglePrivacyPolicy()"
+          >
             Ich stimme der
             <a
               routerLink="/impressum"
-              class="text-blue-500 hover:text-blue-700 underline"
+              class="text-blue-500 hover:text-blue-700"
             >
               Datenschutzerklärung
             </a>
