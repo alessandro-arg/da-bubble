@@ -1,0 +1,21 @@
+.rotated-btn {
+  @apply fixed -rotate-90 left-[-130px] bottom-[300px]
+    bg-white rounded-b-[30px] shadow-xl
+    text-black px-5 py-5 flex items-center gap-2
+    transition-colors duration-200 hover:text-[#535AF1]
+    font-medium text-xl
+    whitespace-nowrap
+    flex-shrink-0
+    w-[339px];
+
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+  will-change: transform;
+}
+
+.rotated-btn span,
+.rotated-btn img {
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}

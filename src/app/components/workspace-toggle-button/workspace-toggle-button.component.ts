@@ -15,11 +15,9 @@ export class WorkspaceToggleButtonComponent {
   toggle() {
     this.isOpen = !this.isOpen;
   }
-
   onMouseEnter() {
     this.isHovered = true;
   }
-
   onMouseLeave() {
     this.isHovered = false;
   }

@@ -2,11 +2,9 @@
   (click)="toggle()"
   (mouseenter)="onMouseEnter()"
   (mouseleave)="onMouseLeave()"
-  class="fixed -rotate-90 -left-[140px] bottom-[300px] bg-white rounded-b-[30px] shadow-xl text-black px-5 py-5 flex items-center gap-2 transform transition-all duration-300 hover:text-[#535AF1] font-medium text-xl"
+  class="rotated-btn"
 >
-  <span class="whitespace-nowrap">
-    Workspace-Menü {{ isOpen ? "schließen" : "öffnen" }}</span
-  >
+  <span>Workspace-Menü {{ isOpen ? "schließen" : "öffnen" }}</span>
   <img
     [src]="
       isHovered
@@ -14,7 +12,7 @@
         : '/assets/img/icons/toggle.png'
     "
     alt="Toggle"
-    class="transition-transform duration-300 ease-in-out w-8 h-8"
-    [style.transform]="'rotate(' + (isOpen ? 90 : 0) + 'deg)'"
+    class="w-8 h-8 transition-transform duration-300 ease-in-out"
+    [style.transform]="'rotate(' + (!isOpen ? 180 : 0) + 'deg)'"
   />
 </button>
