@@ -185,7 +185,7 @@
 
   <div class="flex h-full w-full">
     <div
-      class="sidebar"
+      class="sidebar mr-4"
       [ngClass]="{
         'w-1/4': !isCollapsed,
         'w-0': isCollapsed,
@@ -208,7 +208,6 @@
           (isCollapsed && threadVisible) || (!isCollapsed && !threadVisible),
         'w-full': isCollapsed && !threadVisible
       }"
-      [class.ml-4]="!isCollapsed"
     >
       <app-chat
         [chatPartner]="selectedUser"
@@ -220,7 +219,7 @@
     </div>
 
     <div
-      class="ml-4 bg-white h-full shadow-sm rounded-[32px] overflow-hidden transition-all duration-300 ease-in-out"
+      class="bg-white h-full shadow-sm rounded-[32px] overflow-hidden transition-all duration-300 ease-in-out ml-4"
       [ngClass]="{
         'w-1/4': threadVisible,
         'w-0': !threadVisible

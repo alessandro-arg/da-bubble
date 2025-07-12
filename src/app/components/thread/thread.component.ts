@@ -88,6 +88,7 @@ export class ThreadComponent implements OnChanges, AfterViewInit {
           {} as Record<string, User>
         );
       });
+      this.group$ = this.chatService.getGroup(this.groupId);
     }
 
     if (this.groupId && this.messageId) {
