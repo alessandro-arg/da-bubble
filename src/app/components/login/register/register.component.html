@@ -1,23 +1,39 @@
 <div
   class="login-page container mx-auto p-5 flex flex-col items-center justify-center min-h-screen"
 >
-  <div
-    class="logo-container flex justify-between items-center w-full max-w-2xl mt-24"
+  <!-- Logo Section -->
+  <header
+    class="logo-container flex justify-between items-center w-full max-w-[1920px] mt-24"
   >
-    <div class="logo flex items-center gap-2">
-      <img src="assets/img/logo.svg" alt="DABubble Logo" class="w-11 h-auto" />
-      <p class="text-lg font-bold">DABubble</p>
+    <div class="logo w-full flex gap-2" aria-label="DABubble Logo">
+      <img
+        src="assets/img/logo.svg"
+        alt=""
+        class="w-11 h-auto"
+        aria-hidden="true"
+      />
+      <h1 class="text-lg font-bold">DABubble</h1>
     </div>
-  </div>
+  </header>
 
-  <div
-    class="login-container container mx-auto p-8 md:p-16 flex flex-col items-center justify-center bg-white rounded-lg shadow-md w-full max-w-2xl mt-8"
+  <!-- Registration Form Container -->
+  <main
+    class="login-container container mx-auto p-8 md:p-16 flex flex-col items-center justify-center bg-white rounded-3xl shadow-lg w-full max-w-2xl mt-8"
   >
-    <div class="flex items-center justify-start w-full mb-6 gap-20">
-      <a routerLink="/login" class="text-blue-500 hover:text-blue-700">
-        <img src="assets/img/arrow_back.svg" alt="Back" class="w-5 h-auto" />
+    <div class="flex items-center justify-start w-full mb-6 gap-4 md:gap-20">
+      <a
+        routerLink="/login"
+        class="text-blue-500 hover:text-blue-700"
+        aria-label="Zurück zur Anmeldung"
+      >
+        <img
+          src="assets/img/arrow_back.svg"
+          alt=""
+          class="w-5 h-auto"
+          aria-hidden="true"
+        />
       </a>
-      <h1 class="text-2xl font-bold">Konto erstellen</h1>
+      <h2 class="text-2xl font-bold">Konto erstellen</h2>
     </div>
 
     <p class="text-center mb-6 text-gray-600">
@@ -29,154 +45,249 @@
       [formGroup]="registerForm"
       (ngSubmit)="onSubmit()"
       class="flex justify-center flex-col gap-4 w-full"
+      novalidate
     >
       <!-- Name Field -->
-      <div
-        class="form-group flex justify-center items-center rounded-full flex-col w-full px-4"
-        style="background-color: #edeefe"
-      >
-        <div class="flex justify-center items-center w-full py-2 px-1">
-          <img src="assets/img/person_filled.svg" alt="" class="mr-2 w-5 h-5" />
+      <div class="form-group">
+        <div
+          class="input-container flex items-center rounded-full w-full p-4 bg-[#edeefe]"
+        >
+          <img
+            src="assets/img/person_filled.svg"
+            alt=""
+            class="mr-2 w-6 h-6"
+            aria-hidden="true"
+          />
           <input
-            class="w-full focus:outline-none"
+            class="w-full bg-[#edeefe] text-[18px] focus:outline-none"
             type="text"
             id="name"
             formControlName="name"
             placeholder="Name und Nachname"
-            pattern="[A-Za-zÄÖÜäöüß]+"
+            pattern="[a-zA-ZäöüÄÖÜß\s]+"
+            required
+            aria-describedby="name-error"
           />
         </div>
+        <div id="name-error" class="error-messages">
+          <p
+            *ngIf="
+              registerForm.get('name')?.hasError('required') &&
+              registerForm.get('name')?.touched
+            "
+            class="error"
+          >
+            Bitte geben Sie Ihren Namen ein
+          </p>
+          <p
+            *ngIf="
+              registerForm.get('name')?.hasError('pattern') &&
+              registerForm.get('name')?.touched
+            "
+            class="error"
+          >
+            Nur Buchstaben sind erlaubt
+          </p>
+        </div>
       </div>
-      <p
-        *ngIf="registerForm.get('name')?.errors?.['required'] && registerForm.get('name')?.touched"
-        class="error text-red-500 text-sm mt-1"
-      >
-        Bitte schreiben Sie einen Namen und nur Buchstaben erlaubt.
-      </p>
 
       <!-- Email Field -->
-      <div
-        class="form-group flex justify-center items-center rounded-full flex-col w-full px-4"
-        style="background-color: #edeefe"
-      >
-        <div class="flex justify-center items-center w-full py-2 px-1">
-          <img src="assets/img/mail.svg" alt="Email" class="mr-2 w-5 h-5" />
+      <div class="form-group">
+        <div
+          class="input-container flex items-center rounded-full w-full p-4 bg-[#edeefe]"
+        >
+          <img
+            src="assets/img/mail.svg"
+            alt=""
+            class="mr-2 w-6 h-6"
+            aria-hidden="true"
+          />
           <input
-            class="w-full focus:outline-none"
+            class="w-full bg-[#edeefe] text-[18px] focus:outline-none"
             type="email"
             id="email"
             formControlName="email"
             placeholder="beispielname@email.com"
+            required
+            aria-describedby="email-error"
           />
         </div>
+        <div id="email-error" class="error-messages">
+          <p
+            *ngIf="
+              registerForm.get('email')?.hasError('required') &&
+              registerForm.get('email')?.touched
+            "
+            class="error"
+          >
+            Bitte geben Sie eine E-Mail-Adresse ein
+          </p>
+          <p
+            *ngIf="
+              registerForm.get('email')?.hasError('email') &&
+              registerForm.get('email')?.touched
+            "
+            class="error"
+          >
+            Bitte geben Sie eine gültige E-Mail-Adresse ein
+          </p>
+        </div>
       </div>
-      <p
-        *ngIf="registerForm.get('email')?.errors?.['required'] && registerForm.get('email')?.touched"
-        class="error text-red-500 text-sm mt-1"
-      >
-        Bitte geben Sie eine E-Mail-Adresse ein.
-      </p>
-      <p
-        *ngIf="registerForm.get('email')?.errors?.['email'] && registerForm.get('email')?.touched"
-        class="error text-red-500 text-sm mt-1"
-      >
-        Diese E-Mail-Adresse ist leider ungültig.
-      </p>
 
       <!-- Password Field -->
-      <div class="form-group flex justify-center items-center flex-col w-full">
+      <div class="form-group">
         <div
-          class="flex justify-center items-center w-full py-2 rounded-full px-4"
-          style="background-color: #edeefe"
+          class="input-container flex items-center rounded-full w-full p-4 bg-[#edeefe]"
         >
-          <img src="assets/img/lock.svg" alt="Password" class="mr-2 w-5 h-5" />
+          <img
+            src="assets/img/lock.svg"
+            alt=""
+            class="mr-2 h-6"
+            aria-hidden="true"
+          />
           <input
-            class="w-full focus:outline-none"
+            class="w-full bg-[#edeefe] text-[18px] focus:outline-none"
             [type]="showPassword ? 'text' : 'password'"
             id="password"
             formControlName="password"
             placeholder="Passwort"
+            required
+            minlength="6"
+            aria-describedby="password-error"
           />
-          <div class="flex ml-2" (click)="togglePasswordVisibility()">
+          <button
+            type="button"
+            (click)="togglePasswordVisibility()"
+            class="ml-2 focus:outline-none"
+            [attr.aria-label]="
+              showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'
+            "
+          >
             <img
-              *ngIf="!showPassword"
-              src="assets/img/eye-icon-visibility-off.svg"
-              alt="Hide password"
-              class="w-5 h-5 cursor-pointer"
+              [src]="
+                showPassword
+                  ? 'assets/img/eye-icon-visibility.svg'
+                  : 'assets/img/eye-icon-visibility-off.svg'
+              "
+              alt=""
+              class="w-5 h-5"
+              aria-hidden="true"
             />
-            <img
-              *ngIf="showPassword"
-              src="assets/img/eye-icon-visibility.svg"
-              alt="Show password"
-              class="w-5 h-5 cursor-pointer"
-            />
-          </div>
+          </button>
         </div>
-        <p
-          *ngIf="registerForm.get('password')?.errors?.['required'] && registerForm.get('password')?.touched"
-          class="error text-red-500 text-sm mt-1"
-        >
-          Bitte geben Sie ein Passwort ein.
-        </p>
-        <p
-          *ngIf="registerForm.get('password')?.errors?.['minlength'] && registerForm.get('password')?.touched"
-          class="error text-red-500 text-sm mt-1"
-        >
-          Das Passwort muss mindestens 6 Zeichen lang sein.
-        </p>
+        <div id="password-error" class="error-messages">
+          <p
+            *ngIf="
+              registerForm.get('password')?.hasError('required') &&
+              registerForm.get('password')?.touched
+            "
+            class="error"
+          >
+            Bitte geben Sie ein Passwort ein
+          </p>
+          <p
+            *ngIf="
+              registerForm.get('password')?.hasError('minlength') &&
+              registerForm.get('password')?.touched
+            "
+            class="error"
+          >
+            Das Passwort muss mindestens 6 Zeichen lang sein
+          </p>
+        </div>
       </div>
 
       <!-- Privacy Policy Checkbox -->
-      <div class="flex items-center justify-start w-full mt-4">
-        <input
-          type="checkbox"
-          id="privacyPolicy"
-          formControlName="privacyPolicy"
-          class="mr-2"
-        />
-        <div>
+      <div class="form-group">
+        <div class="flex items-start">
+          <input
+            type="checkbox"
+            id="privacyPolicy"
+            formControlName="privacyPolicy"
+            class="mt-1 mr-2"
+            required
+            aria-describedby="privacy-error"
+          />
           <label for="privacyPolicy" class="text-sm text-gray-600">
             Ich stimme der
-            <a routerLink="/impressum" class="text-blue-500 hover:text-blue-700"
-              >Datenschutzerklärung</a
+            <a
+              routerLink="/impressum"
+              class="text-blue-500 hover:text-blue-700 underline"
             >
+              Datenschutzerklärung
+            </a>
             zu.
           </label>
         </div>
+        <p
+          id="privacy-error"
+          *ngIf="
+            registerForm.get('privacyPolicy')?.hasError('requiredTrue') &&
+            registerForm.get('privacyPolicy')?.touched
+          "
+          class="error"
+        >
+          Sie müssen der Datenschutzerklärung zustimmen
+        </p>
       </div>
-      <p
-        *ngIf="registerForm.get('privacyPolicy')?.errors?.['requiredTrue'] && registerForm.get('privacyPolicy')?.touched"
-        class="error text-red-500 text-sm mt-1"
-      >
-        Sie müssen der Datenschutzerklärung zustimmen.
-      </p>
 
-      <!-- Error Message -->
-      <p
-        *ngIf="errorMessage"
-        class="error text-red-500 text-sm mt-1 text-center"
-      >
-        {{ errorMessage }}
-      </p>
+      <!-- Server Error Message -->
+      <div *ngIf="errorMessage" class="text-center">
+        <p class="error" role="alert" aria-live="assertive">
+          {{ errorMessage }}
+        </p>
+      </div>
 
       <!-- Submit Button -->
-      <div class="flex justify-end items-center w-full mt-6">
+      <div class="flex justify-end mt-6">
         <button
           type="submit"
-          class="next-btn text-white py-2 px-6 rounded-full"
+          class="next-btn bg-[#444DF2] hover:bg-[#3739C8] text-white font-medium py-3 px-8 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-blue-400"
           [disabled]="registerForm.invalid || loading"
+          [attr.aria-busy]="loading"
         >
           <span *ngIf="!loading">Weiter</span>
-          <span *ngIf="loading">Bitte warten...</span>
+          <span *ngIf="loading" class="flex items-center justify-center">
+            <svg
+              class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Bitte warten...
+          </span>
         </button>
       </div>
     </form>
-  </div>
+  </main>
 
-  <div
-    class="footer flex justify-center items-center gap-4 mt-8 font-Figtree weight-light"
-  >
-    <a routerLink="/impressum" class="hover:rounded-full">Impressum</a>
-    <a routerLink="/datenschutz" class="hover:rounded-full">Datenschutz</a>
-  </div>
+  <!-- Footer Links -->
+  <footer class="footer flex justify-center items-center gap-4 mt-auto mb-2">
+    <a
+      routerLink="/impressum"
+      class="mt-8 px-4 py-2 text-[18px] font-normal text-[#797EF3] hover:rounded-full hover:border hover:border-[#cbcbd1] hover:text-[#3739C8]"
+    >
+      Impressum
+    </a>
+    <a
+      routerLink="/datenschutz"
+      class="mt-8 px-4 py-2 text-[18px] font-normal text-[#797EF3] hover:rounded-full hover:border hover:border-[#cbcbd1] hover:text-[#3739C8]"
+    >
+      Datenschutz</a
+    >
+  </footer>
 </div>
