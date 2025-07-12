@@ -1,12 +1,26 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-workspace-toggle-button',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './workspace-toggle-button.component.html',
-  styleUrl: './workspace-toggle-button.component.scss'
+  styleUrl: './workspace-toggle-button.component.scss',
 })
 export class WorkspaceToggleButtonComponent {
+  isOpen = true;
+  isHovered = false;
 
+  toggle() {
+    this.isOpen = !this.isOpen;
+  }
+
+  onMouseEnter() {
+    this.isHovered = true;
+  }
+
+  onMouseLeave() {
+    this.isHovered = false;
+  }
 }

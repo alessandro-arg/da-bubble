@@ -44,6 +44,8 @@ export class LandingPageComponent implements OnInit {
   threadGroupId: string | null = null;
   threadMessageId: string | null = null;
 
+  isCollapsed = false;
+
   constructor(
     private authService: AuthService,
     private auth: Auth,
@@ -84,6 +86,10 @@ export class LandingPageComponent implements OnInit {
   onThreadSelected(ev: { groupId: string; messageId: string }) {
     this.threadGroupId = ev.groupId;
     this.threadMessageId = ev.messageId;
+  }
+
+  toggleWorkspace() {
+    this.isCollapsed = !this.isCollapsed;
   }
 
   onCloseThread() {

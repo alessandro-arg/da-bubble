@@ -183,32 +183,51 @@
     </div>
   </div>
 
-  <div class="w-1/4 bg-white h-full shadow-sm rounded-[32px]">
-    <app-user-list
-      (userSelected)="openPrivateChat($event)"
-      (groupSelected)="openGroupChat($event)"
-    ></app-user-list>
-  </div>
+  <div class="flex h-full w-full">
+    <div
+      class="sidebar"
+      [ngClass]="{
+        'w-1/4': !isCollapsed,
+        'w-0': isCollapsed,
+        collapsed: isCollapsed
+      }"
+    >
+      <div class="content">
+        <app-user-list
+          (userSelected)="openPrivateChat($event)"
+          (groupSelected)="openGroupChat($event)"
+        ></app-user-list>
+      </div>
+    </div>
 
-  <div class="w-2/4 bg-white h-full shadow-sm rounded-[32px]">
-    <app-chat
-      [chatPartner]="selectedUser"
-      [currentUserUid]="currentUserUid"
-      [groupId]="selectedGroupId"
-      (userSelected)="openPrivateChat($event)"
-      (threadSelected)="onThreadSelected($event)"
-    ></app-chat>
-  </div>
+    <div
+      class="bg-white h-full shadow-sm rounded-[32px] transition-all duration-300 ease-in-out"
+      [ngClass]="{
+        'w-2/4 ml-4': !isCollapsed,
+        'w-3/4': isCollapsed
+      }"
+    >
+      <app-chat
+        [chatPartner]="selectedUser"
+        [currentUserUid]="currentUserUid"
+        [groupId]="selectedGroupId"
+        (userSelected)="openPrivateChat($event)"
+        (threadSelected)="onThreadSelected($event)"
+      ></app-chat>
+    </div>
 
-  <div class="w-1/4 bg-white h-full shadow-sm rounded-[32px]">
-    <app-thread
-      *ngIf="threadGroupId && threadMessageId"
-      [groupId]="threadGroupId"
-      [messageId]="threadMessageId"
-      [currentUserUid]="currentUserUid"
-      (closeThread)="onCloseThread()"
-    ></app-thread>
+    <div class="ml-4 w-1/4 bg-white h-full shadow-sm rounded-[32px]">
+      <app-thread
+        *ngIf="threadGroupId && threadMessageId"
+        [groupId]="threadGroupId"
+        [messageId]="threadMessageId"
+        [currentUserUid]="currentUserUid"
+        (closeThread)="onCloseThread()"
+      ></app-thread>
+    </div>
   </div>
 </div>
 
-<app-workspace-toggle-button></app-workspace-toggle-button>
+<app-workspace-toggle-button
+  (click)="toggleWorkspace()"
+></app-workspace-toggle-button>

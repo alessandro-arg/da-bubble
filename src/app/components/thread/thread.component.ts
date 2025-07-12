@@ -10,6 +10,7 @@ import {
   ViewChild,
   CUSTOM_ELEMENTS_SCHEMA,
   HostListener,
+  AfterViewInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChatService } from '../../chat.service';
@@ -29,7 +30,7 @@ import { GroupService } from '../../group.service';
   templateUrl: './thread.component.html',
   styleUrl: './thread.component.scss',
 })
-export class ThreadComponent implements OnChanges {
+export class ThreadComponent implements OnChanges, AfterViewInit {
   @Input() groupId!: string | null;
   @Input() messageId!: string | null;
   @Input() currentUserUid!: string | null;
@@ -51,6 +52,10 @@ export class ThreadComponent implements OnChanges {
   maxVisible = 9;
   expandedMessages = new Set<string>();
 
+  showEmojiPicker = false;
+  isEmojiHovered = false;
+  isAttachHovered = false;
+
   @ViewChild('emojiBtn', { read: ElementRef }) emojiBtn!: ElementRef;
   @ViewChild('picker', { read: ElementRef }) picker!: ElementRef;
   @ViewChild('chatContainer', { read: ElementRef })
@@ -64,6 +69,16 @@ export class ThreadComponent implements OnChanges {
     private userService: UserService,
     private groupService: GroupService
   ) {}
+
+  async ngAfterViewInit() {
+    if (typeof window !== 'undefined') {
+      if (!('requestAnimationFrame' in window)) {
+        (window as any).requestAnimationFrame = (cb: FrameRequestCallback) =>
+          setTimeout(cb, 0);
+      }
+      await import('emoji-picker-element');
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (this.groupId) {
@@ -96,6 +111,7 @@ export class ThreadComponent implements OnChanges {
     const target = event.target as HTMLElement;
     if (target.closest('.emoji-input-container')) return;
     if (target.closest('.picker-container')) return;
+    this.showEmojiPicker = false;
     this.messagePicker = {};
 
     if (!Object.values(this.optionsOpen).some((v) => v)) return;
@@ -127,6 +143,16 @@ export class ThreadComponent implements OnChanges {
       this.threadText.trim()
     );
     this.threadText = '';
+    this.scrollToBottom();
+  }
+
+  toggleEmojiPicker() {
+    this.showEmojiPicker = !this.showEmojiPicker;
+  }
+
+  addEmoji(event: any) {
+    this.threadText += event.detail.unicode;
+    this.showEmojiPicker = false;
   }
 
   /**
@@ -230,15 +256,20 @@ export class ThreadComponent implements OnChanges {
   }
 
   saveEdit(msg: Message) {
-    if (!this.editingMsgId || !this.groupId) return;
+    if (!this.editingMsgId || !this.groupId || !this.messageId) return;
 
     this.chatService
-      .updateMessage(this.groupId, msg.id!, this.editText, true)
+      .updateGroupThreadMessage(
+        this.groupId,
+        this.messageId,
+        msg.id!,
+        this.editText
+      )
       .then(() => {
         this.editingMsgId = null;
         this.editText = '';
       })
-      .catch((err) => console.error('Failed to update message', err));
+      .catch((err) => console.error('Failed to update thread message', err));
   }
 
   autoGrow(textarea: HTMLTextAreaElement) {

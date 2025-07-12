@@ -80,11 +80,11 @@
   </ng-container>
 
   <!-- Answers -->
-  <div class="p-4 space-y-3 overflow-auto h-[60vh]">
+  <div class="space-y-3 overflow-auto h-[65vh]">
     <ng-container *ngFor="let msg of threadMessages$ | async">
       <ng-container *ngIf="participantsMap[msg.sender] as user">
         <div
-          class="relative group flex my-3 gap-[30px] px-[45px] py-4 transition-colors duration-200 hover:bg-[#ECEEFE]"
+          class="relative group flex my-4 gap-[30px] px-[45px] py-4 transition-colors duration-200 hover:bg-[#ECEEFE]"
           [ngClass]="{
             'justify-end': msg.sender === currentUserUid,
             'items-start': msg.sender !== currentUserUid
@@ -196,7 +196,7 @@
 
               <!-- reactions bar -->
               <div
-                class="flex items-center mt-1 px-[45px] gap-1"
+                class="flex items-center mt-1 gap-1"
                 [ngClass]="{
                   'pr-0 flex-row-reverse justify-end':
                     msg.sender === currentUserUid,
@@ -314,20 +314,80 @@
     </ng-container>
   </div>
 
-  <!-- Send message form -->
-  <form (ngSubmit)="sendThread()" class="p-4 flex gap-2 border-t">
-    <input
-      [(ngModel)]="threadText"
-      name="threadText"
-      placeholder="Write a reply…"
-      class="flex-1 p-2 border rounded"
-    />
-    <button
-      type="submit"
-      class="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-      [disabled]="!threadText.trim()"
+  <!-- Input Field -->
+  <div class="px-[35px] pb-[35px] pt-[15px] bg-transparent">
+    <div
+      class="flex flex-col p-5 border border-[#ADB0D9] rounded-[20px] gap-[20px]"
     >
-      Send
-    </button>
-  </form>
+      <!-- Textarea at top -->
+      <textarea
+        [(ngModel)]="threadText"
+        name="threadText"
+        placeholder="Antworten..."
+        class="w-full resize-none border-none focus:outline-none text-lg placeholder-[#686868] bg-transparent pr-[30px]"
+      ></textarea>
+
+      <!-- Icon row at bottom -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-1">
+          <div class="relative">
+            <div class="relative emoji-input-container">
+              <button
+                #emojiBtn
+                class="p-2 rounded-full transition-colors"
+                [ngClass]="{ 'bg-[#F0EDFF]': isEmojiHovered }"
+                (mouseenter)="isEmojiHovered = true"
+                (mouseleave)="isEmojiHovered = false"
+                (click)="toggleEmojiPicker()"
+              >
+                <img
+                  [src]="
+                    isEmojiHovered
+                      ? '../../../assets/img/icons/sentiment_satisfied_purple.png'
+                      : '../../../assets/img/icons/sentiment_satisfied.png'
+                  "
+                  class="w-6 h-6"
+                  alt="emoji"
+                />
+              </button>
+              <div
+                *ngIf="showEmojiPicker"
+                #picker
+                class="absolute z-50 bottom-10 left-0"
+              >
+                <emoji-picker (emoji-click)="addEmoji($event)"></emoji-picker>
+              </div>
+            </div>
+          </div>
+          <button
+            class="p-2 rounded-full transition-colors"
+            [ngClass]="{ 'bg-[#F0EDFF]': isAttachHovered }"
+            (mouseenter)="isAttachHovered = true"
+            (mouseleave)="isAttachHovered = false"
+          >
+            <img
+              [src]="
+                isAttachHovered
+                  ? '../../../assets/img/icons/alternate_email_purple.png'
+                  : '../../../assets/img/icons/alternate_email.png'
+              "
+              class="w-6 h-6"
+              alt="attachment"
+            />
+          </button>
+        </div>
+        <button
+          (click)="sendThread()"
+          [disabled]="!threadText.trim()"
+          class="p-2 disabled:opacity-0 hover:opacity-70"
+        >
+          <img
+            src="../../../assets/img/icons/send.png"
+            class="w-6 h-6"
+            alt="send"
+          />
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

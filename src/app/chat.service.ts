@@ -242,11 +242,26 @@ export class ChatService {
       text,
       createdAt: serverTimestamp(),
     });
-    // bump updatedAt on the parent message if desired:
     const parentRef = doc(
       this.firestore,
       `groups/${groupId}/messages/${messageId}`
     );
     await updateDoc(parentRef, { updatedAt: serverTimestamp() });
+  }
+
+  async updateGroupThreadMessage(
+    groupId: string,
+    parentMessageId: string,
+    threadMessageId: string,
+    newText: string
+  ): Promise<void> {
+    const ref = doc(
+      this.firestore,
+      `groups/${groupId}/messages/${parentMessageId}/threads/${threadMessageId}`
+    );
+    await updateDoc(ref, {
+      text: newText,
+      editedAt: serverTimestamp(),
+    });
   }
 }

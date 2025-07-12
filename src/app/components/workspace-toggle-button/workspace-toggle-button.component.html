@@ -1,10 +1,20 @@
 <button
+  (click)="toggle()"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()"
   class="fixed -rotate-90 -left-[140px] bottom-[300px] bg-white rounded-b-[30px] shadow-xl text-black px-5 py-5 flex items-center gap-2 transform transition-all duration-300 hover:text-[#535AF1] font-medium text-xl"
 >
-  <span class="whitespace-nowrap">Workspace-Menü schließen</span>
+  <span class="whitespace-nowrap">
+    Workspace-Menü {{ isOpen ? "schließen" : "öffnen" }}</span
+  >
   <img
-    src="../../../assets/img/icons/toggle_close.png"
+    [src]="
+      isHovered
+        ? '/assets/img/icons/toggle_purple.png'
+        : '/assets/img/icons/toggle.png'
+    "
     alt="Toggle"
-    class="rotate-90"
+    class="transition-transform duration-300 ease-in-out w-8 h-8"
+    [style.transform]="'rotate(' + (isOpen ? 90 : 0) + 'deg)'"
   />
 </button>
