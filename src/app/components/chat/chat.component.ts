@@ -14,7 +14,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { filter, shareReplay, switchMap, take } from 'rxjs/operators';
-
+import { ReactionBarComponent } from '../../reaction-bar/reaction-bar.component';
 import { ChatService } from '../../chat.service';
 import { GroupService } from '../../group.service';
 import { UserService } from '../../user.service';
@@ -26,7 +26,7 @@ import { Reaction, Message } from '../../models/chat.model';
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactionBarComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
@@ -57,9 +57,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   isEmojiHovered = false;
   isAttachHovered = false;
-
-  maxVisible = 9;
-  expandedMessages = new Set<string>();
 
   editingMsgId: string | null = null;
   editText = '';
@@ -289,78 +286,30 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     }
   }
 
-  /**
-   * Collapse duplicates: [{🙂,a},{🙂,b},{😃,c}] → [{🙂,2},{😃,1}]
-   */
-  summarizeReactions(
-    reactions: Reaction[] = []
-  ): { emoji: string; count: number }[] {
-    const counter: Record<string, number> = {};
-    reactions.forEach((r) => (counter[r.emoji] = (counter[r.emoji] || 0) + 1));
-    return Object.entries(counter).map(([emoji, count]) => ({ emoji, count }));
-  }
-
-  /**
-   * Toggle a reaction: if currentUser has reacted already, remove it;
-   * otherwise add it.
-   */
-  async onReactionClick(msg: Message, emoji: string) {
+  async onQuickReaction(msg: Message, emoji: string) {
     if (!msg.id || !this.currentUserUid) return;
     const isGroup = !!this.groupId;
-    const targetId = isGroup ? this.groupId! : this.chatId!;
-    const reactions = msg.reactions ?? [];
-    const already = reactions.some(
+    const target = isGroup ? this.groupId! : this.chatId!;
+    const already = (msg.reactions ?? []).some(
       (r) => r.userId === this.currentUserUid && r.emoji === emoji
     );
 
     if (already) {
       await this.chatService.removeReaction(
-        targetId,
+        target,
         msg.id,
         emoji,
         this.currentUserUid,
         isGroup
       );
     } else {
-      const reaction: Reaction = {
-        emoji,
-        userId: this.currentUserUid,
-        createdAt: new Date(),
-      };
-      await this.chatService.addReaction(targetId, msg.id, reaction, isGroup);
-    }
-  }
-
-  getReactionUserNames(msg: Message, emoji: string): string[] {
-    return (msg.reactions || [])
-      .filter((r) => r.emoji === emoji)
-      .map((r) =>
-        r.userId === this.currentUserUid
-          ? 'You'
-          : this.participantsMap[r.userId]?.name || 'Unknown'
+      await this.chatService.addReaction(
+        target,
+        msg.id,
+        { emoji, userId: this.currentUserUid, createdAt: new Date() },
+        isGroup
       );
-  }
-
-  toggleReactions(msgId: string) {
-    if (this.expandedMessages.has(msgId)) {
-      this.expandedMessages.delete(msgId);
-    } else {
-      this.expandedMessages.add(msgId);
     }
-  }
-
-  isExpanded(msgId: string): boolean {
-    return this.expandedMessages.has(msgId);
-  }
-
-  extraCount(msg: Message): number {
-    const total = this.summarizeReactions(msg.reactions).length;
-    return total > this.maxVisible ? total - this.maxVisible : 0;
-  }
-
-  displayedReactions(msg: Message) {
-    const all = this.summarizeReactions(msg.reactions);
-    return this.isExpanded(msg.id!) ? all : all.slice(0, this.maxVisible);
   }
 
   startEdit(msg: Message) {
