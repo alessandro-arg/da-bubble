@@ -22,11 +22,17 @@ import { User } from '../../models/user.model';
 import { Observable, Subscription } from 'rxjs';
 import { Group } from '../../models/group.model';
 import { Reaction, Message } from '../../models/chat.model';
+import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
 
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactionBarComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactionBarComponent,
+    HoverMenuComponent,
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',

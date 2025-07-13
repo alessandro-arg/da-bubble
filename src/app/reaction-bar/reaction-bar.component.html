@@ -49,7 +49,7 @@
 
         <!-- Popup -->
         <div
-          class="invisible gap-1 max-w-[150px] opacity-0 peer-hover:visible peer-hover:opacity-100 absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-[#444DF2] text-white text-sm rounded-t-[30px] rounded-br-[30px] py-3 px-2 whitespace-normal transition-opacity duration-150 pointer-events-none"
+          class="invisible items-center text-center gap-1 w-[150px] opacity-0 peer-hover:visible peer-hover:opacity-100 absolute bottom-full left-[50%] mb-[2px] bg-[#444DF2] text-white text-sm rounded-t-[30px] rounded-br-[30px] py-3 px-2 whitespace-normal transition-opacity duration-150 pointer-events-none z-50"
         >
           <div class="mb-1 text-center text-lg">{{ r.emoji }}</div>
           <ng-container *ngIf="getReactionUserNames(r.emoji) as names">

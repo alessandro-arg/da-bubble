@@ -21,11 +21,17 @@ import { User } from '../../models/user.model';
 import { UserService } from '../../user.service';
 import { ReactionBarComponent } from '../../reaction-bar/reaction-bar.component';
 import { GroupService } from '../../group.service';
+import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
 
 @Component({
   selector: 'app-thread',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactionBarComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactionBarComponent,
+    HoverMenuComponent,
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './thread.component.html',
   styleUrl: './thread.component.scss',

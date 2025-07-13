@@ -207,67 +207,15 @@
               ></app-reaction-bar>
 
               <!-- hover menus -->
-              <div
-                *ngIf="msg.sender !== currentUserUid"
-                class="hidden group-hover:flex gap-1 absolute -top-4 right-[45px] px-[15px] py-[3px] bg-white border border-[#ADB0D9] rounded-l-[25px] rounded-tr-[25px]"
-              >
-                <button (click)="onQuickThreadReaction(msg, '✔️')">✔️</button>
-                <button (click)="onQuickThreadReaction(msg, '👍')">👍</button>
-                <div class="picker-container relative inline-block self-start">
-                  <button
-                    class="flex-none p-2 hover:bg-gray-100 rounded-full self-start"
-                    (click)="bar.togglePicker()"
-                  >
-                    <img
-                      src="../../../assets/img/icons/add_reaction.png"
-                      alt="emoji picker"
-                      class="w-4 h-4"
-                    />
-                  </button>
-                </div>
-              </div>
-              <div
-                *ngIf="msg.sender === currentUserUid"
-                class="hidden group-hover:flex gap-1 absolute -top-4 left-[45px] px-[15px] py-[3px] bg-white border border-[#ADB0D9] rounded-l-[25px] rounded-tr-[25px]"
-              >
-                <button (click)="onQuickThreadReaction(msg, '✔️')">✔️</button>
-                <button (click)="onQuickThreadReaction(msg, '👍')">👍</button>
-                <div class="picker-container relative inline-block self-start">
-                  <button
-                    class="flex-none p-2 hover:bg-gray-100 rounded-full self-start"
-                    (click)="bar.togglePicker()"
-                  >
-                    <img
-                      src="../../../assets/img/icons/add_reaction.png"
-                      alt="emoji picker"
-                      class="w-6 h-6"
-                    />
-                  </button>
-                </div>
-                <div class="relative">
-                  <button
-                    class="options-button p-[10px] rounded-[20px] hover:bg-gray-100"
-                    title="Options"
-                    (click)="toggleOptions(msg.id!, $event)"
-                  >
-                    <img
-                      src="../../../assets/img/icons/more_vert.png"
-                      alt="Options"
-                    />
-                  </button>
-                  <div
-                    *ngIf="optionsOpen[msg.id]"
-                    class="options-popup relative"
-                  >
-                    <button
-                      class="absolute px-3 py-1 bg-[#797EF3] text-white rounded-full shadow hover:bg-[#5F5CD6]"
-                      (click)="openEditFromOptions(msg, $event)"
-                    >
-                      Edit User
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <app-hover-menu
+                [msg]="msg"
+                [currentUserUid]="currentUserUid"
+                [showThreadButton]="false"
+                (quickReaction)="onQuickThreadReaction(msg, $event)"
+                (togglePicker)="bar.togglePicker()"
+                (toggleOptions)="toggleOptions(msg.id!, $event)"
+                (openEdit)="openEditFromOptions(msg, $event)"
+              ></app-hover-menu>
             </div>
           </ng-template>
 
