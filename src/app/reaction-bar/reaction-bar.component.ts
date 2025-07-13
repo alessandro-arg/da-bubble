@@ -27,6 +27,7 @@ export class ReactionBarComponent {
   @Input() chatId?: string | null;
   @Input() parentMessageId?: string | null;
   @Input() maxVisible = 5;
+  @Input() inThread = false;
 
   showPicker = false;
   expanded = false;
