@@ -11,6 +11,7 @@ import {
 import { AuthService } from '../../../auth/auth.service';
 import { firstValueFrom } from 'rxjs';
 import { UserService } from '../../../user.service';
+import { RegistrationService } from '../../../registration.service';
 
 @Component({
   selector: 'app-register',
@@ -28,6 +29,7 @@ export class RegisterComponent {
   constructor(
     private authService: AuthService,
     private userService: UserService,
+    private registrationService: RegistrationService,
     private router: Router
   ) {
     this.registerForm = new FormGroup({
@@ -41,49 +43,39 @@ export class RegisterComponent {
     });
   }
 
+  ngOnInit() {
+    const savedData = this.registrationService.getRegistrationData();
+    if (savedData) {
+      this.registerForm.setValue({
+        name: savedData.name,
+        email: savedData.email,
+        password: savedData.password,
+        privacyPolicy: savedData.privacyPolicy
+      });
+    }
+  }
+  
+
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
 
   // Füge diese Methode zur Klasse hinzu
-togglePrivacyPolicy() {
-  const currentValue = this.registerForm.get('privacyPolicy')?.value;
-  this.registerForm.get('privacyPolicy')?.setValue(!currentValue);
-  this.registerForm.get('privacyPolicy')?.markAsTouched();
-}
+  togglePrivacyPolicy() {
+    const currentValue = this.registerForm.get('privacyPolicy')?.value;
+    this.registerForm.get('privacyPolicy')?.setValue(!currentValue);
+    this.registerForm.get('privacyPolicy')?.markAsTouched();
+  }
 
   async onSubmit() {
-    if (this.registerForm.invalid) {
-      return;
-    }
+    if (this.registerForm.invalid) return;
 
-    this.loading = true;
-    this.errorMessage = null;
+    const { name, email, password, privacyPolicy } = this.registerForm.value;
 
-    const { name, email, password } = this.registerForm.value;
+    // Temporär speichern
+    this.registrationService.setRegistrationData({ name, email, password, privacyPolicy });
 
-    try {
-      const userCredential = await firstValueFrom(
-        this.authService.register(email, password)
-      );
-
-      await this.userService.createUser({
-        uid: userCredential.user?.uid,
-        name: name,
-        email: email,
-        avatar: 'assets/img/charaters.svg', // Default avatar
-      });
-
-      this.router.navigate(['/choose-your-avatar']);
-    } catch (error) {
-      console.error('Registration error:', error);
-      this.errorMessage =
-        'Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut.';
-      if (error instanceof Error) {
-        this.errorMessage = error.message;
-      }
-    } finally {
-      this.loading = false;
-    }
+    this.router.navigate(['/choose-your-avatar']);
   }
+  
 }

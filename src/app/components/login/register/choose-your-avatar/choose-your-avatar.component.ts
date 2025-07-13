@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../auth/auth.service';
 import { UserService } from '../../../../user.service';
 import { User } from '../../../../models/user.model';
+import { RegistrationService } from '../../../../registration.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-choose-your-avatar',
@@ -32,6 +34,7 @@ export class ChooseYourAvatarComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private userService: UserService,
+    private registrationService: RegistrationService,
     private router: Router
   ) { }
 
@@ -52,29 +55,55 @@ export class ChooseYourAvatarComponent implements OnInit {
   }
 
   async confirmAvatar() {
-    if (!this.selectedAvatar || !this.currentUser?.uid) {
-      this.errorMessage = ('Bitte wählen Sie einen Avatar aus');
+    const data = this.registrationService.getRegistrationData();
+  
+    if (!data || !this.selectedAvatar) {
+      this.errorMessage = 'Bitte vervollständigen Sie Ihre Registrierung.';
       return;
     }
+  
     this.loading = true;
+    this.errorMessage = null;
+    this.successMessage = null;
+  
     try {
-      const updateData = {
-        avatar: this.selectedAvatar,
-        lastUpdated: new Date()
-      };
-      await this.userService.updateUser(this.currentUser.uid, updateData);
-      this.currentUser = {
-        ...this.currentUser,
-        ...updateData
-      };
+      const { email, password, name } = data;
+  
+      // 1. Versuch, den Benutzer zu registrieren
+      const userCredential = await firstValueFrom(
+        this.authService.register(email, password)
+      );
+  
+      // 2. Benutzerdaten in Firestore speichern
+      await this.userService.createUser({
+        uid: userCredential.user?.uid,
+        name: name,
+        email: email,
+        avatar: this.selectedAvatar
+      });
+  
       this.successMessage = 'Konto erfolgreich erstellt!';
+      this.registrationService.clear();
+  
       setTimeout(() => {
         this.router.navigate(['/login']);
       }, 1800);
-
-    } catch (error) {
-      console.error('Avatar Update Error:', error);
-      this.errorMessage = (`Fehler: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`);
+  
+    } catch (error: any) {
+      console.error('Registrierungsfehler:', error);
+      
+      // Verbesserte Fehlerbehandlung
+      if (error.code === 'auth/email-already-in-use') {
+        this.errorMessage = 'Diese E-Mail-Adresse ist bereits registriert. Bitte verwenden Sie eine andere E-Mail oder melden Sie sich an.';
+      } else if (error.code === 'auth/weak-password') {
+        this.errorMessage = 'Das Passwort ist zu schwach. Bitte wählen Sie ein stärkeres Passwort.';
+      } else if (error.code === 'auth/invalid-email') {
+        this.errorMessage = 'Ungültige E-Mail-Adresse. Bitte überprüfen Sie Ihre Eingabe.';
+      } else if (error.code === 'auth/operation-not-allowed') {
+        this.errorMessage = 'Registrierung ist derzeit nicht möglich. Bitte versuchen Sie es später erneut.';
+      } else {
+        this.errorMessage = 'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
+      }
     } finally {
       this.loading = false;
     }
