@@ -54,13 +54,11 @@ export class RegisterComponent {
       });
     }
   }
-  
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
 
-  // Füge diese Methode zur Klasse hinzu
   togglePrivacyPolicy() {
     const currentValue = this.registerForm.get('privacyPolicy')?.value;
     this.registerForm.get('privacyPolicy')?.setValue(!currentValue);
@@ -69,13 +67,8 @@ export class RegisterComponent {
 
   async onSubmit() {
     if (this.registerForm.invalid) return;
-
     const { name, email, password, privacyPolicy } = this.registerForm.value;
-
-    // Temporär speichern
     this.registrationService.setRegistrationData({ name, email, password, privacyPolicy });
-
     this.router.navigate(['/choose-your-avatar']);
   }
-  
 }
