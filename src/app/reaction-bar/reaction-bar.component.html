@@ -1,0 +1,73 @@
+<div
+  class="flex items-center mt-1 px-[45px] gap-1"
+  [ngClass]="{
+    'pr-0 flex-row-reverse justify-end': msg.sender === currentUserUid,
+    'pl-0 justify-start': msg.sender !== currentUserUid
+  }"
+>
+  <!-- picker -->
+  <div class="relative inline-block self-start">
+    <button
+      class="p-2 hover:bg-gray-100 rounded-full"
+      (click)="togglePicker()"
+      aria-label="Add reaction"
+    >
+      <img
+        src="../../../assets/img/icons/add_reaction.png"
+        class="w-6 h-6"
+        alt=""
+      />
+    </button>
+    <div
+      *ngIf="showPicker"
+      class="absolute bottom-full z-50"
+      [ngClass]="msg.sender === currentUserUid ? 'right-0' : 'left-0'"
+    >
+      <emoji-picker
+        (emoji-click)="
+          onReactionClick($event.detail.unicode!); showPicker = false
+        "
+      ></emoji-picker>
+    </div>
+  </div>
+
+  <!-- reactions -->
+  <div
+    class="flex flex-1 flex-wrap items-center gap-1"
+    [ngClass]="{ 'space-x-reverse': msg.sender === currentUserUid }"
+  >
+    <ng-container *ngFor="let r of displayedReactions()">
+      <div class="relative flex-shrink-0">
+        <span
+          class="peer z-10 whitespace-nowrap px-2 py-1 text-sm bg-gray-200 rounded-full cursor-pointer hover:bg-gray-400"
+          (click)="onReactionClick(r.emoji)"
+        >
+          {{ r.emoji }} {{ r.count }}
+        </span>
+        <div
+          class="invisible opacity-0 peer-hover:visible peer-hover:opacity-100 absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-800 text-white text-xs rounded py-2 px-3 whitespace-nowrap transition-opacity duration-150 pointer-events-none"
+        >
+          <div class="mb-1 text-center">{{ r.emoji }}</div>
+          <ng-container *ngIf="getReactionUserNames(r.emoji) as names">
+            <div *ngIf="names.length === 1">{{ names[0] }} hat reagiert</div>
+            <div *ngIf="names.length === 2">
+              {{ names[0] }} und {{ names[1] }} haben reagiert
+            </div>
+            <div *ngIf="names.length > 2">
+              {{ names[0] }}, {{ names[1] }} und andere {{ names.length - 2 }}
+              haben reagiert
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+
+    <button
+      *ngIf="extraCount() > 0"
+      class="px-2 py-1 text-sm bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300"
+      (click)="toggleReactions()"
+    >
+      {{ isExpanded() ? "Show less" : "+" + extraCount() + " more" }}
+    </button>
+  </div>
+</div>

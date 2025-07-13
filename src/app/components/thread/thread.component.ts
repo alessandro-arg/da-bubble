@@ -19,13 +19,13 @@ import { Message, Reaction } from '../../models/chat.model';
 import { Group } from '../../models/group.model';
 import { User } from '../../models/user.model';
 import { UserService } from '../../user.service';
-import { serverTimestamp } from '@angular/fire/firestore';
+import { ReactionBarComponent } from '../../reaction-bar/reaction-bar.component';
 import { GroupService } from '../../group.service';
 
 @Component({
   selector: 'app-thread',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactionBarComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './thread.component.html',
   styleUrl: './thread.component.scss',
@@ -43,14 +43,10 @@ export class ThreadComponent implements OnChanges, AfterViewInit {
 
   participantsMap: Record<string, User> = {};
   messagePicker: Record<string, boolean> = {};
-  expandedReplies = new Set<string>();
 
   editingMsgId: string | null = null;
   editText = '';
   optionsOpen: Record<string, boolean> = {};
-
-  maxVisible = 9;
-  expandedMessages = new Set<string>();
 
   showEmojiPicker = false;
   isEmojiHovered = false;
@@ -167,26 +163,11 @@ export class ThreadComponent implements OnChanges, AfterViewInit {
     }
   }
 
-  /**
-   * Collapse duplicates: [{🙂,a},{🙂,b},{😃,c}] → [{🙂,2},{😃,1}]
-   */
-  summarizeReactions(
-    reactions: Reaction[] = []
-  ): { emoji: string; count: number }[] {
-    const counter: Record<string, number> = {};
-    reactions.forEach((r) => (counter[r.emoji] = (counter[r.emoji] || 0) + 1));
-    return Object.entries(counter).map(([emoji, count]) => ({ emoji, count }));
-  }
-
-  /**
-   * Toggle a reaction: if currentUser has reacted already, remove it;
-   * otherwise add it.
-   */
-  async onReactionClick(msg: Message, emoji: string) {
-    if (!this.currentUserUid || !this.groupId || !this.messageId || !msg.id)
+  async onQuickThreadReaction(msg: Message, emoji: string) {
+    if (!msg.id || !this.currentUserUid || !this.groupId || !this.messageId) {
       return;
-
-    const already = (msg.reactions || []).some(
+    }
+    const already = (msg.reactions ?? []).some(
       (r) => r.userId === this.currentUserUid && r.emoji === emoji
     );
 
@@ -211,38 +192,6 @@ export class ThreadComponent implements OnChanges, AfterViewInit {
         reaction
       );
     }
-  }
-
-  getReactionUserNames(msg: Message, emoji: string): string[] {
-    return (msg.reactions || [])
-      .filter((r) => r.emoji === emoji)
-      .map((r) =>
-        r.userId === this.currentUserUid
-          ? 'You'
-          : this.participantsMap[r.userId]?.name || 'Unknown'
-      );
-  }
-
-  toggleReactions(msgId: string) {
-    if (this.expandedMessages.has(msgId)) {
-      this.expandedMessages.delete(msgId);
-    } else {
-      this.expandedMessages.add(msgId);
-    }
-  }
-
-  isExpanded(msgId: string): boolean {
-    return this.expandedMessages.has(msgId);
-  }
-
-  extraCount(msg: Message): number {
-    const total = this.summarizeReactions(msg.reactions).length;
-    return total > this.maxVisible ? total - this.maxVisible : 0;
-  }
-
-  displayedReactions(msg: Message) {
-    const all = this.summarizeReactions(msg.reactions);
-    return this.isExpanded(msg.id!) ? all : all.slice(0, this.maxVisible);
   }
 
   startEdit(msg: Message) {
