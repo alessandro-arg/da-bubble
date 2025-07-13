@@ -18,9 +18,7 @@ import { Observable } from 'rxjs';
 import { Message, Reaction } from '../../models/chat.model';
 import { Group } from '../../models/group.model';
 import { User } from '../../models/user.model';
-import { UserService } from '../../user.service';
 import { ReactionBarComponent } from '../../reaction-bar/reaction-bar.component';
-import { GroupService } from '../../group.service';
 import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
 
 @Component({
@@ -60,17 +58,13 @@ export class ThreadComponent implements OnChanges, AfterViewInit {
 
   @ViewChild('emojiBtn', { read: ElementRef }) emojiBtn!: ElementRef;
   @ViewChild('picker', { read: ElementRef }) picker!: ElementRef;
-  @ViewChild('chatContainer', { read: ElementRef })
-  private chatContainer!: ElementRef<HTMLElement>;
+  @ViewChild('threadContainer', { read: ElementRef })
+  threadContainer!: ElementRef<HTMLElement>;
 
   @ViewChild('editInput', { read: ElementRef })
   editInput?: ElementRef<HTMLTextAreaElement>;
 
-  constructor(
-    public chatService: ChatService,
-    private userService: UserService,
-    private groupService: GroupService
-  ) {}
+  constructor(public chatService: ChatService) {}
 
   async ngAfterViewInit() {
     if (typeof window !== 'undefined') {
@@ -126,27 +120,36 @@ export class ThreadComponent implements OnChanges, AfterViewInit {
   }
 
   private scrollToBottom() {
-    const el = this.chatContainer.nativeElement;
+    const el = this.threadContainer.nativeElement;
     el.scrollTop = el.scrollHeight;
   }
 
   async sendThread() {
     if (
-      !this.groupId ||
-      !this.messageId ||
+      !this.threadText.trim() ||
       !this.currentUserUid ||
-      !this.threadText.trim()
+      !this.groupId ||
+      !this.messageId
     ) {
       return;
     }
+    const text = this.threadText.trim();
+    this.threadText = '';
+
     await this.chatService.sendGroupThreadMessage(
       this.groupId,
       this.messageId,
       this.currentUserUid,
-      this.threadText.trim()
+      text
     );
-    this.threadText = '';
-    this.scrollToBottom();
+    setTimeout(() => this.scrollToBottom(), 50);
+  }
+
+  onTextareaKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && !event.altKey) {
+      event.preventDefault();
+      this.sendThread();
+    }
   }
 
   toggleEmojiPicker() {

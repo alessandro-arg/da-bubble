@@ -80,7 +80,7 @@
   </ng-container>
 
   <!-- Answers -->
-  <div class="space-y-3 overflow-auto h-[65vh]">
+  <div #threadContainer class="space-y-3 overflow-auto h-[65vh]">
     <ng-container *ngFor="let msg of threadMessages$ | async">
       <ng-container *ngIf="participantsMap[msg.sender] as user">
         <div
@@ -239,6 +239,7 @@
       <!-- Textarea at top -->
       <textarea
         [(ngModel)]="threadText"
+        (keydown)="onTextareaKeydown($event)"
         name="threadText"
         placeholder="Antworten..."
         class="w-full resize-none border-none focus:outline-none text-lg placeholder-[#686868] bg-transparent pr-[30px]"

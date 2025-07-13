@@ -233,6 +233,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   async send() {
     if (!this.newMessage.trim() || !this.currentUserUid) return;
     const text = this.newMessage.trim();
+    this.newMessage = '';
 
     if (this.groupId) {
       await this.chatService.sendGroupMessage(
@@ -248,7 +249,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
       );
     }
 
-    this.newMessage = '';
     setTimeout(() => this.scrollToBottom(), 50);
   }
 

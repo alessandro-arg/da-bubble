@@ -473,13 +473,23 @@
                           >
                             <div
                               *ngIf="threads.length > 0"
-                              class="ml-8 mb-1 text-xs text-gray-500 flex items-center gap-2"
+                              class="flex items-center gap-5"
+                              [ngClass]="
+                                msg.sender === currentUserUid
+                                  ? 'flex-row-reverse'
+                                  : 'flex-row'
+                              "
                             >
-                              <span (click)="openThread(msg)"
-                                >{{ threads.length }} Answers</span
+                              <span
+                                (click)="openThread(msg)"
+                                class="text-[#535AF1] font-normal text-base cursor-pointer hover:font-bold"
+                                >{{ threads.length }}
+                                {{
+                                  threads.length === 1 ? "Antwort" : "Antworten"
+                                }}</span
                               >
-                              <span>
-                                · Last reply
+                              <span class="text-[#686868] font-normal text-sm">
+                                Letzte Antwort
                                 {{
                                   threads[
                                     threads.length - 1
