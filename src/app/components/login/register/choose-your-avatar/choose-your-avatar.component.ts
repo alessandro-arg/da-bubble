@@ -69,12 +69,10 @@ export class ChooseYourAvatarComponent implements OnInit {
     try {
       const { email, password, name } = data;
   
-      // 1. Versuch, den Benutzer zu registrieren
       const userCredential = await firstValueFrom(
         this.authService.register(email, password)
       );
   
-      // 2. Benutzerdaten in Firestore speichern
       await this.userService.createUser({
         uid: userCredential.user?.uid,
         name: name,
@@ -90,9 +88,7 @@ export class ChooseYourAvatarComponent implements OnInit {
       }, 1800);
   
     } catch (error: any) {
-      console.error('Registrierungsfehler:', error);
       
-      // Verbesserte Fehlerbehandlung
       if (error.code === 'auth/email-already-in-use') {
         this.errorMessage = 'Diese E-Mail-Adresse ist bereits registriert. Bitte verwenden Sie eine andere E-Mail oder melden Sie sich an.';
       } else if (error.code === 'auth/weak-password') {
