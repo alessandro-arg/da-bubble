@@ -93,7 +93,7 @@ export class ResetPasswordComponent implements OnInit {
 
     try {
       await this.authService.confirmPasswordReset(this.oobCode, newPassword).toPromise();
-      this.successMessage = 'Ihr Passwort wurde erfolgreich geändert. Sie können sich jetzt mit Ihrem neuen Passwort anmelden.';
+      this.successMessage = 'Anmelden';
       setTimeout(() => {
         this.router.navigate(['/login']);
       }, 3000);
