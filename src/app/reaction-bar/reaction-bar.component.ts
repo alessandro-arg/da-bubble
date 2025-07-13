@@ -135,7 +135,7 @@ export class ReactionBarComponent {
       .filter((r) => r.emoji === emoji)
       .map((r) =>
         r.userId === this.currentUserUid
-          ? 'You'
+          ? 'Du'
           : this.participantsMap[r.userId]?.name || 'Unknown'
       );
   }
