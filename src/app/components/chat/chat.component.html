@@ -236,6 +236,7 @@
 
                     <!-- ─── reactions bar ──────────────────────────────────── -->
                     <app-reaction-bar
+                      #bar
                       [msg]="msg"
                       [currentUserUid]="currentUserUid"
                       [participantsMap]="participantsMap"
@@ -267,7 +268,7 @@
                       >
                         <button
                           class="flex-none p-2 hover:bg-gray-100 rounded-full self-start"
-                          (click)="toggleMessagePicker(msg.id)"
+                          (click)="bar.togglePicker()"
                         >
                           <img
                             src="../../../assets/img/icons/add_reaction.png"
@@ -302,7 +303,7 @@
                       >
                         <button
                           class="flex-none p-2 hover:bg-gray-100 rounded-full self-start"
-                          (click)="toggleMessagePicker(msg.id)"
+                          (click)="bar.togglePicker()"
                         >
                           <img
                             src="../../../assets/img/icons/add_reaction.png"
@@ -574,6 +575,7 @@
 
                         <!-- ─── reactions bar ──────────────────────────────────── -->
                         <app-reaction-bar
+                          #bar
                           [msg]="msg"
                           [currentUserUid]="currentUserUid"
                           [participantsMap]="participantsMap"
@@ -605,7 +607,7 @@
                           >
                             <button
                               class="flex-none p-2 hover:bg-gray-100 rounded-full self-start"
-                              (click)="toggleMessagePicker(msg.id)"
+                              (click)="bar.togglePicker()"
                             >
                               <img
                                 src="../../../assets/img/icons/add_reaction.png"
@@ -650,7 +652,7 @@
                           >
                             <button
                               class="flex-none p-2 hover:bg-gray-100 rounded-full self-start"
-                              (click)="toggleMessagePicker(msg.id)"
+                              (click)="bar.togglePicker()"
                             >
                               <img
                                 src="../../../assets/img/icons/add_reaction.png"

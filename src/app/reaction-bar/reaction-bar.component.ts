@@ -39,9 +39,8 @@ export class ReactionBarComponent {
   @HostListener('document:click', ['$event.target'])
   onClickOutside(targetElement: HTMLElement) {
     if (!this.showPicker) return;
-    if (this.host.nativeElement.contains(targetElement)) {
-      return;
-    }
+    if (this.host.nativeElement.contains(targetElement)) return;
+    if ((targetElement as Element).closest('.picker-container')) return;
     this.showPicker = false;
   }
 
