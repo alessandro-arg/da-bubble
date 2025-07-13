@@ -46,18 +46,27 @@
           <span class="text-lg">{{ r.emoji }}</span>
           <span> {{ r.count }}</span>
         </span>
+
+        <!-- Popup -->
         <div
-          class="invisible opacity-0 peer-hover:visible peer-hover:opacity-100 absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-800 text-white text-xs rounded py-2 px-3 whitespace-nowrap transition-opacity duration-150 pointer-events-none"
+          class="invisible gap-1 max-w-[150px] opacity-0 peer-hover:visible peer-hover:opacity-100 absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-[#444DF2] text-white text-sm rounded-t-[30px] rounded-br-[30px] py-3 px-2 whitespace-normal transition-opacity duration-150 pointer-events-none"
         >
-          <div class="mb-1 text-center">{{ r.emoji }}</div>
+          <div class="mb-1 text-center text-lg">{{ r.emoji }}</div>
           <ng-container *ngIf="getReactionUserNames(r.emoji) as names">
-            <div *ngIf="names.length === 1">{{ names[0] }} hat reagiert</div>
+            <div *ngIf="names.length === 1">
+              <span class="font-bold text-base">{{ names[0] }}</span> hat
+              reagiert
+            </div>
             <div *ngIf="names.length === 2">
-              {{ names[0] }} und {{ names[1] }} haben reagiert
+              <span class="font-bold text-base">{{ names[0] }}</span> und
+              <span class="font-bold text-base">{{ names[1] }}</span> haben
+              reagiert
             </div>
             <div *ngIf="names.length > 2">
-              {{ names[0] }}, {{ names[1] }} und andere {{ names.length - 2 }}
-              haben reagiert
+              <span class="font-bold text-base">{{ names[0] }}</span
+              >, <span class="font-bold text-base">{{ names[1] }}</span> und
+              <span class="font-bold text-base">{{ names.length - 2 }}</span>
+              andere haben reagiert
             </div>
           </ng-container>
         </div>
