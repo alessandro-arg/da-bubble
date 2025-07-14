@@ -18,10 +18,10 @@
       </div>
     </div>
 
-    <ng-container *ngIf="showAddMembersModal">
+    <ng-container *ngIf="showAddMembersModal || showMembersModal">
       <div
         class="fixed inset-0 bg-black bg-opacity-50 z-40"
-        (click)="closeAddMembersModal()"
+        (click)="closeAddMembersModal(); closeMembersModal()"
       ></div>
     </ng-container>
 
@@ -40,24 +40,100 @@
             />
           </div>
           <div class="flex gap-2 px-[10px] py-[3px] items-center">
-            <div class="flex items-center gap-[10px] py-1 px-2">
-              <img
-                src="../../../assets/img/charaters(1).svg"
-                alt=""
-                class="w-10 h-10 border-2 border-white rounded-full"
-              />
-              <img
-                src="../../../assets/img/charaters(2).svg"
-                alt=""
-                class="w-10 h-10 border-2 border-white rounded-full -ml-5"
-              />
-              <img
-                src="../../../assets/img/charaters(3).svg"
-                alt=""
-                class="w-10 h-10 border-2 border-white rounded-full -ml-5"
-              />
-              <span class="font-semibold text-xl">3</span>
+            <div class="relative inline-block">
+              <div
+                class="flex items-center gap-[10px] py-1 px-2"
+                (click)="openMembersModal()"
+              >
+                <img
+                  src="../../../assets/img/charaters(1).svg"
+                  alt=""
+                  class="w-10 h-10 border-2 border-white rounded-full"
+                />
+                <img
+                  src="../../../assets/img/charaters(2).svg"
+                  alt=""
+                  class="w-10 h-10 border-2 border-white rounded-full -ml-5"
+                />
+                <img
+                  src="../../../assets/img/charaters(3).svg"
+                  alt=""
+                  class="w-10 h-10 border-2 border-white rounded-full -ml-5"
+                />
+                <span class="font-semibold text-xl">3</span>
+              </div>
+
+              <!-- MITGLIEDER MODAL -->
+              <div
+                *ngIf="showMembersModal"
+                class="absolute top-full right-0 mt-2 w-72 bg-white rounded-xl p-4 shadow-lg z-50"
+                (click)="$event.stopPropagation()"
+              >
+                <!-- header -->
+                <div class="flex justify-between items-center mb-4">
+                  <h2 class="text-xl font-semibold">Mitglieder</h2>
+                  <button
+                    (click)="closeMembersModal(); $event.stopPropagation()"
+                    class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] group transition-colors duration-200"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-6 h-6 text-black group-hover:text-[#535AF1]"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- list current participants -->
+                <ul class="space-y-3">
+                  <li
+                    *ngFor="let u of participantsMap | keyvalue"
+                    class="flex items-center gap-3"
+                  >
+                    <img
+                      [src]="u.value.avatar"
+                      class="w-8 h-8 rounded-full border-2 border-white"
+                      *ngIf="u.value.avatar"
+                    />
+                    <div class="flex flex-col">
+                      <span
+                        >{{ u.value.name }}
+                        <small *ngIf="u.value.uid === currentUserUid"
+                          >(Du)</small
+                        >
+                      </span>
+                    </div>
+                  </li>
+                </ul>
+
+                <!-- footer: jump into the Add Members flow -->
+                <div class="mt-6 text-center">
+                  <button
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full hover:bg-gray-200"
+                    (click)="
+                      onClickAddMembersFromMembersModal();
+                      $event.stopPropagation()
+                    "
+                  >
+                    <img
+                      src="../../../assets/img/icons/add_members.png"
+                      class="w-5 h-5"
+                    />
+                    Mitglieder hinzufügen
+                  </button>
+                </div>
+              </div>
             </div>
+
             <div class="relative inline-block add-members-button">
               <img
                 src="../../../assets/img/icons/add_members.png"
@@ -116,7 +192,7 @@
                     >
                       {{ u.name || u.email }}
                       <button (click)="removeSelected(u)" class="ml-1">
-                        ×
+                        x
                       </button>
                     </span>
                   </div>

@@ -55,6 +55,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   showEmojiPicker = false;
   showProfileModal = false;
   showAddMembersModal = false;
+  showMembersModal = false;
   allUsers: User[] = [];
   filteredUsers: User[] = [];
   selectedUsers: User[] = [];
@@ -231,7 +232,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
         const matchesName = (u.name || u.email || '').toLowerCase().includes(t);
         return notAlready && matchesName;
       })
-      .slice(0, 5); // limit to top 5 suggestions
+      .slice(0, 5);
   }
 
   selectUser(u: User) {
@@ -254,6 +255,19 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     }
     this.selectedUsers = [];
     this.closeAddMembersModal();
+  }
+
+  openMembersModal() {
+    this.showMembersModal = true;
+  }
+
+  closeMembersModal() {
+    this.showMembersModal = false;
+  }
+
+  onClickAddMembersFromMembersModal() {
+    this.closeMembersModal();
+    this.openAddMembersModal();
   }
 
   toggleEmojiPicker() {
