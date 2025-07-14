@@ -54,6 +54,11 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   messagesLoading = false;
   showEmojiPicker = false;
   showProfileModal = false;
+  showAddMembersModal = false;
+  allUsers: User[] = [];
+  filteredUsers: User[] = [];
+  selectedUsers: User[] = [];
+  searchTerm = '';
 
   messagePicker: Record<string, boolean> = {};
   participantsMap: Record<string, User> = {};
@@ -198,6 +203,57 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   closeProfileModal() {
     this.showProfileModal = false;
+  }
+
+  openAddMembersModal() {
+    this.showAddMembersModal = true;
+    if (!this.allUsers.length) {
+      this.groupService.getAllUsers().then((users) => (this.allUsers = users));
+    }
+  }
+
+  closeAddMembersModal() {
+    this.showAddMembersModal = false;
+    this.searchTerm = '';
+    this.filteredUsers = [];
+  }
+
+  filterUsers() {
+    const t = this.searchTerm.trim().toLowerCase();
+    if (!t) {
+      this.filteredUsers = [];
+      return;
+    }
+
+    this.filteredUsers = this.allUsers
+      .filter((u) => {
+        const notAlready = !this.participantsMap[u.uid!];
+        const matchesName = (u.name || u.email || '').toLowerCase().includes(t);
+        return notAlready && matchesName;
+      })
+      .slice(0, 5); // limit to top 5 suggestions
+  }
+
+  selectUser(u: User) {
+    if (!this.selectedUsers.find((x) => x.uid === u.uid)) {
+      this.selectedUsers.push(u);
+    }
+    this.searchTerm = '';
+    this.filteredUsers = [];
+  }
+
+  removeSelected(u: User) {
+    this.selectedUsers = this.selectedUsers.filter((x) => x.uid !== u.uid);
+  }
+
+  async confirmAdd() {
+    if (!this.groupId) return;
+    for (let u of this.selectedUsers) {
+      await this.groupService.addUserToGroup(this.groupId, u.uid!);
+      this.participantsMap[u.uid!] = u;
+    }
+    this.selectedUsers = [];
+    this.closeAddMembersModal();
   }
 
   toggleEmojiPicker() {

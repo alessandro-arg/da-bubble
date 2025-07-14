@@ -5,6 +5,9 @@ import {
   addDoc,
   serverTimestamp,
   getDocs,
+  arrayUnion,
+  doc,
+  updateDoc,
 } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { User } from './models/user.model';
@@ -57,5 +60,14 @@ export class GroupService {
     const allUids = snapshot.docs.map((d) => d.id);
 
     return this.createGroup(name, description, allUids);
+  }
+
+  /** Add a single user UID to the `participants` array of an existing group. */
+  async addUserToGroup(groupId: string, userId: string): Promise<void> {
+    const groupRef = doc(this.firestore, 'groups', groupId);
+    await updateDoc(groupRef, {
+      participants: arrayUnion(userId),
+      updatedAt: serverTimestamp(),
+    });
   }
 }
