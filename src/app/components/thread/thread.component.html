@@ -80,7 +80,10 @@
   </ng-container>
 
   <!-- Answers -->
-  <div #threadContainer class="space-y-3 overflow-auto h-[65vh]">
+  <div
+    #threadContainer
+    class="space-y-3 overflow-y-auto overflow-x-hidden h-[65vh]"
+  >
     <ng-container *ngFor="let msg of threadMessages$ | async">
       <ng-container *ngIf="participantsMap[msg.sender] as user">
         <div
@@ -211,6 +214,7 @@
                 [msg]="msg"
                 [currentUserUid]="currentUserUid"
                 [showThreadButton]="false"
+                [showQuickButtons]="false"
                 (quickReaction)="onQuickThreadReaction(msg, $event)"
                 (togglePicker)="bar.togglePicker()"
                 (toggleOptions)="toggleOptions(msg.id!, $event)"

@@ -4,6 +4,7 @@
   class="hidden group-hover:flex gap-1 absolute -top-4 right-[45px] px-[15px] py-[3px] items-center bg-white border border-[#ADB0D9] rounded-l-[25px] rounded-tr-[25px] transition-opacity duration-200 z-10"
 >
   <button
+    *ngIf="showQuickButtons"
     (click)="quickReaction.emit('✔️')"
     class="p-[10px] rounded-[20px] hover:bg-gray-100"
     title="✔️"
@@ -11,6 +12,7 @@
     ✔️
   </button>
   <button
+    *ngIf="showQuickButtons"
     (click)="quickReaction.emit('👍')"
     class="p-[10px] rounded-[20px] hover:bg-gray-100"
     title="👍"
@@ -45,6 +47,7 @@
   class="hidden group-hover:flex gap-1 absolute -top-4 left-[45px] px-[15px] py-[3px] items-center bg-white border border-[#ADB0D9] rounded-l-[25px] rounded-tr-[25px] transition-opacity duration-200 z-10"
 >
   <button
+    *ngIf="showQuickButtons"
     (click)="quickReaction.emit('✔️')"
     class="p-[10px] rounded-[20px] hover:bg-gray-100"
     title="✔️"
@@ -52,6 +55,7 @@
     ✔️
   </button>
   <button
+    *ngIf="showQuickButtons"
     (click)="quickReaction.emit('👍')"
     class="p-[10px] rounded-[20px] hover:bg-gray-100"
     title="👍"
@@ -78,20 +82,26 @@
   >
     <img src="../../../assets/img/icons/comment.png" alt="Thread" />
   </button>
-  <div class="relative">
+  <div class="relative inline-block">
+    <!-- the three-dot “options” button -->
     <button
-      class="options-button p-[10px] rounded-[20px] hover:bg-gray-100"
+      class="options-button p-2 rounded-full hover:bg-gray-100 relative"
       title="Options"
       (click)="onToggleOptions($event)"
     >
       <img src="../../../assets/img/icons/more_vert.png" alt="Options" />
     </button>
-    <div *ngIf="optionsOpen" class="options-popup relative">
+
+    <!-- the popup itself -->
+    <div
+      *ngIf="optionsOpen"
+      class="absolute w-max top-1/2 left-full mt-2 bg-white flex items-center py-2 px-4 rounded-b-[30px] rounded-tr-[30px] shadow-[0px_6px_14px_0px_#00000033] z-10"
+    >
       <button
-        class="absolute px-3 py-1 bg-[#797EF3] text-white rounded-full shadow hover:bg-[#5F5CD6]"
+        class="px-5 py-2 font-semibold text-lg bg-transparent text-black rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1]"
         (click)="onOpenEdit($event)"
       >
-        Edit User
+        Nachricht bearbeiten
       </button>
     </div>
   </div>

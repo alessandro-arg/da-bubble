@@ -248,6 +248,7 @@
                     <app-hover-menu
                       [msg]="msg"
                       [currentUserUid]="currentUserUid"
+                      [showQuickButtons]="true"
                       (quickReaction)="onQuickReaction(msg, $event)"
                       (togglePicker)="bar.togglePicker()"
                       (toggleOptions)="toggleOptions(msg.id!, $event)"
@@ -515,6 +516,7 @@
                           [msg]="msg"
                           [currentUserUid]="currentUserUid"
                           [showThreadButton]="!!groupId"
+                          [showQuickButtons]="true"
                           (quickReaction)="onQuickReaction(msg, $event)"
                           (togglePicker)="bar.togglePicker()"
                           (toggleOptions)="toggleOptions(msg.id!, $event)"

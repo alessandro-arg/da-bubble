@@ -13,6 +13,7 @@ export class HoverMenuComponent {
   @Input() msg!: Message;
   @Input() currentUserUid!: string | null;
   @Input() showThreadButton = false;
+  @Input() showQuickButtons = false;
 
   @Output() quickReaction = new EventEmitter<string>();
   @Output() togglePicker = new EventEmitter<void>();
