@@ -1,7 +1,7 @@
 <!-- User hover on other peoples messages -->
 <div
   *ngIf="msg.sender !== currentUserUid"
-  class="hidden group-hover:flex gap-1 absolute -top-4 right-[45px] px-[15px] py-[3px] items-center bg-white border border-[#ADB0D9] rounded-l-[25px] rounded-tr-[25px] transition-opacity duration-200 z-10"
+  class="hidden group-hover:flex gap-1 absolute -top-4 right-[45px] px-[15px] py-[3px] items-center bg-white border border-[#ADB0D9] rounded-r-[25px] rounded-tl-[25px] transition-opacity duration-200 z-10"
 >
   <button
     *ngIf="showQuickButtons"
