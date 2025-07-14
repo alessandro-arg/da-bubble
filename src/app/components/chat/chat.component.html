@@ -37,13 +37,26 @@
         >
           <div class="relative inline-block">
             <div
-              class="flex items-center gap-[10px] py-1 cursor-pointer"
+              class="flex items-center gap-[10px] py-[6px] px-[10px] cursor-pointer hover:text-[#535AF1] rounded-full hover:bg-[#ECEEFE]"
               (click)="openGroupSettingsModal()"
+              (mouseenter)="isGroupTitleHovered = true"
+              (mouseleave)="isGroupTitleHovered = false"
             >
-              <img src="../../../assets/img/icons/tag.png" class="w-6 h-6" />
+              <img
+                [src]="
+                  isGroupTitleHovered
+                    ? '../../../assets/img/icons/tag_purple.png'
+                    : '../../../assets/img/icons/tag.png'
+                "
+                class="w-6 h-6"
+              />
               <p class="text-xl font-bold">{{ group.name }}</p>
               <img
-                src="../../../assets/img/icons/arrow_down.png"
+                [src]="
+                  isGroupTitleHovered
+                    ? '../../../assets/img/icons/arrow_down_purple.png'
+                    : '../../../assets/img/icons/arrow_down.png'
+                "
                 class="w-[30px] h-[30px]"
               />
             </div>
@@ -107,7 +120,7 @@
                     src="../../../assets/img/icons/tag.png"
                     class="w-5 h-5"
                   />
-                  <span class="text-lg font-semibold"># {{ group.name }}</span>
+                  <span class="text-lg font-semibold">{{ group.name }}</span>
                 </div>
                 <div
                   *ngIf="editingGroupName"
@@ -196,22 +209,23 @@
                 class="flex items-center gap-[10px] py-1 px-2 cursor-pointer rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] transition-colors duration-200"
                 (click)="openMembersModal()"
               >
-                <img
-                  src="../../../assets/img/charaters(1).svg"
-                  alt=""
-                  class="w-10 h-10 border-2 border-white rounded-full"
-                />
-                <img
-                  src="../../../assets/img/charaters(2).svg"
-                  alt=""
-                  class="w-10 h-10 border-2 border-white rounded-full -ml-5"
-                />
-                <img
-                  src="../../../assets/img/charaters(3).svg"
-                  alt=""
-                  class="w-10 h-10 border-2 border-white rounded-full -ml-5"
-                />
-                <span class="font-semibold text-xl">3</span>
+                <ng-container
+                  *ngFor="
+                    let uid of group.participants | slice : 0 : 3;
+                    let i = index
+                  "
+                >
+                  <img
+                    *ngIf="participantsMap[uid]"
+                    [src]="participantsMap[uid].avatar"
+                    [alt]="participantsMap[uid].name"
+                    class="w-10 h-10 border-2 border-white rounded-full"
+                    [ngClass]="{ '-ml-5': i > 0 }"
+                  />
+                </ng-container>
+                <span class="font-semibold text-xl">
+                  {{ group.participants.length }}
+                </span>
               </div>
 
               <!-- MITGLIEDER MODAL -->
@@ -245,24 +259,26 @@
                 </div>
 
                 <!-- list current participants -->
-                <ul class="space-y-3">
-                  <li
-                    *ngFor="let uid of currentGroup?.participants"
-                    class="flex items-center gap-3"
-                  >
-                    <img
-                      *ngIf="participantsMap[uid]?.avatar"
-                      [src]="participantsMap[uid]!.avatar"
-                      class="w-8 h-8 rounded-full border-2 border-white"
-                    />
-                    <div class="flex flex-col">
-                      <span>
-                        {{ participantsMap[uid].name || "" }}
-                        <small *ngIf="uid === currentUserUid">(Du)</small>
-                      </span>
-                    </div>
-                  </li>
-                </ul>
+                <ng-container *ngIf="group$ | async as group">
+                  <ul class="space-y-3">
+                    <li
+                      *ngFor="let uid of group.participants"
+                      class="flex items-center gap-3"
+                    >
+                      <img
+                        *ngIf="participantsMap[uid]"
+                        [src]="participantsMap[uid].avatar"
+                        class="w-8 h-8 rounded-full border-2 border-white"
+                      />
+                      <div class="flex flex-col">
+                        <span>
+                          {{ participantsMap[uid].name }}
+                          <small *ngIf="uid === currentUserUid">(Du)</small>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </ng-container>
 
                 <!-- footer: jump into the Add Members flow -->
                 <div class="mt-6 text-center">

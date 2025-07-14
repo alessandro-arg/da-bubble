@@ -58,6 +58,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   showAddMembersModal = false;
   showMembersModal = false;
   showGroupSettingsModal = false;
+
   allUsers: User[] = [];
   filteredUsers: User[] = [];
   selectedUsers: User[] = [];
@@ -78,6 +79,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   isEmojiHovered = false;
   isAttachHovered = false;
   isAddMembersHovered = false;
+  isGroupTitleHovered = false;
 
   editingMsgId: string | null = null;
   editText = '';
