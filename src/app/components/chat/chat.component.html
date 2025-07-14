@@ -18,10 +18,14 @@
       </div>
     </div>
 
-    <ng-container *ngIf="showAddMembersModal || showMembersModal">
+    <ng-container
+      *ngIf="showAddMembersModal || showMembersModal || showGroupSettingsModal"
+    >
       <div
         class="fixed inset-0 bg-black bg-opacity-50 z-40"
-        (click)="closeAddMembersModal(); closeMembersModal()"
+        (click)="
+          closeAddMembersModal(); closeMembersModal(); closeGroupSettingsModal()
+        "
       ></div>
     </ng-container>
 
@@ -31,18 +35,104 @@
         <div
           class="w-full flex justify-between gap-[10px] px-[45px] pt-[28px] pb-[16px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
         >
-          <div class="flex items-center gap-[10px] py-1">
-            <img src="../../../assets/img/icons/tag.png" class="w-6 h-6" />
-            <p class="text-xl font-bold">{{ group.name }}</p>
-            <img
-              src="../../../assets/img/icons/arrow_down.png"
-              class="w-[30px] h-[30px]"
-            />
+          <div class="relative inline-block">
+            <div
+              class="flex items-center gap-[10px] py-1 cursor-pointer"
+              (click)="openGroupSettingsModal()"
+            >
+              <img src="../../../assets/img/icons/tag.png" class="w-6 h-6" />
+              <p class="text-xl font-bold">{{ group.name }}</p>
+              <img
+                src="../../../assets/img/icons/arrow_down.png"
+                class="w-[30px] h-[30px]"
+              />
+            </div>
+
+            <div
+              *ngIf="showGroupSettingsModal"
+              class="absolute top-full left-0 mt-2 w-96 bg-white rounded-xl p-6 shadow-lg z-50"
+              (click)="$event.stopPropagation()"
+            >
+              <!-- Header row -->
+              <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-2">
+                  <img
+                    src="../../../assets/img/icons/tag.png"
+                    class="w-6 h-6"
+                  />
+                  <h2 class="text-2xl font-semibold">{{ group.name }}</h2>
+                </div>
+                <button
+                  class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
+                  (click)="closeGroupSettingsModal(); $event.stopPropagation()"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Channel-Name field -->
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-1"
+                  >Channel-Name</label
+                >
+                <input
+                  type="text"
+                  [value]="group.name"
+                  disabled
+                  class="w-full border rounded-full px-4 py-2 text-gray-700 bg-gray-50"
+                />
+              </div>
+
+              <!-- Beschreibung field -->
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-1"
+                  >Beschreibung</label
+                >
+                <textarea
+                  [value]="group.description || ''"
+                  disabled
+                  class="w-full border rounded-xl px-4 py-2 text-gray-700 bg-gray-50 resize-none h-24"
+                ></textarea>
+              </div>
+
+              <!-- Erstellt von -->
+              <div class="mb-6">
+                <label class="block text-sm font-medium mb-1"
+                  >Erstellt von</label
+                >
+                <p class="text-gray-800">
+                  {{ participantsMap[group.creator!].name }}
+                </p>
+              </div>
+
+              <!-- Leave button -->
+              <div class="flex justify-end">
+                <button
+                  (click)="leaveChannel()"
+                  class="bg-red-600 text-white rounded-full px-5 py-2 hover:bg-red-700 transition"
+                >
+                  Channel verlassen
+                </button>
+              </div>
+            </div>
           </div>
           <div class="flex gap-2 px-[10px] py-[3px] items-center">
             <div class="relative inline-block">
               <div
-                class="flex items-center gap-[10px] py-1 px-2"
+                class="flex items-center gap-[10px] py-1 px-2 cursor-pointer rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] transition-colors duration-200"
                 (click)="openMembersModal()"
               >
                 <img
@@ -134,9 +224,17 @@
               </div>
             </div>
 
-            <div class="relative inline-block add-members-button">
+            <div
+              class="relative inline-block add-members-button"
+              (mouseenter)="isAddMembersHovered = true"
+              (mouseleave)="isAddMembersHovered = false"
+            >
               <img
-                src="../../../assets/img/icons/add_members.png"
+                [src]="
+                  isAddMembersHovered
+                    ? '../../../assets/img/icons/add_members_purple.png'
+                    : '../../../assets/img/icons/add_members.png'
+                "
                 alt="Add members"
                 class="cursor-pointer"
                 (click)="openAddMembersModal()"
@@ -762,6 +860,7 @@
       </div>
     </ng-template>
 
+    <!-- Show Profile Modal -->
     <div
       *ngIf="showProfileModal"
       class="fixed inset-0 z-50 flex items-center flex-col gap-9 justify-center bg-black bg-opacity-40"

@@ -56,6 +56,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   showProfileModal = false;
   showAddMembersModal = false;
   showMembersModal = false;
+  showGroupSettingsModal = false;
   allUsers: User[] = [];
   filteredUsers: User[] = [];
   selectedUsers: User[] = [];
@@ -69,6 +70,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   isEmojiHovered = false;
   isAttachHovered = false;
+  isAddMembersHovered = false;
 
   editingMsgId: string | null = null;
   editText = '';
@@ -268,6 +270,23 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   onClickAddMembersFromMembersModal() {
     this.closeMembersModal();
     this.openAddMembersModal();
+  }
+
+  openGroupSettingsModal() {
+    this.showGroupSettingsModal = true;
+  }
+  closeGroupSettingsModal() {
+    this.showGroupSettingsModal = false;
+  }
+
+  async leaveChannel() {
+    if (!this.groupId || !this.currentUserUid) return;
+    await this.groupService.removeUserFromGroup(
+      this.groupId,
+      this.currentUserUid
+    );
+    delete this.participantsMap[this.currentUserUid];
+    this.closeGroupSettingsModal();
   }
 
   toggleEmojiPicker() {

@@ -8,6 +8,7 @@ import {
   arrayUnion,
   doc,
   updateDoc,
+  arrayRemove,
 } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { User } from './models/user.model';
@@ -62,11 +63,29 @@ export class GroupService {
     return this.createGroup(name, description, allUids);
   }
 
-  /** Add a single user UID to the `participants` array of an existing group. */
+  async updateGroup(
+    groupId: string,
+    data: { name?: string; description?: string }
+  ): Promise<void> {
+    const groupRef = doc(this.firestore, 'groups', groupId);
+    await updateDoc(groupRef, {
+      ...data,
+      updatedAt: serverTimestamp(),
+    });
+  }
+
   async addUserToGroup(groupId: string, userId: string): Promise<void> {
     const groupRef = doc(this.firestore, 'groups', groupId);
     await updateDoc(groupRef, {
       participants: arrayUnion(userId),
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  async removeUserFromGroup(groupId: string, userId: string): Promise<void> {
+    const groupRef = doc(this.firestore, 'groups', groupId);
+    await updateDoc(groupRef, {
+      participants: arrayRemove(userId),
       updatedAt: serverTimestamp(),
     });
   }
