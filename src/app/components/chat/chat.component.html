@@ -50,11 +50,11 @@
 
             <div
               *ngIf="showGroupSettingsModal"
-              class="absolute top-full left-0 mt-2 w-96 bg-white rounded-xl p-6 shadow-lg z-50"
+              class="absolute top-full left-0 mt-2 w-[28rem] bg-white rounded-2xl p-6 shadow-xl z-50"
               (click)="$event.stopPropagation()"
             >
-              <!-- Header row -->
-              <div class="flex justify-between items-center mb-6">
+              <!-- header -->
+              <div class="flex justify-between items-center mb-8">
                 <div class="flex items-center gap-2">
                   <img
                     src="../../../assets/img/icons/tag.png"
@@ -83,46 +83,107 @@
                 </button>
               </div>
 
-              <!-- Channel-Name field -->
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-1"
-                  >Channel-Name</label
+              <!-- Channel-Name card -->
+              <div
+                class="border border-purple-200 rounded-xl p-4 mb-6 relative"
+              >
+                <div class="flex justify-between items-center">
+                  <span class="text-sm font-medium text-gray-500"
+                    >Channel-Name</span
+                  >
+                  <button
+                    *ngIf="!editingGroupName && isCreator"
+                    class="text-purple-600 text-sm"
+                    (click)="startEditGroupName()"
+                  >
+                    Bearbeiten
+                  </button>
+                </div>
+                <div
+                  *ngIf="!editingGroupName"
+                  class="mt-2 flex items-center gap-2"
                 >
-                <input
-                  type="text"
-                  [value]="group.name"
-                  disabled
-                  class="w-full border rounded-full px-4 py-2 text-gray-700 bg-gray-50"
-                />
+                  <img
+                    src="../../../assets/img/icons/tag.png"
+                    class="w-5 h-5"
+                  />
+                  <span class="text-lg font-semibold"># {{ group.name }}</span>
+                </div>
+                <div
+                  *ngIf="editingGroupName"
+                  class="mt-2 flex items-center gap-2"
+                >
+                  <input
+                    [(ngModel)]="newGroupName"
+                    class="flex-1 border border-gray-300 rounded-full px-4 py-2"
+                  />
+                  <button
+                    class="text-purple-600 text-sm"
+                    (click)="saveGroupName()"
+                  >
+                    Speichern
+                  </button>
+                  <button class="ml-2 text-sm" (click)="cancelEditGroupName()">
+                    Abbrechen
+                  </button>
+                </div>
               </div>
 
-              <!-- Beschreibung field -->
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-1"
-                  >Beschreibung</label
+              <!-- Beschreibung card -->
+              <div
+                class="border border-purple-200 rounded-xl p-4 mb-6 relative"
+              >
+                <div class="flex justify-between items-center">
+                  <span class="text-sm font-medium text-gray-500"
+                    >Beschreibung</span
+                  >
+                  <button
+                    *ngIf="!editingGroupDescription && isCreator"
+                    class="text-purple-600 text-sm"
+                    (click)="startEditGroupDescription()"
+                  >
+                    Bearbeiten
+                  </button>
+                </div>
+                <div
+                  *ngIf="!editingGroupDescription"
+                  class="mt-2 text-gray-700"
                 >
-                <textarea
-                  [value]="group.description || ''"
-                  disabled
-                  class="w-full border rounded-xl px-4 py-2 text-gray-700 bg-gray-50 resize-none h-24"
-                ></textarea>
+                  {{ group.description || "Keine Beschreibung" }}
+                </div>
+                <div *ngIf="editingGroupDescription" class="mt-2">
+                  <textarea
+                    [(ngModel)]="newGroupDescription"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-2 h-28 resize-none"
+                  ></textarea>
+                  <div class="flex justify-end gap-2 mt-2">
+                    <button
+                      class="text-purple-600 text-sm"
+                      (click)="saveGroupDescription()"
+                    >
+                      Speichern
+                    </button>
+                    <button
+                      class="text-sm"
+                      (click)="cancelEditGroupDescription()"
+                    >
+                      Abbrechen
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              <!-- Erstellt von -->
-              <div class="mb-6">
-                <label class="block text-sm font-medium mb-1"
-                  >Erstellt von</label
-                >
-                <p class="text-gray-800">
-                  {{ participantsMap[group.creator!].name }}
-                </p>
-              </div>
-
-              <!-- Leave button -->
-              <div class="flex justify-end">
+              <!-- Erstellt von + Leave button -->
+              <div class="flex justify-between items-center">
+                <div>
+                  <span class="text-sm text-gray-500">Erstellt von</span>
+                  <p class="text-purple-600">
+                    {{ participantsMap[group.creator!].name }}
+                  </p>
+                </div>
                 <button
+                  class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition"
                   (click)="leaveChannel()"
-                  class="bg-red-600 text-white rounded-full px-5 py-2 hover:bg-red-700 transition"
                 >
                   Channel verlassen
                 </button>
@@ -186,20 +247,18 @@
                 <!-- list current participants -->
                 <ul class="space-y-3">
                   <li
-                    *ngFor="let u of participantsMap | keyvalue"
+                    *ngFor="let uid of currentGroup?.participants"
                     class="flex items-center gap-3"
                   >
                     <img
-                      [src]="u.value.avatar"
+                      *ngIf="participantsMap[uid]?.avatar"
+                      [src]="participantsMap[uid]!.avatar"
                       class="w-8 h-8 rounded-full border-2 border-white"
-                      *ngIf="u.value.avatar"
                     />
                     <div class="flex flex-col">
-                      <span
-                        >{{ u.value.name }}
-                        <small *ngIf="u.value.uid === currentUserUid"
-                          >(Du)</small
-                        >
+                      <span>
+                        {{ participantsMap[uid].name || "" }}
+                        <small *ngIf="uid === currentUserUid">(Du)</small>
                       </span>
                     </div>
                   </li>

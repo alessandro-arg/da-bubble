@@ -41,6 +41,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   @Input() chatPartner!: User | null;
   @Input() currentUserUid!: string | null;
   @Input() groupId!: string | null;
+  @Output() closedChannel = new EventEmitter<void>();
   @Output() userSelected = new EventEmitter<User>();
   @Output() threadSelected = new EventEmitter<{
     groupId: string;
@@ -64,6 +65,12 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   messagePicker: Record<string, boolean> = {};
   participantsMap: Record<string, User> = {};
+
+  currentGroup: Group | null = null;
+  editingGroupName = false;
+  editingGroupDescription = false;
+  newGroupName = '';
+  newGroupDescription = '';
 
   threadStreams: Record<string, Observable<Message[]>> = {};
   private messagesSub?: Subscription;
@@ -144,11 +151,14 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   private async loadGroupChat(groupId: string) {
     this.messagesSub?.unsubscribe();
-
     this.chatId = groupId;
     this.messages$ = this.chatService.getGroupMessages(groupId);
-
     this.group$ = this.chatService.getGroup(groupId);
+
+    this.group$.pipe(take(1)).subscribe((g) => {
+      this.currentGroup = g;
+    });
+
     this.group$
       .pipe(
         filter((g) => !!g.creator),
@@ -176,6 +186,12 @@ export class ChatComponent implements OnChanges, AfterViewInit {
         }
       });
     });
+  }
+
+  get isCreator(): boolean {
+    return (
+      !!this.currentGroup && this.currentUserUid === this.currentGroup.creator
+    );
   }
 
   private finishLoading() {
@@ -274,19 +290,59 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   openGroupSettingsModal() {
     this.showGroupSettingsModal = true;
+    if (this.currentGroup) {
+      this.newGroupName = this.currentGroup.name;
+      this.newGroupDescription = this.currentGroup.description || '';
+    }
   }
+
   closeGroupSettingsModal() {
     this.showGroupSettingsModal = false;
+    this.editingGroupName = false;
+    this.editingGroupDescription = false;
+  }
+
+  startEditGroupName() {
+    this.editingGroupName = true;
+    this.newGroupName = this.currentGroup?.name || '';
+  }
+  cancelEditGroupName() {
+    this.editingGroupName = false;
+    this.newGroupName = this.currentGroup?.name || '';
+  }
+  async saveGroupName() {
+    if (!this.groupId) return;
+    await this.groupService.updateGroup(this.groupId, {
+      name: this.newGroupName,
+    });
+    this.editingGroupName = false;
+  }
+
+  startEditGroupDescription() {
+    this.editingGroupDescription = true;
+    this.newGroupDescription = this.currentGroup?.description || '';
+  }
+  cancelEditGroupDescription() {
+    this.editingGroupDescription = false;
+    this.newGroupDescription = this.currentGroup?.description || '';
+  }
+  async saveGroupDescription() {
+    if (!this.groupId) return;
+    await this.groupService.updateGroup(this.groupId, {
+      description: this.newGroupDescription,
+    });
+    this.editingGroupDescription = false;
   }
 
   async leaveChannel() {
+    if (this.currentUserUid) return;
     if (!this.groupId || !this.currentUserUid) return;
     await this.groupService.removeUserFromGroup(
       this.groupId,
       this.currentUserUid
     );
-    delete this.participantsMap[this.currentUserUid];
     this.closeGroupSettingsModal();
+    this.closedChannel.emit();
   }
 
   toggleEmojiPicker() {

@@ -98,6 +98,11 @@ export class LandingPageComponent implements OnInit {
     this.threadVisible = false;
   }
 
+  onChannelClosed() {
+    this.selectedGroupId = null;
+    this.selectedUser = null;
+  }
+
   toggleWorkspace() {
     this.isCollapsed = !this.isCollapsed;
   }

@@ -215,6 +215,7 @@
         [groupId]="selectedGroupId"
         (userSelected)="openPrivateChat($event)"
         (threadSelected)="onThreadSelected($event)"
+        (closedChannel)="onChannelClosed()"
       ></app-chat>
     </div>
 
