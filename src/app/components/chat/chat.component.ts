@@ -23,6 +23,7 @@ import { forkJoin, Observable, Subscription } from 'rxjs';
 import { Group } from '../../models/group.model';
 import { Reaction, Message } from '../../models/chat.model';
 import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
+import { GroupSettingsModalComponent } from '../group-settings-modal/group-settings-modal.component';
 
 @Component({
   selector: 'app-chat',
@@ -32,6 +33,7 @@ import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
     FormsModule,
     ReactionBarComponent,
     HoverMenuComponent,
+    GroupSettingsModalComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.component.html',
@@ -302,58 +304,10 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   openGroupSettingsModal() {
     this.showGroupSettingsModal = true;
-    if (this.currentGroup) {
-      this.newGroupName = this.currentGroup.name;
-      this.newGroupDescription = this.currentGroup.description || '';
-    }
   }
 
   closeGroupSettingsModal() {
     this.showGroupSettingsModal = false;
-    this.editingGroupName = false;
-    this.editingGroupDescription = false;
-  }
-
-  startEditGroupName() {
-    this.editingGroupName = true;
-    this.newGroupName = this.currentGroup?.name || '';
-  }
-  cancelEditGroupName() {
-    this.editingGroupName = false;
-    this.newGroupName = this.currentGroup?.name || '';
-  }
-  async saveGroupName() {
-    if (!this.groupId) return;
-    await this.groupService.updateGroup(this.groupId, {
-      name: this.newGroupName,
-    });
-    this.editingGroupName = false;
-  }
-
-  startEditGroupDescription() {
-    this.editingGroupDescription = true;
-    this.newGroupDescription = this.currentGroup?.description || '';
-  }
-  cancelEditGroupDescription() {
-    this.editingGroupDescription = false;
-    this.newGroupDescription = this.currentGroup?.description || '';
-  }
-  async saveGroupDescription() {
-    if (!this.groupId) return;
-    await this.groupService.updateGroup(this.groupId, {
-      description: this.newGroupDescription,
-    });
-    this.editingGroupDescription = false;
-  }
-
-  async leaveChannel() {
-    if (!this.groupId || !this.currentUserUid) return;
-    await this.groupService.removeUserFromGroup(
-      this.groupId,
-      this.currentUserUid
-    );
-    this.closeGroupSettingsModal();
-    this.closedChannel.emit();
   }
 
   toggleEmojiPicker() {

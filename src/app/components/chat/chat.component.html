@@ -62,145 +62,18 @@
             </div>
 
             <div
-              *ngIf="showGroupSettingsModal"
+              *ngIf="showGroupSettingsModal && currentGroup && currentUserUid"
               class="absolute top-full left-0 mt-2 w-[28rem] bg-white rounded-2xl p-6 shadow-xl z-50"
               (click)="$event.stopPropagation()"
             >
-              <!-- header -->
-              <div class="flex justify-between items-center mb-8">
-                <div class="flex items-center gap-2">
-                  <img
-                    src="../../../assets/img/icons/tag.png"
-                    class="w-6 h-6"
-                  />
-                  <h2 class="text-2xl font-semibold">{{ group.name }}</h2>
-                </div>
-                <button
-                  class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
-                  (click)="closeGroupSettingsModal(); $event.stopPropagation()"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <!-- Channel-Name card -->
-              <div
-                class="border border-purple-200 rounded-xl p-4 mb-6 relative"
-              >
-                <div class="flex justify-between items-center">
-                  <span class="text-sm font-medium text-gray-500"
-                    >Channel-Name</span
-                  >
-                  <button
-                    *ngIf="!editingGroupName && isCreator"
-                    class="text-purple-600 text-sm"
-                    (click)="startEditGroupName()"
-                  >
-                    Bearbeiten
-                  </button>
-                </div>
-                <div
-                  *ngIf="!editingGroupName"
-                  class="mt-2 flex items-center gap-2"
-                >
-                  <img
-                    src="../../../assets/img/icons/tag.png"
-                    class="w-5 h-5"
-                  />
-                  <span class="text-lg font-semibold">{{ group.name }}</span>
-                </div>
-                <div
-                  *ngIf="editingGroupName"
-                  class="mt-2 flex items-center gap-2"
-                >
-                  <input
-                    [(ngModel)]="newGroupName"
-                    class="flex-1 border border-gray-300 rounded-full px-4 py-2"
-                  />
-                  <button
-                    class="text-purple-600 text-sm"
-                    (click)="saveGroupName()"
-                  >
-                    Speichern
-                  </button>
-                  <button class="ml-2 text-sm" (click)="cancelEditGroupName()">
-                    Abbrechen
-                  </button>
-                </div>
-              </div>
-
-              <!-- Beschreibung card -->
-              <div
-                class="border border-purple-200 rounded-xl p-4 mb-6 relative"
-              >
-                <div class="flex justify-between items-center">
-                  <span class="text-sm font-medium text-gray-500"
-                    >Beschreibung</span
-                  >
-                  <button
-                    *ngIf="!editingGroupDescription && isCreator"
-                    class="text-purple-600 text-sm"
-                    (click)="startEditGroupDescription()"
-                  >
-                    Bearbeiten
-                  </button>
-                </div>
-                <div
-                  *ngIf="!editingGroupDescription"
-                  class="mt-2 text-gray-700"
-                >
-                  {{ group.description || "Keine Beschreibung" }}
-                </div>
-                <div *ngIf="editingGroupDescription" class="mt-2">
-                  <textarea
-                    [(ngModel)]="newGroupDescription"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 h-28 resize-none"
-                  ></textarea>
-                  <div class="flex justify-end gap-2 mt-2">
-                    <button
-                      class="text-purple-600 text-sm"
-                      (click)="saveGroupDescription()"
-                    >
-                      Speichern
-                    </button>
-                    <button
-                      class="text-sm"
-                      (click)="cancelEditGroupDescription()"
-                    >
-                      Abbrechen
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Erstellt von + Leave button -->
-              <div class="flex justify-between items-center">
-                <div>
-                  <span class="text-sm text-gray-500">Erstellt von</span>
-                  <p class="text-purple-600">
-                    {{ participantsMap[group.creator!].name }}
-                  </p>
-                </div>
-                <button
-                  class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition"
-                  (click)="leaveChannel()"
-                >
-                  Channel verlassen
-                </button>
-              </div>
+              <app-group-settings-modal
+                [group]="currentGroup"
+                [participantsMap]="participantsMap"
+                [isCreator]="isCreator"
+                [currentUserUid]="currentUserUid"
+                (close)="closeGroupSettingsModal()"
+                (closedChannel)="closedChannel.emit()"
+              ></app-group-settings-modal>
             </div>
           </div>
           <div class="flex gap-2 px-[10px] py-[3px] items-center">
@@ -677,7 +550,10 @@
                 <!-- Placeholder when no messages yet -->
                 <div *ngIf="msgs.length === 0">
                   <div class="w-full flex flex-col gap-6 px-[45px]">
-                    <div class="flex gap-6 items-end cursor-pointer w-max">
+                    <div
+                      class="flex gap-6 items-end cursor-pointer w-max"
+                      (click)="openGroupSettingsModal()"
+                    >
                       <img
                         src="../../../assets/img/icons/tag.png"
                         [alt]="group.name"
@@ -698,7 +574,11 @@
                       erstellt worden, von
                       {{ participantsMap[group.creator].name }}. Das is der
                       Anfang des Channels
-                      <span class="text-[#535AF1]"># {{ group.name }}</span>
+                      <span
+                        class="text-[#535AF1] cursor-pointer"
+                        (click)="openGroupSettingsModal()"
+                        ># {{ group.name }}</span
+                      >
                     </p>
                   </div>
                 </div>
