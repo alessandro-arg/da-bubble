@@ -25,17 +25,24 @@
 <!-- list current participants -->
 <ul class="space-y-3">
   <li *ngFor="let uid of group.participants" class="flex items-center gap-3">
-    <img
-      *ngIf="participantsMap[uid]"
-      [src]="participantsMap[uid].avatar"
-      class="w-8 h-8 rounded-full border-2 border-white"
-    />
-    <div class="flex flex-col">
-      <span>
-        {{ participantsMap[uid].name }}
-        <small *ngIf="uid === currentUserUid">(Du)</small>
-      </span>
-    </div>
+    <ng-container *ngIf="participantsMap[uid]; else loading">
+      <img
+        [src]="participantsMap[uid].avatar"
+        class="w-8 h-8 rounded-full border-2 border-white"
+      />
+      <div class="flex flex-col">
+        <span>
+          {{ participantsMap[uid].name }}
+          <small *ngIf="uid === currentUserUid">(Du)</small>
+        </span>
+      </div>
+    </ng-container>
+    <ng-template #loading>
+      <div class="flex items-center gap-3 animate-pulse">
+        <div class="w-8 h-8 bg-gray-200 rounded-full"></div>
+        <div class="h-4 bg-gray-200 rounded w-24"></div>
+      </div>
+    </ng-template>
   </li>
 </ul>
 

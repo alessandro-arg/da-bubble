@@ -158,51 +158,41 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     this.finishLoading();
   }
 
-  private async loadGroupChat(groupId: string) {
+  private loadGroupChat(groupId: string) {
     this.messagesSub?.unsubscribe();
     this.chatId = groupId;
     this.messages$ = this.chatService.getGroupMessages(groupId);
     this.group$ = this.chatService.getGroup(groupId);
-    this.group$.pipe(take(1)).subscribe((g) => {
+    this.group$.subscribe((g) => {
       this.currentGroup = g;
       this.currentParticipants = g.participants || [];
+      const allIds = new Set<string>([g.creator!, ...(g.participants || [])]);
+      const missing = Array.from(allIds).filter(
+        (uid) => !this.participantsMap[uid]
+      );
+      if (missing.length) {
+        Promise.all(missing.map((uid) => this.userService.getUser(uid))).then(
+          (users) => {
+            users.forEach((u) => {
+              if (u) this.participantsMap[u.uid!] = u;
+            });
+          }
+        );
+      }
     });
-
-    this.group$
-      .pipe(
-        filter((g) => !!g.creator),
-        take(1)
-      )
-      .subscribe((g) => {
-        const allIds = new Set<string>([
-          g.creator!,
-          ...(g.participants || []),
-          ...(g.pastParticipants || []),
-        ]);
-
-        Promise.all(
-          Array.from(allIds).map((uid) => this.userService.getUser(uid))
-        ).then((users) => {
-          this.participantsMap = users
-            .filter((u): u is User => !!u)
-            .reduce((map, u) => ({ ...map, [u.uid!]: u }), {});
-        });
-      });
 
     this.finishLoading();
 
-    this.messagesSub = this.messages$
-      .pipe(take(1))
-      .subscribe((msgs: Message[]) => {
-        this.threadStreams = {};
-        msgs.forEach((m) => {
-          if (m.id) {
-            this.threadStreams[m.id] = this.chatService
-              .getGroupThreadMessages(groupId, m.id)
-              .pipe(shareReplay({ bufferSize: 1, refCount: true }));
-          }
-        });
+    this.messagesSub = this.messages$.pipe(take(1)).subscribe((msgs) => {
+      this.threadStreams = {};
+      msgs.forEach((m) => {
+        if (m.id) {
+          this.threadStreams[m.id] = this.chatService
+            .getGroupThreadMessages(groupId, m.id)
+            .pipe(shareReplay({ bufferSize: 1, refCount: true }));
+        }
       });
+    });
   }
 
   get isCreator(): boolean {

@@ -66,14 +66,16 @@
               class="absolute top-full left-0 mt-2 w-[28rem] bg-white rounded-2xl p-6 shadow-xl z-50"
               (click)="$event.stopPropagation()"
             >
-              <app-group-settings-modal
-                [group]="currentGroup"
-                [participantsMap]="participantsMap"
-                [isCreator]="isCreator"
-                [currentUserUid]="currentUserUid"
-                (close)="closeGroupSettingsModal()"
-                (closedChannel)="closedChannel.emit()"
-              ></app-group-settings-modal>
+              <ng-container *ngIf="group$ | async as group">
+                <app-group-settings-modal
+                  [group]="group"
+                  [participantsMap]="participantsMap"
+                  [isCreator]="isCreator"
+                  [currentUserUid]="currentUserUid"
+                  (close)="closeGroupSettingsModal()"
+                  (closedChannel)="closedChannel.emit()"
+                ></app-group-settings-modal>
+              </ng-container>
             </div>
           </div>
           <div class="flex gap-2 px-[10px] py-[3px] items-center">
@@ -139,12 +141,14 @@
                 class="absolute p-5 right-0 mt-2 w-96 bg-white rounded-xl shadow-lg z-50 add-members-modal"
                 (click)="$event.stopPropagation()"
               >
-                <app-add-members-modal
-                  [groupId]="currentGroup.id"
-                  [groupName]="currentGroup.name"
-                  [currentParticipants]="currentGroup.participants"
-                  (close)="showAddMembersModal = false"
-                ></app-add-members-modal>
+                <ng-container *ngIf="group$ | async as group">
+                  <app-add-members-modal
+                    [groupId]="group.id"
+                    [groupName]="group.name"
+                    [currentParticipants]="group.participants"
+                    (close)="closeAddMembersModal()"
+                  ></app-add-members-modal>
+                </ng-container>
               </div>
             </div>
           </div>
