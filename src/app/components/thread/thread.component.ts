@@ -14,12 +14,21 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChatService } from '../../chat.service';
-import { Observable } from 'rxjs';
+import {
+  filter,
+  firstValueFrom,
+  from,
+  Observable,
+  switchMap,
+  take,
+} from 'rxjs';
 import { Message, Reaction } from '../../models/chat.model';
 import { Group } from '../../models/group.model';
 import { User } from '../../models/user.model';
 import { ReactionBarComponent } from '../../reaction-bar/reaction-bar.component';
 import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
+import { UserService } from '../../user.service';
+import { doc, Firestore, getDoc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-thread',
@@ -64,7 +73,11 @@ export class ThreadComponent implements OnChanges, AfterViewInit {
   @ViewChild('editInput', { read: ElementRef })
   editInput?: ElementRef<HTMLTextAreaElement>;
 
-  constructor(public chatService: ChatService) {}
+  constructor(
+    private firestore: Firestore,
+    public chatService: ChatService,
+    private userService: UserService
+  ) {}
 
   async ngAfterViewInit() {
     if (typeof window !== 'undefined') {
@@ -78,25 +91,56 @@ export class ThreadComponent implements OnChanges, AfterViewInit {
 
   ngOnChanges(changes: SimpleChanges) {
     if (this.groupId) {
-      this.chatService.getGroupParticipants(this.groupId).then((users) => {
-        this.participantsMap = users.reduce(
-          (m, u) => ({ ...m, [u.uid!]: u }),
-          {} as Record<string, User>
-        );
-      });
+      // 1) keep the group$ for any template use
       this.group$ = this.chatService.getGroup(this.groupId);
+
+      // 2) fire off our participant‑loading helper
+      this.loadAllThreadParticipants(this.groupId);
     }
 
     if (this.groupId && this.messageId) {
+      // load the parent message
       this.originalMessage$ = this.chatService.getGroupMessage(
         this.groupId,
         this.messageId
       );
+      // load its replies
       this.threadMessages$ = this.chatService.getGroupThreadMessages(
         this.groupId,
         this.messageId
       );
     }
+  }
+
+  private async loadAllThreadParticipants(groupId: string) {
+    // 1) Fetch the full Group doc once
+    const groupRef = doc(this.firestore, `groups/${groupId}`);
+    const groupSnap = await getDoc(groupRef);
+    if (!groupSnap.exists()) return;
+    const g = groupSnap.data() as Group;
+
+    // 2) Gather every UID we need
+    const allIds = new Set<string>([
+      g.creator,
+      ...(g.participants || []),
+      ...(g.pastParticipants || []),
+    ]);
+
+    // 3) Fetch each User doc in parallel
+    const usersMap: Record<string, User> = {};
+    await Promise.all(
+      Array.from(allIds).map(async (uid) => {
+        const userRef = doc(this.firestore, `users/${uid}`);
+        const userSnap = await getDoc(userRef).catch(() => null);
+        if (userSnap?.exists()) {
+          const u = { uid: userSnap.id, ...(userSnap.data() as any) };
+          usersMap[uid] = u;
+        }
+      })
+    );
+
+    // 4) Assign to your template map
+    this.participantsMap = usersMap;
   }
 
   onClose() {

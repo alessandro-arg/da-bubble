@@ -19,7 +19,7 @@ import { ChatService } from '../../chat.service';
 import { GroupService } from '../../group.service';
 import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
-import { Observable, Subscription } from 'rxjs';
+import { forkJoin, Observable, Subscription } from 'rxjs';
 import { Group } from '../../models/group.model';
 import { Reaction, Message } from '../../models/chat.model';
 import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
@@ -156,38 +156,43 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     this.chatId = groupId;
     this.messages$ = this.chatService.getGroupMessages(groupId);
     this.group$ = this.chatService.getGroup(groupId);
-
-    this.group$.pipe(take(1)).subscribe((g) => {
-      this.currentGroup = g;
-    });
+    this.group$.pipe(take(1)).subscribe((g) => (this.currentGroup = g));
 
     this.group$
       .pipe(
         filter((g) => !!g.creator),
-        switchMap((g) => this.userService.getUser(g.creator))
+        take(1)
       )
-      .subscribe((user) => {
-        if (user) this.participantsMap[user.uid!] = user;
-      });
+      .subscribe((g) => {
+        const allIds = new Set<string>([
+          g.creator!,
+          ...(g.participants || []),
+          ...(g.pastParticipants || []),
+        ]);
 
-    const users = await this.chatService.getGroupParticipants(groupId);
-    this.participantsMap = users.reduce(
-      (map, u) => ({ ...map, [u.uid!]: u }),
-      {} as Record<string, User>
-    );
+        Promise.all(
+          Array.from(allIds).map((uid) => this.userService.getUser(uid))
+        ).then((users) => {
+          this.participantsMap = users
+            .filter((u): u is User => !!u)
+            .reduce((map, u) => ({ ...map, [u.uid!]: u }), {});
+        });
+      });
 
     this.finishLoading();
 
-    this.messagesSub = this.messages$.pipe(take(1)).subscribe((msgs) => {
-      this.threadStreams = {};
-      msgs.forEach((m) => {
-        if (m.id) {
-          this.threadStreams[m.id] = this.chatService
-            .getGroupThreadMessages(groupId, m.id)
-            .pipe(shareReplay({ bufferSize: 1, refCount: true }));
-        }
+    this.messagesSub = this.messages$
+      .pipe(take(1))
+      .subscribe((msgs: Message[]) => {
+        this.threadStreams = {};
+        msgs.forEach((m) => {
+          if (m.id) {
+            this.threadStreams[m.id] = this.chatService
+              .getGroupThreadMessages(groupId, m.id)
+              .pipe(shareReplay({ bufferSize: 1, refCount: true }));
+          }
+        });
       });
-    });
   }
 
   get isCreator(): boolean {
@@ -337,7 +342,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   }
 
   async leaveChannel() {
-    if (this.currentUserUid) return;
     if (!this.groupId || !this.currentUserUid) return;
     await this.groupService.removeUserFromGroup(
       this.groupId,

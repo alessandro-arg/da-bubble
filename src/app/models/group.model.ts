@@ -3,6 +3,7 @@ export interface Group {
   name: string;
   description?: string;
   participants: string[];
+  pastParticipants?: string[];
   creator: string;
   createdAt: any;
   updatedAt: any;

@@ -36,6 +36,7 @@ export class GroupService {
       name,
       description,
       participants: finalParticipants,
+      pastParticipants: finalParticipants,
       creator: currentUser.uid,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
@@ -86,6 +87,7 @@ export class GroupService {
     const groupRef = doc(this.firestore, 'groups', groupId);
     await updateDoc(groupRef, {
       participants: arrayRemove(userId),
+      pastParticipants: arrayUnion(userId),
       updatedAt: serverTimestamp(),
     });
   }
