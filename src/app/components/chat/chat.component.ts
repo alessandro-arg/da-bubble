@@ -21,8 +21,11 @@ import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
 import { Observable, Subscription } from 'rxjs';
 import { Group } from '../../models/group.model';
-import { Reaction, Message } from '../../models/chat.model';
+import { Message } from '../../models/chat.model';
 import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
+import { GroupSettingsModalComponent } from '../group-settings-modal/group-settings-modal.component';
+import { GroupMembersModalComponent } from '../group-members-modal/group-members-modal.component';
+import { AddMembersModalComponent } from '../add-members-modal/add-members-modal.component';
 
 @Component({
   selector: 'app-chat',
@@ -32,6 +35,9 @@ import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
     FormsModule,
     ReactionBarComponent,
     HoverMenuComponent,
+    GroupSettingsModalComponent,
+    GroupMembersModalComponent,
+    AddMembersModalComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.component.html',
@@ -60,6 +66,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   showGroupSettingsModal = false;
 
   allUsers: User[] = [];
+  currentParticipants: string[] = [];
   filteredUsers: User[] = [];
   selectedUsers: User[] = [];
   searchTerm = '';
@@ -156,38 +163,46 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     this.chatId = groupId;
     this.messages$ = this.chatService.getGroupMessages(groupId);
     this.group$ = this.chatService.getGroup(groupId);
-
     this.group$.pipe(take(1)).subscribe((g) => {
       this.currentGroup = g;
+      this.currentParticipants = g.participants || [];
     });
 
     this.group$
       .pipe(
         filter((g) => !!g.creator),
-        switchMap((g) => this.userService.getUser(g.creator))
+        take(1)
       )
-      .subscribe((user) => {
-        if (user) this.participantsMap[user.uid!] = user;
-      });
+      .subscribe((g) => {
+        const allIds = new Set<string>([
+          g.creator!,
+          ...(g.participants || []),
+          ...(g.pastParticipants || []),
+        ]);
 
-    const users = await this.chatService.getGroupParticipants(groupId);
-    this.participantsMap = users.reduce(
-      (map, u) => ({ ...map, [u.uid!]: u }),
-      {} as Record<string, User>
-    );
+        Promise.all(
+          Array.from(allIds).map((uid) => this.userService.getUser(uid))
+        ).then((users) => {
+          this.participantsMap = users
+            .filter((u): u is User => !!u)
+            .reduce((map, u) => ({ ...map, [u.uid!]: u }), {});
+        });
+      });
 
     this.finishLoading();
 
-    this.messagesSub = this.messages$.pipe(take(1)).subscribe((msgs) => {
-      this.threadStreams = {};
-      msgs.forEach((m) => {
-        if (m.id) {
-          this.threadStreams[m.id] = this.chatService
-            .getGroupThreadMessages(groupId, m.id)
-            .pipe(shareReplay({ bufferSize: 1, refCount: true }));
-        }
+    this.messagesSub = this.messages$
+      .pipe(take(1))
+      .subscribe((msgs: Message[]) => {
+        this.threadStreams = {};
+        msgs.forEach((m) => {
+          if (m.id) {
+            this.threadStreams[m.id] = this.chatService
+              .getGroupThreadMessages(groupId, m.id)
+              .pipe(shareReplay({ bufferSize: 1, refCount: true }));
+          }
+        });
       });
-    });
   }
 
   get isCreator(): boolean {
@@ -248,9 +263,10 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
     this.filteredUsers = this.allUsers
       .filter((u) => {
-        const notAlready = !this.participantsMap[u.uid!];
+        const isCurrent = this.currentParticipants.includes(u.uid!);
+        const notSelected = !this.selectedUsers.some((x) => x.uid === u.uid);
         const matchesName = (u.name || u.email || '').toLowerCase().includes(t);
-        return notAlready && matchesName;
+        return !isCurrent && notSelected && matchesName;
       })
       .slice(0, 5);
   }
@@ -292,59 +308,10 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   openGroupSettingsModal() {
     this.showGroupSettingsModal = true;
-    if (this.currentGroup) {
-      this.newGroupName = this.currentGroup.name;
-      this.newGroupDescription = this.currentGroup.description || '';
-    }
   }
 
   closeGroupSettingsModal() {
     this.showGroupSettingsModal = false;
-    this.editingGroupName = false;
-    this.editingGroupDescription = false;
-  }
-
-  startEditGroupName() {
-    this.editingGroupName = true;
-    this.newGroupName = this.currentGroup?.name || '';
-  }
-  cancelEditGroupName() {
-    this.editingGroupName = false;
-    this.newGroupName = this.currentGroup?.name || '';
-  }
-  async saveGroupName() {
-    if (!this.groupId) return;
-    await this.groupService.updateGroup(this.groupId, {
-      name: this.newGroupName,
-    });
-    this.editingGroupName = false;
-  }
-
-  startEditGroupDescription() {
-    this.editingGroupDescription = true;
-    this.newGroupDescription = this.currentGroup?.description || '';
-  }
-  cancelEditGroupDescription() {
-    this.editingGroupDescription = false;
-    this.newGroupDescription = this.currentGroup?.description || '';
-  }
-  async saveGroupDescription() {
-    if (!this.groupId) return;
-    await this.groupService.updateGroup(this.groupId, {
-      description: this.newGroupDescription,
-    });
-    this.editingGroupDescription = false;
-  }
-
-  async leaveChannel() {
-    if (this.currentUserUid) return;
-    if (!this.groupId || !this.currentUserUid) return;
-    await this.groupService.removeUserFromGroup(
-      this.groupId,
-      this.currentUserUid
-    );
-    this.closeGroupSettingsModal();
-    this.closedChannel.emit();
   }
 
   toggleEmojiPicker() {

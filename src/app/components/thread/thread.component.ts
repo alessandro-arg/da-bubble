@@ -20,6 +20,7 @@ import { Group } from '../../models/group.model';
 import { User } from '../../models/user.model';
 import { ReactionBarComponent } from '../../reaction-bar/reaction-bar.component';
 import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
+import { doc, Firestore, getDoc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-thread',
@@ -64,7 +65,7 @@ export class ThreadComponent implements OnChanges, AfterViewInit {
   @ViewChild('editInput', { read: ElementRef })
   editInput?: ElementRef<HTMLTextAreaElement>;
 
-  constructor(public chatService: ChatService) {}
+  constructor(private firestore: Firestore, public chatService: ChatService) {}
 
   async ngAfterViewInit() {
     if (typeof window !== 'undefined') {
@@ -78,13 +79,8 @@ export class ThreadComponent implements OnChanges, AfterViewInit {
 
   ngOnChanges(changes: SimpleChanges) {
     if (this.groupId) {
-      this.chatService.getGroupParticipants(this.groupId).then((users) => {
-        this.participantsMap = users.reduce(
-          (m, u) => ({ ...m, [u.uid!]: u }),
-          {} as Record<string, User>
-        );
-      });
       this.group$ = this.chatService.getGroup(this.groupId);
+      this.loadAllThreadParticipants(this.groupId);
     }
 
     if (this.groupId && this.messageId) {
@@ -97,6 +93,33 @@ export class ThreadComponent implements OnChanges, AfterViewInit {
         this.messageId
       );
     }
+  }
+
+  private async loadAllThreadParticipants(groupId: string) {
+    const groupRef = doc(this.firestore, `groups/${groupId}`);
+    const groupSnap = await getDoc(groupRef);
+    if (!groupSnap.exists()) return;
+    const g = groupSnap.data() as Group;
+
+    const allIds = new Set<string>([
+      g.creator,
+      ...(g.participants || []),
+      ...(g.pastParticipants || []),
+    ]);
+
+    const usersMap: Record<string, User> = {};
+    await Promise.all(
+      Array.from(allIds).map(async (uid) => {
+        const userRef = doc(this.firestore, `users/${uid}`);
+        const userSnap = await getDoc(userRef).catch(() => null);
+        if (userSnap?.exists()) {
+          const u = { uid: userSnap.id, ...(userSnap.data() as any) };
+          usersMap[uid] = u;
+        }
+      })
+    );
+
+    this.participantsMap = usersMap;
   }
 
   onClose() {

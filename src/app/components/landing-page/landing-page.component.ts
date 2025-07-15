@@ -101,6 +101,7 @@ export class LandingPageComponent implements OnInit {
   onChannelClosed() {
     this.selectedGroupId = null;
     this.selectedUser = null;
+    this.threadVisible = false;
   }
 
   toggleWorkspace() {

@@ -62,145 +62,18 @@
             </div>
 
             <div
-              *ngIf="showGroupSettingsModal"
+              *ngIf="showGroupSettingsModal && currentGroup && currentUserUid"
               class="absolute top-full left-0 mt-2 w-[28rem] bg-white rounded-2xl p-6 shadow-xl z-50"
               (click)="$event.stopPropagation()"
             >
-              <!-- header -->
-              <div class="flex justify-between items-center mb-8">
-                <div class="flex items-center gap-2">
-                  <img
-                    src="../../../assets/img/icons/tag.png"
-                    class="w-6 h-6"
-                  />
-                  <h2 class="text-2xl font-semibold">{{ group.name }}</h2>
-                </div>
-                <button
-                  class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
-                  (click)="closeGroupSettingsModal(); $event.stopPropagation()"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <!-- Channel-Name card -->
-              <div
-                class="border border-purple-200 rounded-xl p-4 mb-6 relative"
-              >
-                <div class="flex justify-between items-center">
-                  <span class="text-sm font-medium text-gray-500"
-                    >Channel-Name</span
-                  >
-                  <button
-                    *ngIf="!editingGroupName && isCreator"
-                    class="text-purple-600 text-sm"
-                    (click)="startEditGroupName()"
-                  >
-                    Bearbeiten
-                  </button>
-                </div>
-                <div
-                  *ngIf="!editingGroupName"
-                  class="mt-2 flex items-center gap-2"
-                >
-                  <img
-                    src="../../../assets/img/icons/tag.png"
-                    class="w-5 h-5"
-                  />
-                  <span class="text-lg font-semibold">{{ group.name }}</span>
-                </div>
-                <div
-                  *ngIf="editingGroupName"
-                  class="mt-2 flex items-center gap-2"
-                >
-                  <input
-                    [(ngModel)]="newGroupName"
-                    class="flex-1 border border-gray-300 rounded-full px-4 py-2"
-                  />
-                  <button
-                    class="text-purple-600 text-sm"
-                    (click)="saveGroupName()"
-                  >
-                    Speichern
-                  </button>
-                  <button class="ml-2 text-sm" (click)="cancelEditGroupName()">
-                    Abbrechen
-                  </button>
-                </div>
-              </div>
-
-              <!-- Beschreibung card -->
-              <div
-                class="border border-purple-200 rounded-xl p-4 mb-6 relative"
-              >
-                <div class="flex justify-between items-center">
-                  <span class="text-sm font-medium text-gray-500"
-                    >Beschreibung</span
-                  >
-                  <button
-                    *ngIf="!editingGroupDescription && isCreator"
-                    class="text-purple-600 text-sm"
-                    (click)="startEditGroupDescription()"
-                  >
-                    Bearbeiten
-                  </button>
-                </div>
-                <div
-                  *ngIf="!editingGroupDescription"
-                  class="mt-2 text-gray-700"
-                >
-                  {{ group.description || "Keine Beschreibung" }}
-                </div>
-                <div *ngIf="editingGroupDescription" class="mt-2">
-                  <textarea
-                    [(ngModel)]="newGroupDescription"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-2 h-28 resize-none"
-                  ></textarea>
-                  <div class="flex justify-end gap-2 mt-2">
-                    <button
-                      class="text-purple-600 text-sm"
-                      (click)="saveGroupDescription()"
-                    >
-                      Speichern
-                    </button>
-                    <button
-                      class="text-sm"
-                      (click)="cancelEditGroupDescription()"
-                    >
-                      Abbrechen
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Erstellt von + Leave button -->
-              <div class="flex justify-between items-center">
-                <div>
-                  <span class="text-sm text-gray-500">Erstellt von</span>
-                  <p class="text-purple-600">
-                    {{ participantsMap[group.creator!].name }}
-                  </p>
-                </div>
-                <button
-                  class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition"
-                  (click)="leaveChannel()"
-                >
-                  Channel verlassen
-                </button>
-              </div>
+              <app-group-settings-modal
+                [group]="currentGroup"
+                [participantsMap]="participantsMap"
+                [isCreator]="isCreator"
+                [currentUserUid]="currentUserUid"
+                (close)="closeGroupSettingsModal()"
+                (closedChannel)="closedChannel.emit()"
+              ></app-group-settings-modal>
             </div>
           </div>
           <div class="flex gap-2 px-[10px] py-[3px] items-center">
@@ -230,80 +103,23 @@
 
               <!-- MITGLIEDER MODAL -->
               <div
-                *ngIf="showMembersModal"
+                *ngIf="showMembersModal && currentGroup && currentUserUid"
                 class="absolute top-full right-0 mt-2 w-72 bg-white rounded-xl p-4 shadow-lg z-50"
                 (click)="$event.stopPropagation()"
               >
-                <!-- header -->
-                <div class="flex justify-between items-center mb-4">
-                  <h2 class="text-xl font-semibold">Mitglieder</h2>
-                  <button
-                    (click)="closeMembersModal(); $event.stopPropagation()"
-                    class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] group transition-colors duration-200"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="w-6 h-6 text-black group-hover:text-[#535AF1]"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      stroke-width="2"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-
-                <!-- list current participants -->
                 <ng-container *ngIf="group$ | async as group">
-                  <ul class="space-y-3">
-                    <li
-                      *ngFor="let uid of group.participants"
-                      class="flex items-center gap-3"
-                    >
-                      <img
-                        *ngIf="participantsMap[uid]"
-                        [src]="participantsMap[uid].avatar"
-                        class="w-8 h-8 rounded-full border-2 border-white"
-                      />
-                      <div class="flex flex-col">
-                        <span>
-                          {{ participantsMap[uid].name }}
-                          <small *ngIf="uid === currentUserUid">(Du)</small>
-                        </span>
-                      </div>
-                    </li>
-                  </ul>
+                  <app-group-members-modal
+                    [group]="group"
+                    [participantsMap]="participantsMap"
+                    [currentUserUid]="currentUserUid"
+                    (close)="closeMembersModal()"
+                    (addMembers)="onClickAddMembersFromMembersModal()"
+                  ></app-group-members-modal>
                 </ng-container>
-
-                <!-- footer: jump into the Add Members flow -->
-                <div class="mt-6 text-center">
-                  <button
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full hover:bg-gray-200"
-                    (click)="
-                      onClickAddMembersFromMembersModal();
-                      $event.stopPropagation()
-                    "
-                  >
-                    <img
-                      src="../../../assets/img/icons/add_members.png"
-                      class="w-5 h-5"
-                    />
-                    Mitglieder hinzufügen
-                  </button>
-                </div>
               </div>
             </div>
 
-            <div
-              class="relative inline-block add-members-button"
-              (mouseenter)="isAddMembersHovered = true"
-              (mouseleave)="isAddMembersHovered = false"
-            >
+            <div class="relative inline-block add-members-button">
               <img
                 [src]="
                   isAddMembersHovered
@@ -312,110 +128,23 @@
                 "
                 alt="Add members"
                 class="cursor-pointer"
+                (mouseenter)="isAddMembersHovered = true"
+                (mouseleave)="isAddMembersHovered = false"
                 (click)="openAddMembersModal()"
               />
 
               <!-- 2) the small modal dropdown -->
               <div
-                *ngIf="showAddMembersModal"
+                *ngIf="showAddMembersModal && currentGroup"
                 class="absolute p-5 right-0 mt-2 w-96 bg-white rounded-xl shadow-lg z-50 add-members-modal"
                 (click)="$event.stopPropagation()"
               >
-                <!-- header -->
-                <div class="flex justify-between items-center mb-4">
-                  <h2 class="text-lg font-semibold">Leute hinzufügen</h2>
-                  <button
-                    (click)="closeAddMembersModal(); $event.stopPropagation()"
-                    class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] group transition-colors duration-200"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="w-6 h-6 text-black group-hover:text-[#535AF1]"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      stroke-width="2"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-
-                <!-- group name tag -->
-                <div class="flex items-center gap-2 px-4 py-2">
-                  <img
-                    src="../../../assets/img/icons/tag.png"
-                    class="w-4 h-4"
-                  />
-                  <span class="text-purple-600">{{
-                    (group$ | async)?.name
-                  }}</span>
-                </div>
-
-                <!-- input + chips -->
-                <div class="px-4">
-                  <div class="flex flex-wrap gap-1 mb-2">
-                    <span
-                      *ngFor="let u of selectedUsers"
-                      class="flex items-center bg-purple-100 text-purple-800 rounded-full px-2 py-1 text-sm"
-                    >
-                      {{ u.name || u.email }}
-                      <button (click)="removeSelected(u)" class="ml-1">
-                        x
-                      </button>
-                    </span>
-                  </div>
-                  <input
-                    type="text"
-                    [(ngModel)]="searchTerm"
-                    (input)="filterUsers()"
-                    placeholder="Name eingeben"
-                    class="w-full border border-gray-300 rounded-full px-4 py-2 focus:outline-none"
-                  />
-                </div>
-
-                <!-- suggestion list -->
-                <ul
-                  *ngIf="filteredUsers.length"
-                  class="max-h-40 overflow-y-auto mt-1"
-                >
-                  <li
-                    *ngFor="let u of filteredUsers"
-                    class="flex items-center justify-between px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    (click)="selectUser(u)"
-                  >
-                    <div class="flex items-center gap-2">
-                      <img
-                        [src]="u.avatar"
-                        class="w-6 h-6 rounded-full"
-                        *ngIf="u.avatar"
-                      />
-                      <span>{{ u.name || u.email }}</span>
-                    </div>
-                    <span class="text-sm text-gray-500">+</span>
-                  </li>
-                </ul>
-                <div
-                  *ngIf="!filteredUsers.length && searchTerm"
-                  class="px-4 py-2 text-sm text-gray-500"
-                >
-                  Keine Benutzer gefunden
-                </div>
-
-                <!-- confirm button -->
-                <div class="p-4 border-t flex justify-end">
-                  <button
-                    (click)="confirmAdd()"
-                    [disabled]="!selectedUsers.length"
-                    class="bg-purple-600 text-white rounded-full px-4 py-2 disabled:opacity-50"
-                  >
-                    Hinzufügen
-                  </button>
-                </div>
+                <app-add-members-modal
+                  [groupId]="currentGroup.id"
+                  [groupName]="currentGroup.name"
+                  [currentParticipants]="currentGroup.participants"
+                  (close)="showAddMembersModal = false"
+                ></app-add-members-modal>
               </div>
             </div>
           </div>
@@ -677,7 +406,10 @@
                 <!-- Placeholder when no messages yet -->
                 <div *ngIf="msgs.length === 0">
                   <div class="w-full flex flex-col gap-6 px-[45px]">
-                    <div class="flex gap-6 items-end cursor-pointer w-max">
+                    <div
+                      class="flex gap-6 items-end cursor-pointer w-max"
+                      (click)="openGroupSettingsModal()"
+                    >
                       <img
                         src="../../../assets/img/icons/tag.png"
                         [alt]="group.name"
@@ -698,7 +430,11 @@
                       erstellt worden, von
                       {{ participantsMap[group.creator].name }}. Das is der
                       Anfang des Channels
-                      <span class="text-[#535AF1]"># {{ group.name }}</span>
+                      <span
+                        class="text-[#535AF1] cursor-pointer"
+                        (click)="openGroupSettingsModal()"
+                        ># {{ group.name }}</span
+                      >
                     </p>
                   </div>
                 </div>

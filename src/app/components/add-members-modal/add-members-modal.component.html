@@ -1,0 +1,81 @@
+<!-- header -->
+<div class="flex justify-between items-center mb-4">
+  <h2 class="text-lg font-semibold">Leute hinzufügen</h2>
+  <button
+    (click)="onClose(); $event.stopPropagation()"
+    class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] group transition-colors duration-200"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="w-6 h-6 text-black group-hover:text-[#535AF1]"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      stroke-width="2"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M6 18L18 6M6 6l12 12"
+      />
+    </svg>
+  </button>
+</div>
+
+<!-- group name tag -->
+<div class="flex items-center gap-2 px-4 py-2">
+  <img src="../../../assets/img/icons/tag.png" class="w-4 h-4" />
+  <span class="text-purple-600">{{ groupName }}</span>
+</div>
+
+<!-- input + chips -->
+<div class="px-4">
+  <div class="flex flex-wrap gap-1 mb-2">
+    <span
+      *ngFor="let u of selectedUsers"
+      class="flex items-center bg-purple-100 text-purple-800 rounded-full px-2 py-1 text-sm"
+    >
+      {{ u.name || u.email }}
+      <button (click)="removeSelected(u)" class="ml-1">×</button>
+    </span>
+  </div>
+  <input
+    type="text"
+    [(ngModel)]="searchTerm"
+    (input)="filterUsers()"
+    placeholder="Name eingeben"
+    class="w-full border border-gray-300 rounded-full px-4 py-2 focus:outline-none"
+  />
+</div>
+
+<!-- suggestion list -->
+<ul *ngIf="filteredUsers.length" class="max-h-40 overflow-y-auto mt-1">
+  <li
+    *ngFor="let u of filteredUsers"
+    class="flex items-center justify-between px-4 py-2 hover:bg-gray-100 cursor-pointer"
+    (click)="selectUser(u)"
+  >
+    <div class="flex items-center gap-2">
+      <img *ngIf="u.avatar" [src]="u.avatar" class="w-6 h-6 rounded-full" />
+      <span>{{ u.name || u.email }}</span>
+    </div>
+    <span class="text-sm text-gray-500">+</span>
+  </li>
+</ul>
+<div
+  *ngIf="!filteredUsers.length && searchTerm"
+  class="px-4 py-2 text-sm text-gray-500"
+>
+  Keine Benutzer gefunden
+</div>
+
+<!-- confirm -->
+<div class="p-4 border-t flex justify-end">
+  <button
+    (click)="confirmAdd()"
+    [disabled]="!selectedUsers.length"
+    class="bg-purple-600 text-white rounded-full px-4 py-2 disabled:opacity-50"
+  >
+    Hinzufügen
+  </button>
+</div>
