@@ -1,144 +1,142 @@
-<div class="px-[20px] py-[30px] flex flex-col gap-6 h-full">
-  <div class="flex items-center w-full justify-between rounded-3xl">
-    <div class="flex items-center gap-4 flex-1">
+<div class="px-[20px] py-[30px] flex flex-col gap-6 h-full w-full">
+  <div class="flex-none flex items-center w-full justify-between rounded-3xl">
+    <div class="flex items-center gap-4">
       <img src="../../../assets/img/workspace-logo.png" alt="Image" />
       <h2 class="font-bold text-xl">Devspace</h2>
     </div>
     <img src="../../../assets/img/icons/edit_square.png" alt="" />
   </div>
-  <div class="w-full flex flex-col gap-6 overflow-hidden">
-    <div class="w-full flex flex-col">
-      <div class="w-full flex justify-between items-center">
-        <div
-          class="w-fit flex items-center gap-[15px] pr-3 py-1 cursor-pointer select-none hover:text-[#535AF1]"
-          (click)="toggleChannelsDropdown()"
-          (mouseenter)="channelsAccountHover = channelsArrowHover = true"
-          (mouseleave)="channelsAccountHover = channelsArrowHover = false"
-        >
-          <img
-            [src]="channelsArrowSrc"
-            alt="Toggle"
-            class="cursor-pointer transform transition-transform duration-200"
-            [ngClass]="{
-              '-rotate-90': !channelsDropdownOpen,
-              'scale-105': channelsArrowHover
-            }"
-          />
-          <div class="flex items-center gap-2">
-            <img [src]="channelsAccountSrc" alt="Workspace icon" />
-            <h3 class="font-semibold text-[18px]">Channels</h3>
-          </div>
+
+  <div class="flex-1 overflow-y-scroll flex flex-col">
+    <div class="flex justify-between items-center">
+      <div
+        class="w-fit flex items-center gap-[15px] pr-3 py-1 cursor-pointer select-none hover:text-[#535AF1]"
+        (click)="toggleChannelsDropdown()"
+        (mouseenter)="channelsAccountHover = channelsArrowHover = true"
+        (mouseleave)="channelsAccountHover = channelsArrowHover = false"
+      >
+        <img
+          [src]="channelsArrowSrc"
+          alt="Toggle"
+          class="cursor-pointer transform transition-transform duration-200"
+          [ngClass]="{
+            '-rotate-90': !channelsDropdownOpen,
+            'scale-105': channelsArrowHover
+          }"
+        />
+        <div class="flex items-center gap-2">
+          <img [src]="channelsAccountSrc" alt="Workspace icon" />
+          <h3 class="font-semibold text-[18px]">Channels</h3>
         </div>
-        <button
-          class="w-[30px] h-[30px] rounded-full transition-colors flex justify-center items-center hover:bg-[#F0EDFF]"
-          (mouseenter)="addChannelHover = true"
-          (mouseleave)="addChannelHover = false"
+      </div>
+      <button
+        class="w-[30px] h-[30px] rounded-full transition-colors flex justify-center items-center hover:bg-[#F0EDFF]"
+        (mouseenter)="addChannelHover = true"
+        (mouseleave)="addChannelHover = false"
+        (click)="openAddGroupModal()"
+      >
+        <img
+          [src]="
+            addChannelHover
+              ? '../../../assets/img/icons/add_purple.png'
+              : '../../../assets/img/icons/add.png'
+          "
+          alt="Add"
+        />
+      </button>
+    </div>
+
+    <app-create-group-modal
+      *ngIf="showAddGroupModal"
+      (close)="closeAddGroupModal()"
+    ></app-create-group-modal>
+
+    <div
+      class="overflow-hidden transition-[max-height] duration-300 ease-in-out mb-3 mt-3"
+      [ngClass]="channelsDropdownOpen ? ' max-h-[100%]' : 'max-h-0'"
+    >
+      <div class="flex flex-col gap-3">
+        <div
+          *ngFor="let g of groups"
+          (click)="onGroupClick(g)"
+          class="flex items-center gap-2 ml-[25px] w-max rounded-2xl py-1 px-5 cursor-pointer transition-colors duration-200"
+          [ngClass]="{
+            'bg-[#ECEEFE]': activeGroupId === g.id,
+            'hover:bg-[#E0E2FF]': activeGroupId !== g.id
+          }"
+        >
+          <img src="../../../assets/img/icons/tag.png" alt="group icon" />
+          <p>{{ g.name }}</p>
+        </div>
+        <div
+          class="w-full flex gap-2 ml-[25px] rounded-2xl py-1 px-5 cursor-pointer hover:bg-[#ECEEFE] transition-colors"
           (click)="openAddGroupModal()"
         >
           <img
-            [src]="
-              addChannelHover
-                ? '../../../assets/img/icons/add_purple.png'
-                : '../../../assets/img/icons/add.png'
-            "
-            alt="Add"
+            src="../../../assets/img/icons/add_circle.png"
+            alt="add channel"
           />
-        </button>
+          <span>Channel hinzufügen</span>
+        </div>
+      </div>
+    </div>
+    <div class="w-full flex flex-col flex-1 gap-6 h-full overflow-hidden">
+      <div
+        class="w-fit flex items-center gap-[15px] pr-3 py-1 cursor-pointer select-none hover:text-[#535AF1]"
+        (click)="toggleDirektDropdown()"
+        (mouseenter)="direktAccountHover = direktArrowHover = true"
+        (mouseleave)="direktAccountHover = direktArrowHover = false"
+      >
+        <img
+          [src]="direktArrowSrc"
+          alt="Toggle"
+          class="cursor-pointer transform transition-transform duration-200"
+          [ngClass]="{
+            '-rotate-90': !direktDropdownOpen,
+            'scale-105': direktArrowHover
+          }"
+        />
+
+        <div class="flex items-center gap-2">
+          <img [src]="direktAccountSrc" alt="Users icon" />
+          <h3 class="font-semibold text-[18px]">Direktnachrichten</h3>
+        </div>
       </div>
 
-      <app-create-group-modal
-        *ngIf="showAddGroupModal"
-        (close)="closeAddGroupModal()"
-      ></app-create-group-modal>
-
       <div
-        class="overflow-hidden transition-[max-height] duration-300 ease-in-out mb-3 mt-3"
-        [ngClass]="channelsDropdownOpen ? ' max-h-[100%]' : 'max-h-0'"
+        class="overflow-hidden transition-[max-height] duration-300 ease-in-out"
+        [ngClass]="direktDropdownOpen ? 'max-h-[100%]' : 'max-h-0'"
       >
         <div class="flex flex-col gap-3">
           <div
-            *ngFor="let g of groups"
-            (click)="onGroupClick(g)"
-            class="flex items-center gap-2 ml-[25px] w-max rounded-2xl py-1 px-5 cursor-pointer transition-colors duration-200"
+            *ngFor="let user of users"
+            (click)="onClick(user)"
+            class="w-max ml-4 mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
             [ngClass]="{
-              'bg-[#ECEEFE]': activeGroupId === g.id,
-              'hover:bg-[#E0E2FF]': activeGroupId !== g.id
+              'bg-[#ECEEFE]': user.uid === activeUserUid,
+              'hover:bg-[#ECEEFE]': user.uid !== activeUserUid
             }"
           >
-            <img src="../../../assets/img/icons/tag.png" alt="group icon" />
-            <p>{{ g.name }}</p>
-          </div>
-          <div
-            class="w-full flex gap-2 ml-[25px] rounded-2xl py-1 px-5 cursor-pointer hover:bg-[#ECEEFE] transition-colors"
-            (click)="openAddGroupModal()"
-          >
-            <img
-              src="../../../assets/img/icons/add_circle.png"
-              alt="add channel"
-            />
-            <span>Channel hinzufügen</span>
-          </div>
-        </div>
-      </div>
-      <div class="w-full flex flex-col flex-1 gap-6 h-full overflow-hidden">
-        <div
-          class="w-fit flex items-center gap-[15px] pr-3 py-1 cursor-pointer select-none hover:text-[#535AF1]"
-          (click)="toggleDirektDropdown()"
-          (mouseenter)="direktAccountHover = direktArrowHover = true"
-          (mouseleave)="direktAccountHover = direktArrowHover = false"
-        >
-          <img
-            [src]="direktArrowSrc"
-            alt="Toggle"
-            class="cursor-pointer transform transition-transform duration-200"
-            [ngClass]="{
-              '-rotate-90': !direktDropdownOpen,
-              'scale-105': direktArrowHover
-            }"
-          />
-
-          <div class="flex items-center gap-2">
-            <img [src]="direktAccountSrc" alt="Users icon" />
-            <h3 class="font-semibold text-[18px]">Direktnachrichten</h3>
-          </div>
-        </div>
-
-        <!-- collapsible list -->
-        <div
-          class="overflow-hidden transition-[max-height] duration-300 ease-in-out"
-          [ngClass]="direktDropdownOpen ? ' max-h-[100%]' : 'max-h-0'"
-        >
-          <div class="flex flex-col gap-3 overflow-y-auto h-full">
-            <div
-              *ngFor="let user of users"
-              (click)="onClick(user)"
-              class="w-max ml-4 mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+            <div class="relative w-12 h-12">
+              <img
+                [src]="user.avatar || '../../../assets/img/profile.svg'"
+                alt="User"
+                class="w-full h-full rounded-full object-cover"
+              />
+              <div
+                class="absolute bottom-0 right-[-2px] w-4 h-4 bg-[#92C83E] rounded-full border-2 border-white"
+              ></div>
+            </div>
+            <p
+              class="text-base transition-colors duration-200"
               [ngClass]="{
-                'bg-[#ECEEFE]': user.uid === activeUserUid,
-                'hover:bg-[#ECEEFE]': user.uid !== activeUserUid
+                'font-bold text-[#535AF1]': user.uid === activeUserUid,
+                'font-normal text-black': user.uid !== activeUserUid
               }"
             >
-              <div class="relative w-12 h-12">
-                <img
-                  [src]="user.avatar || '../../../assets/img/profile.svg'"
-                  alt="User"
-                  class="w-full h-full rounded-full object-cover"
-                />
-                <div
-                  class="absolute bottom-0 right-[-2px] w-4 h-4 bg-[#92C83E] rounded-full border-2 border-white"
-                ></div>
-              </div>
-              <p
-                class="text-base transition-colors duration-200"
-                [ngClass]="{
-                  'font-bold text-[#535AF1]': user.uid === activeUserUid,
-                  'font-normal text-black': user.uid !== activeUserUid
-                }"
-              >
-                {{ user.name }}
-                <span *ngIf="user.uid === currentUserUid">(Du)</span>
-              </p>
-            </div>
+              {{ user.name }}
+              <span *ngIf="user.uid === currentUserUid">(Du)</span>
+            </p>
           </div>
         </div>
       </div>

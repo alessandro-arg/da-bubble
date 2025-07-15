@@ -192,8 +192,9 @@
         collapsed: isCollapsed
       }"
     >
-      <div class="content">
+      <div class="content h-full w-full flex">
         <app-user-list
+          class="w-full"
           (userSelected)="openPrivateChat($event)"
           (groupSelected)="openGroupChat($event)"
         ></app-user-list>
