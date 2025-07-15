@@ -60,6 +60,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   showGroupSettingsModal = false;
 
   allUsers: User[] = [];
+  currentParticipants: string[] = [];
   filteredUsers: User[] = [];
   selectedUsers: User[] = [];
   searchTerm = '';
@@ -156,7 +157,10 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     this.chatId = groupId;
     this.messages$ = this.chatService.getGroupMessages(groupId);
     this.group$ = this.chatService.getGroup(groupId);
-    this.group$.pipe(take(1)).subscribe((g) => (this.currentGroup = g));
+    this.group$.pipe(take(1)).subscribe((g) => {
+      this.currentGroup = g;
+      this.currentParticipants = g.participants || [];
+    });
 
     this.group$
       .pipe(
@@ -253,9 +257,10 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
     this.filteredUsers = this.allUsers
       .filter((u) => {
-        const notAlready = !this.participantsMap[u.uid!];
+        const isCurrent = this.currentParticipants.includes(u.uid!);
+        const notSelected = !this.selectedUsers.some((x) => x.uid === u.uid);
         const matchesName = (u.name || u.email || '').toLowerCase().includes(t);
-        return notAlready && matchesName;
+        return !isCurrent && notSelected && matchesName;
       })
       .slice(0, 5);
   }
