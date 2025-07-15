@@ -19,11 +19,13 @@ import { ChatService } from '../../chat.service';
 import { GroupService } from '../../group.service';
 import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
-import { forkJoin, Observable, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Group } from '../../models/group.model';
-import { Reaction, Message } from '../../models/chat.model';
+import { Message } from '../../models/chat.model';
 import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
 import { GroupSettingsModalComponent } from '../group-settings-modal/group-settings-modal.component';
+import { GroupMembersModalComponent } from '../group-members-modal/group-members-modal.component';
+import { AddMembersModalComponent } from '../add-members-modal/add-members-modal.component';
 
 @Component({
   selector: 'app-chat',
@@ -34,6 +36,8 @@ import { GroupSettingsModalComponent } from '../group-settings-modal/group-setti
     ReactionBarComponent,
     HoverMenuComponent,
     GroupSettingsModalComponent,
+    GroupMembersModalComponent,
+    AddMembersModalComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.component.html',
