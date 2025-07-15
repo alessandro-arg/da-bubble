@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
@@ -23,7 +23,16 @@ export class SearchbarComponent {
 
   private async loadAllUsers() {
     this.allUsers = await this.userService.getAllUsers();
+    this.allUsers.sort((a, b) => a.name.localeCompare(b.name));
     this.filteredUsers = [...this.allUsers];
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.show-popup-user-list') && !target.closest('input[type="text"]')) {
+      this.showPopup = false;
+    }
   }
 
   async onInputChange(event: Event) {
