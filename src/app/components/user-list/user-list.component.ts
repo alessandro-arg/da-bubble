@@ -54,6 +54,8 @@ export class UserListComponent implements OnInit, OnDestroy {
   channelsArrowHover = false;
   channelsAccountHover = false;
   addChannelHover = false;
+  addChannelHover2 = false;
+  hoveredGroupId: string | null = null;
   showAddGroupModal = false;
 
   constructor(

@@ -65,21 +65,46 @@
         <div
           *ngFor="let g of groups"
           (click)="onGroupClick(g)"
+          (mouseenter)="hoveredGroupId = g.id"
+          (mouseleave)="hoveredGroupId = null"
           class="flex items-center gap-2 ml-[25px] w-max rounded-2xl py-1 px-5 cursor-pointer transition-colors duration-200"
           [ngClass]="{
             'bg-[#ECEEFE]': selectedGroupId === g.id,
             'hover:bg-[#E0E2FF]': selectedGroupId !== g.id
           }"
         >
-          <img src="../../../assets/img/icons/tag.png" alt="group icon" />
-          <p>{{ g.name }}</p>
+          <img
+            [src]="
+              selectedGroupId === g.id
+                ? '../../../assets/img/icons/tag_purple.png'
+                : hoveredGroupId === g.id
+                ? '../../../assets/img/icons/tag_hover.png'
+                : '../../../assets/img/icons/tag.png'
+            "
+            alt="group icon"
+          />
+          <p
+            class="text-base transition-colors duration-200"
+            [ngClass]="{
+              'font-bold text-[#535AF1]': g.id === selectedGroupId,
+              'font-normal text-black': g.id !== selectedGroupId
+            }"
+          >
+            {{ g.name }}
+          </p>
         </div>
         <div
-          class="w-max flex gap-2 ml-[25px] rounded-2xl py-1 px-5 cursor-pointer hover:bg-[#ECEEFE] transition-colors"
+          class="w-max flex gap-2 ml-[25px] rounded-2xl py-1 px-5 cursor-pointer hover:text-[#535AF1] transition-colors"
           (click)="openAddGroupModal()"
+          (mouseenter)="addChannelHover2 = true"
+          (mouseleave)="addChannelHover2 = false"
         >
           <img
-            src="../../../assets/img/icons/add_circle.png"
+            [src]="
+              addChannelHover2
+                ? '../../../assets/img/icons/add_circle_purple.png'
+                : '../../../assets/img/icons/add_circle.png'
+            "
             alt="add channel"
           />
           <span>Channel hinzufügen</span>

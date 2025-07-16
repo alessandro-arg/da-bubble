@@ -1,6 +1,6 @@
 <div class="max-w-[1800px] mx-auto flex items-center px-6 py-4">
   <div class="w-1/4">
-    <img src="../assets/img/logo.png" alt="Logo" class="h-16" />
+    <img src="../assets/img/logo.png" alt="Logo" class="h-16 cursor-pointer" />
   </div>
 
   <app-searchbar
@@ -9,9 +9,14 @@
 
   <div
     *ngIf="currentUser"
-    class="flex items-center mr-4 gap-5 text-gray-700 w-2/4 justify-end"
+    class="flex items-center mr-4 gap-5 w-2/4 cursor-pointer justify-end hover:text-[#797EF3]"
+    (mouseenter)="currentUserHovered = true"
+    (mouseleave)="currentUserHovered = false"
+    (click)="toggleDropdown(); $event.stopPropagation()"
   >
-    <h2 class="font-bold text-3xl">{{ currentUser.name }}</h2>
+    <h2 class="font-bold text-3xl">
+      {{ currentUser.name }}
+    </h2>
     <div class="relative w-16 h-16">
       <img
         [src]="currentUser.avatar || './assets/img/profile.svg'"
@@ -23,10 +28,11 @@
       ></div>
     </div>
     <img
-      src="../assets/img/icons/arrow_down.png"
-      alt=""
-      class="cursor-pointer"
-      (click)="toggleDropdown(); $event.stopPropagation()"
+      [src]="
+        currentUserHovered
+          ? '../assets/img/icons/arrow_down_purple.png'
+          : '../assets/img/icons/arrow_down.png'
+      "
     />
   </div>
 </div>
@@ -44,7 +50,7 @@
   <!-- Dropdown Modal -->
   <div
     *ngIf="showDropdown"
-    class="absolute flex flex-col gap-4 items-center right-6 w-fit bg-white shadow-lg rounded-b-[30px] rounded-tl-[30px] border p-8 z-50"
+    class="absolute flex flex-col gap-4 items-center right-8 w-fit bg-white shadow-lg rounded-b-[30px] rounded-tl-[30px] border p-8 z-50"
     (click)="$event.stopPropagation()"
   >
     <button
@@ -214,7 +220,6 @@
       }"
     >
       <app-chat
-        *ngIf="selectedUser !== null || selectedGroupId !== null"
         [chatPartner]="selectedUser"
         [groupId]="selectedGroupId"
         [currentUserUid]="currentUserUid"

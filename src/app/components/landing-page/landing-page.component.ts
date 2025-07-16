@@ -41,6 +41,7 @@ export class LandingPageComponent implements OnInit {
   selectedUser: User | null = null;
   selectedGroupId: string | null = null;
   currentUserUid: string | null = null;
+  currentUserHovered = false;
 
   threadGroupId: string | null = null;
   threadMessageId: string | null = null;
@@ -72,7 +73,6 @@ export class LandingPageComponent implements OnInit {
   }
 
   openPrivateChat(user: User) {
-    console.log('Opening private chat with', user);
     this.selectedGroupId = null;
     this.selectedUser = user;
     this.threadGroupId = null;
