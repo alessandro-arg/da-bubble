@@ -245,6 +245,19 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     this.showProfileModal = false;
   }
 
+  onNameClicked(uid: string) {
+    const user = this.participantsMap[uid];
+    if (user) {
+      this.profileUser = {
+        uid,
+        name: user.name,
+        email: user.email || '',
+        avatar: user.avatar || '',
+      };
+      this.showProfileModal = true;
+    }
+  }
+
   openAddMembersModal() {
     this.showAddMembersModal = true;
     if (!this.allUsers.length) {
