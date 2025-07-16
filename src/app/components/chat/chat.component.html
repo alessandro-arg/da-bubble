@@ -116,6 +116,7 @@
                     [currentUserUid]="currentUserUid"
                     (close)="closeMembersModal()"
                     (addMembers)="onClickAddMembersFromMembersModal()"
+                    (memberClicked)="onMemberClicked($event)"
                   ></app-group-members-modal>
                 </ng-container>
               </div>
@@ -712,7 +713,8 @@
         <!-- Avatar -->
         <div class="flex justify-center w-[420px]">
           <img
-            [src]="chatPartner!.avatar"
+            *ngIf="profileUser"
+            [src]="profileUser.avatar"
             class="w-[200px] h-[200px] rounded-full object-cover"
             alt="Avatar"
           />
@@ -720,7 +722,9 @@
 
         <!-- Name & Edit -->
         <div class="flex flex-col justify-between gap-4 items-center">
-          <span class="font-bold text-3xl w-full">{{ chatPartner!.name }}</span>
+          <span *ngIf="profileUser" class="font-bold text-3xl w-full">{{
+            profileUser.name
+          }}</span>
           <div class="flex items-center gap-4 text-[#92C83E] w-full">
             <div class="w-4 h-4 rounded-full bg-[#92C83E]"></div>
             <span class="font-normal text-lg">Active</span>
@@ -733,8 +737,11 @@
             <img src="../../../assets/img/icons/mail.png" alt="" />
             <span>E-Mail-Adresse</span>
           </div>
-          <div class="ml-[50px] mt-[15px] font-medium text-lg text-[#1381FF]">
-            {{ chatPartner!.email }}
+          <div
+            *ngIf="profileUser"
+            class="ml-[50px] mt-[15px] font-medium text-lg text-[#1381FF]"
+          >
+            {{ profileUser.email }}
           </div>
         </div>
 

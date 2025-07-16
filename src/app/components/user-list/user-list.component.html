@@ -67,8 +67,8 @@
           (click)="onGroupClick(g)"
           class="flex items-center gap-2 ml-[25px] w-max rounded-2xl py-1 px-5 cursor-pointer transition-colors duration-200"
           [ngClass]="{
-            'bg-[#ECEEFE]': activeGroupId === g.id,
-            'hover:bg-[#E0E2FF]': activeGroupId !== g.id
+            'bg-[#ECEEFE]': selectedGroupId === g.id,
+            'hover:bg-[#E0E2FF]': selectedGroupId !== g.id
           }"
         >
           <img src="../../../assets/img/icons/tag.png" alt="group icon" />
@@ -123,8 +123,8 @@
             (click)="onClick(user)"
             class="w-max ml-4 mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
             [ngClass]="{
-              'bg-[#ECEEFE]': user.uid === activeUserUid,
-              'hover:bg-[#ECEEFE]': user.uid !== activeUserUid
+              'bg-[#ECEEFE]': user.uid === selectedUserUid,
+              'hover:bg-[#ECEEFE]': user.uid !== selectedUserUid
             }"
           >
             <div class="relative w-12 h-12">
@@ -140,8 +140,8 @@
             <p
               class="text-base transition-colors duration-200"
               [ngClass]="{
-                'font-bold text-[#535AF1]': user.uid === activeUserUid,
-                'font-normal text-black': user.uid !== activeUserUid
+                'font-bold text-[#535AF1]': user.uid === selectedUserUid,
+                'font-normal text-black': user.uid !== selectedUserUid
               }"
             >
               {{ user.name }}

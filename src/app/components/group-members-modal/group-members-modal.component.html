@@ -29,6 +29,9 @@
       <ng-container *ngIf="participantsMap[uid]; else loading">
         <div
           class="w-max ml-4 mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+          (click)="
+            openProfileModal(participantsMap[uid]); $event.stopPropagation()
+          "
         >
           <div class="relative w-12 h-12">
             <img

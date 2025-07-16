@@ -47,6 +47,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   @Input() chatPartner!: User | null;
   @Input() currentUserUid!: string | null;
   @Input() groupId!: string | null;
+  @Input() profileUser: User | null = null;
   @Output() closedChannel = new EventEmitter<void>();
   @Output() userSelected = new EventEmitter<User>();
   @Output() threadSelected = new EventEmitter<{
@@ -209,10 +210,15 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   }
 
   startChatWithPartner() {
-    if (this.chatPartner) {
-      this.userSelected.emit(this.chatPartner);
-      this.closeProfileModal();
-    }
+    if (!this.profileUser) return;
+    const userCopy = { ...this.profileUser };
+    this.showProfileModal = false;
+    this.showMembersModal = false;
+
+    setTimeout(() => {
+      this.userSelected.emit(userCopy);
+      this.profileUser = null;
+    }, 10);
   }
 
   openThread(msg: Message) {
@@ -223,7 +229,15 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     });
   }
 
+  onMemberClicked(user: User) {
+    this.profileUser = user;
+    this.openProfileModal();
+  }
+
   openProfileModal() {
+    if (this.chatPartner) {
+      this.profileUser = this.chatPartner;
+    }
     this.showProfileModal = true;
   }
 

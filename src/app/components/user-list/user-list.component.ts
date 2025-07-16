@@ -4,6 +4,7 @@ import {
   EventEmitter,
   OnInit,
   OnDestroy,
+  Input,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../user.service';
@@ -19,7 +20,7 @@ import {
   CollectionReference,
   Query,
 } from '@angular/fire/firestore';
-import { Subscription, switchMap, filter } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { CreateGroupModalComponent } from './create-group-modal/create-group-modal.component';
 
 @Component({
@@ -30,8 +31,11 @@ import { CreateGroupModalComponent } from './create-group-modal/create-group-mod
   styleUrl: './user-list.component.scss',
 })
 export class UserListComponent implements OnInit, OnDestroy {
+  @Input() selectedUserUid: string | null = null;
+  @Input() selectedGroupId: string | null = null;
   @Output() userSelected = new EventEmitter<User>();
   @Output() groupSelected = new EventEmitter<string>();
+  @Output() userProfileClicked = new EventEmitter<User>();
 
   users: User[] = [];
   groups: Group[] = [];
@@ -118,6 +122,10 @@ export class UserListComponent implements OnInit, OnDestroy {
       this.activeGroupId = null;
       this.userSelected.emit(user);
     }
+  }
+
+  onProfileClick(user: User) {
+    this.userProfileClicked.emit(user);
   }
 
   onGroupClick(g: Group) {

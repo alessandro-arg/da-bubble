@@ -37,6 +37,7 @@ export class LandingPageComponent implements OnInit {
   editedName: string = '';
   nameError: string | null = null;
 
+  profileUser: User | null = null;
   selectedUser: User | null = null;
   selectedGroupId: string | null = null;
   currentUserUid: string | null = null;
@@ -71,11 +72,17 @@ export class LandingPageComponent implements OnInit {
   }
 
   openPrivateChat(user: User) {
+    console.log('Opening private chat with', user);
     this.selectedGroupId = null;
     this.selectedUser = user;
     this.threadGroupId = null;
     this.threadMessageId = null;
     this.threadVisible = false;
+  }
+
+  openProfileModalFromUser(user: User) {
+    this.profileUser = user;
+    this.showProfileModal = true;
   }
 
   openGroupChat(groupId: string) {
@@ -161,7 +168,7 @@ export class LandingPageComponent implements OnInit {
 
   async logout() {
     try {
-      await this.authService.logout();
+      this.authService.logout();
       this.router.navigate(['/login']);
     } catch (error) {
       console.error('Logout error:', error);

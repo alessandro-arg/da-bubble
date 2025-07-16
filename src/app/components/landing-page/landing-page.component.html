@@ -195,8 +195,11 @@
       <div class="content h-full w-full flex">
         <app-user-list
           class="block h-full w-full"
+          [selectedUserUid]="selectedUser?.uid ?? null"
+          [selectedGroupId]="selectedGroupId"
           (userSelected)="openPrivateChat($event)"
           (groupSelected)="openGroupChat($event)"
+          (userProfileClicked)="openProfileModalFromUser($event)"
         ></app-user-list>
       </div>
     </div>
@@ -211,9 +214,11 @@
       }"
     >
       <app-chat
+        *ngIf="selectedUser !== null || selectedGroupId !== null"
         [chatPartner]="selectedUser"
-        [currentUserUid]="currentUserUid"
         [groupId]="selectedGroupId"
+        [currentUserUid]="currentUserUid"
+        [attr.key]="selectedUser?.uid || selectedGroupId"
         (userSelected)="openPrivateChat($event)"
         (threadSelected)="onThreadSelected($event)"
         (closedChannel)="onChannelClosed()"

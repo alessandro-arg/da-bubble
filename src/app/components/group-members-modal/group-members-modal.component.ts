@@ -15,6 +15,10 @@ export class GroupMembersModalComponent {
   @Input() currentUserUid!: string;
   @Output() close = new EventEmitter<void>();
   @Output() addMembers = new EventEmitter<void>();
+  @Output() memberClicked = new EventEmitter<any>();
+
+  showProfileModal: boolean = false;
+  chatPartner: any = null;
 
   isButtonHovered = false;
 
@@ -24,5 +28,14 @@ export class GroupMembersModalComponent {
 
   onAddMembers() {
     this.addMembers.emit();
+  }
+
+  openProfileModal(user: any) {
+    this.memberClicked.emit(user);
+  }
+
+  closeProfileModal() {
+    this.showProfileModal = false;
+    this.chatPartner = null;
   }
 }
