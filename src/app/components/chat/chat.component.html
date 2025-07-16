@@ -22,7 +22,7 @@
       *ngIf="showAddMembersModal || showMembersModal || showGroupSettingsModal"
     >
       <div
-        class="fixed inset-0 bg-black bg-opacity-50 z-40"
+        class="fixed inset-0 bg-black bg-opacity-30 z-40"
         (click)="
           closeAddMembersModal(); closeMembersModal(); closeGroupSettingsModal()
         "
@@ -106,7 +106,7 @@
               <!-- MITGLIEDER MODAL -->
               <div
                 *ngIf="showMembersModal && currentGroup && currentUserUid"
-                class="absolute top-full right-0 mt-2 w-72 bg-white rounded-xl p-4 shadow-lg z-50"
+                class="absolute top-full right-0 mt-2 p-10 bg-white rounded-b-[30px] rounded-tl-[30px] shadow-[0px_6px_10px_0px_#00000033] flex flex-col gap-5 z-50"
                 (click)="$event.stopPropagation()"
               >
                 <ng-container *ngIf="group$ | async as group">

@@ -13,9 +13,10 @@ export class GroupMembersModalComponent {
   @Input() group!: Group;
   @Input() participantsMap!: Record<string, { avatar: string; name: string }>;
   @Input() currentUserUid!: string;
-
   @Output() close = new EventEmitter<void>();
   @Output() addMembers = new EventEmitter<void>();
+
+  isButtonHovered = false;
 
   onClose() {
     this.close.emit();
