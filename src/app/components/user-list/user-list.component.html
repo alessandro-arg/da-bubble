@@ -7,7 +7,7 @@
     <img src="../../../assets/img/icons/edit_square.png" alt="" />
   </div>
 
-  <div class="flex-1 overflow-y-scroll flex flex-col">
+  <div class="flex-1 overflow-y-auto flex flex-col">
     <div class="flex justify-between items-center">
       <div
         class="w-fit flex items-center gap-[15px] pr-3 py-1 cursor-pointer select-none hover:text-[#535AF1]"
@@ -30,7 +30,7 @@
         </div>
       </div>
       <button
-        class="w-[30px] h-[30px] rounded-full transition-colors flex justify-center items-center hover:bg-[#F0EDFF]"
+        class="w-[30px] h-[30px] rounded-full transition-colors flex justify-center items-center hover:bg-[#F0EDFF] mr-1"
         (mouseenter)="addChannelHover = true"
         (mouseleave)="addChannelHover = false"
         (click)="openAddGroupModal()"
@@ -52,8 +52,12 @@
     ></app-create-group-modal>
 
     <div
-      class="overflow-hidden transition-[max-height] duration-300 ease-in-out mb-3 mt-3"
-      [ngClass]="channelsDropdownOpen ? ' max-h-[100%]' : 'max-h-0'"
+      class="transition-all duration-300 ease-in-out mb-3 mt-3"
+      [ngClass]="
+        channelsDropdownOpen
+          ? 'max-h-[100%] opacity-1'
+          : 'max-h-0 opacity-0 pointer-events-none'
+      "
     >
       <div class="flex flex-col gap-3">
         <div
@@ -69,7 +73,7 @@
           <p>{{ g.name }}</p>
         </div>
         <div
-          class="w-full flex gap-2 ml-[25px] rounded-2xl py-1 px-5 cursor-pointer hover:bg-[#ECEEFE] transition-colors"
+          class="w-max flex gap-2 ml-[25px] rounded-2xl py-1 px-5 cursor-pointer hover:bg-[#ECEEFE] transition-colors"
           (click)="openAddGroupModal()"
         >
           <img
@@ -80,7 +84,7 @@
         </div>
       </div>
     </div>
-    <div class="w-full flex flex-col flex-1 gap-6 h-full overflow-hidden">
+    <div class="w-full flex flex-col flex-1 gap-6 h-full">
       <div
         class="w-fit flex items-center gap-[15px] pr-3 py-1 cursor-pointer select-none hover:text-[#535AF1]"
         (click)="toggleDirektDropdown()"
@@ -104,8 +108,12 @@
       </div>
 
       <div
-        class="overflow-hidden transition-[max-height] duration-300 ease-in-out"
-        [ngClass]="direktDropdownOpen ? 'max-h-[100%]' : 'max-h-0'"
+        class="overflow-hidden transition-all duration-300 ease-in-out"
+        [ngClass]="
+          direktDropdownOpen
+            ? 'max-h-[100%] opacity-1'
+            : 'max-h-0 opacity-0 pointer-events-none'
+        "
       >
         <div class="flex flex-col gap-3">
           <div

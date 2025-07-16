@@ -1,5 +1,10 @@
 .sidebar {
-  @apply relative h-full shadow-sm rounded-[32px] overflow-hidden transition-all duration-300 ease-in-out bg-white;
+  @apply relative h-full shadow-sm rounded-[32px] transition-all duration-300 ease-in-out bg-white;
+  overflow: visible;
+}
+
+.sidebar.collapsed {
+  @apply overflow-hidden;
 }
 
 .sidebar.collapsed .content {
