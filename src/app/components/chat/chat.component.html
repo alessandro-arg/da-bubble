@@ -139,7 +139,7 @@
               <!-- 2) the small modal dropdown -->
               <div
                 *ngIf="showAddMembersModal && currentGroup"
-                class="absolute p-5 right-0 mt-2 w-96 bg-white rounded-xl shadow-lg z-50 add-members-modal"
+                class="absolute p-10 right-0 mt-2 w-max bg-white rounded-b-[30px] rounded-tl-[30px] shadow-[0px_6px_10px_0px_#00000033] z-50 add-members-modal"
                 (click)="$event.stopPropagation()"
               >
                 <ng-container *ngIf="group$ | async as group">
