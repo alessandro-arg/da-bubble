@@ -37,7 +37,7 @@
         >
           <div class="relative inline-block">
             <div
-              class="flex items-center gap-[10px] py-[6px] px-[10px] cursor-pointer hover:text-[#535AF1] rounded-full hover:bg-[#ECEEFE]"
+              class="flex items-center gap-[10px] py-[6px] px-[10px] cursor-pointer hover:text-[#535AF1] rounded-full hover:bg-[#ECEEFE] transition-all duration-300"
               (click)="openGroupSettingsModal()"
               (mouseenter)="isGroupTitleHovered = true"
               (mouseleave)="isGroupTitleHovered = false"
@@ -63,7 +63,7 @@
 
             <div
               *ngIf="showGroupSettingsModal && currentGroup && currentUserUid"
-              class="absolute top-full left-0 mt-2 w-[28rem] bg-white rounded-2xl p-6 shadow-xl z-50"
+              class="absolute p-10 left-0 mt-2 w-max bg-white rounded-b-[30px] rounded-tr-[30px] shadow-[0px_6px_10px_0px_#00000033] z-50 add-members-modal"
               (click)="$event.stopPropagation()"
             >
               <ng-container *ngIf="group$ | async as group">

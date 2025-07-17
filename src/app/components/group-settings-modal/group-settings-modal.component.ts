@@ -1,4 +1,11 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GroupService } from '../../group.service';
@@ -25,6 +32,8 @@ export class GroupSettingsModalComponent {
   newGroupName = '';
   newGroupDescription = '';
 
+  @ViewChild('groupNameInput') groupNameInput!: ElementRef<HTMLInputElement>;
+
   constructor(private groupService: GroupService) {}
 
   ngOnInit() {
@@ -40,6 +49,9 @@ export class GroupSettingsModalComponent {
   startEditGroupName() {
     this.editingGroupName = true;
     this.newGroupName = this.group.name;
+    setTimeout(() => {
+      this.groupNameInput?.nativeElement.focus();
+    }, 0);
   }
 
   cancelEditGroupName() {
