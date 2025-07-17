@@ -149,32 +149,67 @@
 
           <ul
             *ngIf="filteredUsers.length"
-            class="absolute z-10 mt-1 w-full bg-white border rounded shadow-lg max-h-48 overflow-auto"
+            class="absolute py-5 px-5 flex flex-col gap-4 z-10 bg-white border border-[#ADB0D9] rounded-b-[20px] rounded-tr-[20px] shadow-[0px_2px_10px_0px_#00000014] w-[335px] max-h-48 overflow-auto -mt-3 left-4"
           >
             <li
               *ngFor="let u of filteredUsers"
               (click)="addUser(u)"
-              class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              class="w-max ml-4 mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
             >
-              {{ u.name }}
-              <small class="text-gray-500">({{ u.email }})</small>
+              <div class="relative w-12 h-12">
+                <img
+                  [src]="u.avatar"
+                  [alt]="u.name"
+                  class="w-full h-full rounded-full object-cover"
+                />
+                <div
+                  class="absolute bottom-0 right-[-2px] w-4 h-4 bg-[#92C83E] rounded-full border-2 border-white"
+                ></div>
+              </div>
+              <div class="flex flex-col">
+                <p
+                  class="text-base transition-colors duration-200 font-normal text-black"
+                >
+                  {{ u.name }}
+                </p>
+              </div>
             </li>
           </ul>
         </div>
 
         <div class="flex flex-wrap gap-2 mt-2">
-          <span
+          <div
             *ngFor="let u of selectedUsers"
-            class="flex items-center bg-[#E0E7FF] px-3 py-1 rounded-full text-sm"
+            class="flex items-center gap-4 bg-[#ECEEFE] px-5 py-1 rounded-[35px] text-base"
           >
-            {{ u.name }}
+            <img
+              [src]="u.avatar"
+              [alt]="u.name"
+              class="w-[38px] h-[38px] rounded-full object-cover"
+            />
+            <p class="text-base transition-colors duration-200">
+              {{ u.name }}
+            </p>
             <button
               (click)="removeUser(u)"
-              class="ml-2 text-gray-600 hover:text-gray-800"
+              class="w-10 h-10 -ml-1 flex items-center justify-center rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] group transition-colors duration-200"
             >
-              &times;
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5 text-black group-hover:text-[#535AF1]"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
             </button>
-          </span>
+          </div>
         </div>
       </div>
 
