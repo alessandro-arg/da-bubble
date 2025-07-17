@@ -33,6 +33,8 @@ export class GroupSettingsModalComponent {
   newGroupDescription = '';
 
   @ViewChild('groupNameInput') groupNameInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('groupDescriptionInput')
+  groupDescriptionInput!: ElementRef<HTMLInputElement>;
 
   constructor(private groupService: GroupService) {}
 
@@ -69,6 +71,9 @@ export class GroupSettingsModalComponent {
   startEditGroupDescription() {
     this.editingGroupDescription = true;
     this.newGroupDescription = this.group.description || '';
+    setTimeout(() => {
+      this.groupDescriptionInput?.nativeElement.focus();
+    }, 0);
   }
 
   cancelEditGroupDescription() {
