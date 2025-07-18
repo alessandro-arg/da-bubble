@@ -777,12 +777,15 @@
   <!-- Input Field -->
   <div class="px-[35px] pb-[35px] pt-[15px] bg-transparent">
     <div
-      class="flex flex-col p-5 border border-[#ADB0D9] rounded-[20px] gap-[20px]"
+      #wrapper
+      class="relative flex flex-col p-5 border border-[#ADB0D9] rounded-[20px] gap-[20px] hover:border-[#797EF3]"
     >
       <!-- Textarea at top -->
       <textarea
+        #textarea
         [(ngModel)]="newMessage"
-        (keydown)="onTextareaKeydown($event)"
+        (keydown)="onKeydown($event)"
+        (input)="onInput()"
         [disabled]="!chatPartner && !groupId"
         [placeholder]="
           chatPartner
@@ -791,8 +794,32 @@
             ? 'Nachricht an #' + (group$ | async)?.name
             : ''
         "
-        class="w-full resize-none border-none focus:outline-none text-lg placeholder-[#686868] bg-transparent pr-[30px]"
+        class="w-full resize-none border-none focus:outline-none text-lg placeholder-[#686868] bg-transparent pr-[30px] leading-6"
       ></textarea>
+
+      <div
+        #mirror
+        class="absolute bottom-0 left-0 invisible whitespace-pre-wrap break-words w-full text-lg leading-6 pr-[30px] font-sans"
+        style="
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+        "
+      ></div>
+
+      <ul
+        *ngIf="showMentionMenu"
+        class="absolute bg-white border border-[#ADB0D9] rounded-md max-h-[150px] overflow-y-auto z-10"
+        [ngStyle]="{ top: mentionY + 'px', left: mentionX + 'px' }"
+      >
+        <li
+          *ngFor="let u of filteredUsers"
+          (click)="selectMention(u)"
+          class="px-2 py-1 cursor-pointer hover:bg-[#F0EDFF]"
+        >
+          {{ u.name }}
+        </li>
+      </ul>
 
       <!-- Icon row at bottom -->
       <div class="flex items-center justify-between">
@@ -831,6 +858,7 @@
             [ngClass]="{ 'bg-[#F0EDFF]': isAttachHovered }"
             (mouseenter)="isAttachHovered = true"
             (mouseleave)="isAttachHovered = false"
+            (click)="openMentionMenu()"
           >
             <img
               [src]="
@@ -839,7 +867,7 @@
                   : '../../../assets/img/icons/alternate_email.png'
               "
               class="w-6 h-6"
-              alt="attachment"
+              alt="mention"
             />
           </button>
         </div>
