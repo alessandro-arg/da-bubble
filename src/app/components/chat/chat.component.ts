@@ -72,12 +72,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   selectedUsers: User[] = [];
   searchTerm = '';
 
-  mentionUsers: User[] = [];
-  showMentionMenu = false;
-  mentionX = 0;
-  mentionY = 0;
-  triggerIndex = 0;
-
   messagePicker: Record<string, boolean> = {};
   participantsMap: Record<string, User> = {};
 
@@ -98,9 +92,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   editingMsgId: string | null = null;
   editText = '';
   optionsOpen: Record<string, boolean> = {};
-
-  @ViewChild('textarea') textarea!: ElementRef<HTMLTextAreaElement>;
-  @ViewChild('mirror') mirror!: ElementRef<HTMLDivElement>;
 
   @ViewChild('emojiBtn', { read: ElementRef }) emojiBtn!: ElementRef;
   @ViewChild('picker', { read: ElementRef }) picker!: ElementRef;
@@ -163,7 +154,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
         [meUid]: me,
         [them.uid]: them,
       };
-      this.updateMentionUsers();
     }
 
     this.finishLoading();
@@ -187,7 +177,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
             users.forEach((u) => {
               if (u) this.participantsMap[u.uid!] = u;
             });
-            this.updateMentionUsers();
           }
         );
       }
@@ -220,10 +209,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     });
   }
 
-  private updateMentionUsers() {
-    this.mentionUsers = Object.values(this.participantsMap);
-  }
-
   startChatWithPartner() {
     if (!this.profileUser) return;
     const userCopy = { ...this.profileUser };
@@ -234,93 +219,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
       this.userSelected.emit(userCopy);
       this.profileUser = null;
     }, 10);
-  }
-
-  onKeydown(event: KeyboardEvent) {
-    if (this.showMentionMenu && event.key === 'Escape') {
-      this.showMentionMenu = false;
-    } else if (event.key === 'Enter') {
-      if (event.shiftKey) {
-        return;
-      }
-      event.preventDefault();
-      this.send();
-    }
-  }
-
-  onInput() {
-    const ta = this.textarea.nativeElement;
-    const cursor = ta.selectionStart!;
-    const val = ta.value;
-
-    if (!this.showMentionMenu && val[cursor - 1] === '@') {
-      this.triggerIndex = cursor;
-      this.showMentionMenu = true;
-      this.filteredUsers = [...this.mentionUsers];
-      setTimeout(() => this.positionMenu(), 0);
-      return;
-    }
-
-    if (this.showMentionMenu) {
-      const query = val.slice(this.triggerIndex, cursor);
-      this.filteredUsers = this.mentionUsers.filter((u) =>
-        u.name.toLowerCase().includes(query.toLowerCase())
-      );
-      this.positionMenu();
-    }
-  }
-
-  positionMenu() {
-    const ta = this.textarea.nativeElement;
-    const mir = this.mirror.nativeElement;
-
-    const cursor = ta.selectionStart!;
-    const before = ta.value
-      .slice(0, cursor)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/\n$/g, '\n\u200b');
-    mir.innerHTML = before + '<span id="caret-marker">\u200b</span>';
-
-    const marker = mir.querySelector('#caret-marker') as HTMLElement;
-    const { offsetLeft: mx, offsetTop: my } = marker;
-    const taRect = ta.getBoundingClientRect();
-    const wrapRect = (ta.parentElement as HTMLElement).getBoundingClientRect();
-    const lineH = parseFloat(
-      getComputedStyle(ta).lineHeight || `${taRect.height}px`
-    );
-    this.mentionX = mx + (taRect.left - wrapRect.left) - ta.scrollLeft;
-    this.mentionY = my + (taRect.top - wrapRect.top) - ta.scrollTop + lineH;
-  }
-
-  openMentionMenu() {
-    const ta = this.textarea.nativeElement;
-    const cursor = ta.selectionStart!;
-    const before = ta.value.slice(0, cursor);
-    const after = ta.value.slice(cursor);
-
-    ta.value = before + '@' + after;
-    this.newMessage = ta.value;
-    this.triggerIndex = cursor + 1;
-    ta.setSelectionRange(this.triggerIndex, this.triggerIndex);
-    this.showMentionMenu = true;
-    this.filteredUsers = [...this.mentionUsers];
-    setTimeout(() => this.positionMenu(), 0);
-  }
-
-  selectMention(u: User) {
-    const ta = this.textarea.nativeElement;
-    const cursor = ta.selectionStart!;
-    const beforeTrigger = ta.value.slice(0, this.triggerIndex - 1);
-    const after = ta.value.slice(cursor);
-    const display = u.name;
-    const insert = `@${display} `;
-    ta.value = beforeTrigger + insert + after;
-    this.newMessage = ta.value;
-    const newPos = beforeTrigger.length + insert.length;
-    ta.setSelectionRange(newPos, newPos);
-    this.showMentionMenu = false;
   }
 
   openThread(msg: Message) {
@@ -483,6 +381,13 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     }
 
     setTimeout(() => this.scrollToBottom(), 50);
+  }
+
+  onTextareaKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && !event.altKey) {
+      event.preventDefault();
+      this.send();
+    }
   }
 
   sameDay(d1: Date, d2: Date): boolean {
