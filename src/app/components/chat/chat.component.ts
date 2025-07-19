@@ -10,10 +10,12 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   Output,
   EventEmitter,
+  QueryList,
+  ViewChildren,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { filter, shareReplay, switchMap, take } from 'rxjs/operators';
+import { shareReplay, take } from 'rxjs/operators';
 import { ReactionBarComponent } from '../../reaction-bar/reaction-bar.component';
 import { ChatService } from '../../chat.service';
 import { GroupService } from '../../group.service';
@@ -101,11 +103,19 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   @ViewChild('editInput', { read: ElementRef })
   editInput?: ElementRef<HTMLTextAreaElement>;
 
+  @ViewChild('messageInput', { read: ElementRef })
+  msgInput!: ElementRef<HTMLTextAreaElement>;
+  @ViewChildren('mentionItem', { read: ElementRef })
+  mentionItems!: QueryList<ElementRef<HTMLLIElement>>;
+  showMentionList = false;
+  activeMentionIndex = 0;
+  private mentionStartIndex = 0;
+
   constructor(
     public chatService: ChatService,
     private userService: UserService,
     private groupService: GroupService
-  ) { }
+  ) {}
 
   async ngAfterViewInit() {
     if (typeof window !== 'undefined') {
@@ -240,6 +250,140 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     });
   }
 
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (target.closest('.emoji-input-container')) return;
+    if (target.closest('.picker-container')) return;
+    this.showEmojiPicker = false;
+    this.messagePicker = {};
+
+    if (!Object.values(this.optionsOpen).some((v) => v)) return;
+    if (target.closest('.options-button') || target.closest('.options-popup')) {
+      return;
+    }
+
+    this.optionsOpen = {};
+  }
+
+  private scrollToBottom() {
+    const el = this.chatContainer.nativeElement;
+    el.scrollTop = el.scrollHeight;
+  }
+
+  async send() {
+    if (!this.newMessage.trim() || !this.currentUserUid) return;
+    const text = this.newMessage.trim();
+    this.newMessage = '';
+
+    if (this.groupId) {
+      await this.chatService.sendGroupMessage(
+        this.groupId,
+        this.currentUserUid,
+        text
+      );
+    } else if (this.chatId) {
+      await this.chatService.sendMessage(
+        this.chatId,
+        this.currentUserUid,
+        text
+      );
+    }
+
+    setTimeout(() => this.scrollToBottom(), 50);
+  }
+
+  onInput() {
+    const ta = this.msgInput.nativeElement;
+    const val = this.newMessage;
+    const pos = ta.selectionStart;
+    const idx = val.lastIndexOf('@', pos - 1);
+    if (idx >= 0 && (idx === 0 || /\s/.test(val[idx - 1]))) {
+      const query = val.slice(idx + 1, pos).toLowerCase();
+
+      this.filteredUsers = this.allUsers.filter((u) =>
+        u.name.toLowerCase().startsWith(query)
+      );
+
+      if (this.filteredUsers.length) {
+        this.showMentionList = true;
+        this.activeMentionIndex = 0;
+        this.mentionStartIndex = idx;
+        return;
+      }
+    }
+    this.showMentionList = false;
+  }
+
+  onTextareaKeydown(e: KeyboardEvent) {
+    if (this.showMentionList) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        this.activeMentionIndex =
+          (this.activeMentionIndex + 1) % this.filteredUsers.length;
+        this.scrollActiveItemIntoView();
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        this.activeMentionIndex =
+          (this.activeMentionIndex - 1 + this.filteredUsers.length) %
+          this.filteredUsers.length;
+        this.scrollActiveItemIntoView();
+        return;
+      }
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        e.preventDefault();
+        this.selectMentionUser(this.filteredUsers[this.activeMentionIndex]);
+        return;
+      }
+    }
+
+    if (e.key === 'Enter' && !e.altKey) {
+      e.preventDefault();
+      this.send();
+    }
+  }
+
+  private scrollActiveItemIntoView() {
+    const items = this.mentionItems.toArray();
+    const el = items[this.activeMentionIndex]?.nativeElement;
+    if (el) el.scrollIntoView({ block: 'nearest' });
+  }
+
+  triggerMention() {
+    const ta = this.msgInput.nativeElement;
+    ta.focus();
+    const start = ta.selectionStart ?? this.newMessage.length;
+    const before = this.newMessage.slice(0, start);
+    const after = this.newMessage.slice(start);
+    this.newMessage = `${before}@${after}`;
+    this.mentionStartIndex = start;
+    setTimeout(() => {
+      ta.setSelectionRange(start + 1, start + 1);
+      this.onInput();
+    }, 0);
+  }
+
+  onMentionMouseDown(event: MouseEvent, user: User) {
+    event.preventDefault();
+    this.selectMentionUser(user);
+  }
+
+  selectMentionUser(user: User) {
+    const ta = this.msgInput.nativeElement;
+    const before = this.newMessage.slice(0, this.mentionStartIndex);
+    const after = this.newMessage.slice(ta.selectionStart);
+    this.newMessage = `${before}@${user.name} ${after}`;
+    this.showMentionList = false;
+
+    const newPos = before.length + user.name.length + 2;
+    setTimeout(() => {
+      ta.setSelectionRange(newPos, newPos);
+      ta.focus();
+    }, 0);
+  }
+
   onMemberClicked(user: User) {
     this.profileUser = user;
     this.openProfileModal();
@@ -349,56 +493,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   addEmoji(event: any) {
     this.newMessage += event.detail.unicode;
     this.showEmojiPicker = false;
-  }
-
-  @HostListener('document:click', ['$event'])
-  onClickOutside(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    if (target.closest('.emoji-input-container')) return;
-    if (target.closest('.picker-container')) return;
-    this.showEmojiPicker = false;
-    this.messagePicker = {};
-
-    if (!Object.values(this.optionsOpen).some((v) => v)) return;
-    if (target.closest('.options-button') || target.closest('.options-popup')) {
-      return;
-    }
-
-    this.optionsOpen = {};
-  }
-
-  private scrollToBottom() {
-    const el = this.chatContainer.nativeElement;
-    el.scrollTop = el.scrollHeight;
-  }
-
-  async send() {
-    if (!this.newMessage.trim() || !this.currentUserUid) return;
-    const text = this.newMessage.trim();
-    this.newMessage = '';
-
-    if (this.groupId) {
-      await this.chatService.sendGroupMessage(
-        this.groupId,
-        this.currentUserUid,
-        text
-      );
-    } else if (this.chatId) {
-      await this.chatService.sendMessage(
-        this.chatId,
-        this.currentUserUid,
-        text
-      );
-    }
-
-    setTimeout(() => this.scrollToBottom(), 50);
-  }
-
-  onTextareaKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter' && !event.altKey) {
-      event.preventDefault();
-      this.send();
-    }
   }
 
   sameDay(d1: Date, d2: Date): boolean {

@@ -775,13 +775,18 @@
   </div>
 
   <!-- Input Field -->
-  <div class="px-[35px] pb-[35px] pt-[15px] bg-transparent">
+  <div
+    *ngIf="chatPartner || groupId"
+    class="px-[35px] pb-[35px] pt-[15px] bg-transparent"
+  >
     <div
-      class="flex flex-col p-5 border border-[#ADB0D9] rounded-[20px] gap-[20px] hover:border-[#797EF3]"
+      class="relative flex flex-col p-5 border border-[#ADB0D9] rounded-[20px] gap-[20px] hover:border-[#797EF3]"
     >
       <!-- Textarea at top -->
       <textarea
+        #messageInput
         [(ngModel)]="newMessage"
+        (input)="onInput()"
         (keydown)="onTextareaKeydown($event)"
         [disabled]="!chatPartner && !groupId"
         [placeholder]="
@@ -793,6 +798,42 @@
         "
         class="w-full resize-none border-none focus:outline-none text-lg placeholder-[#686868] bg-transparent pr-[30px]"
       ></textarea>
+
+      <!-- Mention Menu when we hit the '@' -->
+      <ul
+        *ngIf="showMentionList"
+        class="absolute flex flex-col gap-3 left-[20px] bottom-full -mb-4 p-5 w-[350px] max-h-[467px] overflow-auto bg-white border border-[#ADB0D9] rounded-t-[20px] rounded-br-[20px] shadow-[0px_2px_10px_0px_#00000014 z-20"
+      >
+        <li
+          #mentionItem
+          *ngFor="let u of filteredUsers; let i = index"
+          (mousedown)="onMentionMouseDown($event, u)"
+          [ngClass]="{
+            'bg-[#ECEEFE]': i === activeMentionIndex
+          }"
+          class="w-max ml-4 mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+        >
+          <div class="relative w-12 h-12">
+            <img
+              [src]="u.avatar || '../../../assets/img/profile.svg'"
+              alt="User"
+              class="w-full h-full rounded-full object-cover"
+            />
+            <div
+              class="absolute bottom-0 right-[-2px] w-4 h-4 bg-[#92C83E] rounded-full border-2 border-white"
+            ></div>
+          </div>
+          <p
+            class="text-base transition-colors duration-200"
+            [ngClass]="{
+              'font-bold text-[#535AF1]': i === activeMentionIndex,
+              'font-normal text-black': i !== activeMentionIndex
+            }"
+          >
+            {{ u.name }} <span *ngIf="u.uid === currentUserUid">(Du)</span>
+          </p>
+        </li>
+      </ul>
 
       <!-- Icon row at bottom -->
       <div class="flex items-center justify-between">
@@ -831,6 +872,7 @@
             [ngClass]="{ 'bg-[#F0EDFF]': isAttachHovered }"
             (mouseenter)="isAttachHovered = true"
             (mouseleave)="isAttachHovered = false"
+            (click)="triggerMention()"
           >
             <img
               [src]="
@@ -839,7 +881,7 @@
                   : '../../../assets/img/icons/alternate_email.png'
               "
               class="w-6 h-6"
-              alt="attachment"
+              alt="mention"
             />
           </button>
         </div>
