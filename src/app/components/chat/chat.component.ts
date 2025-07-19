@@ -363,8 +363,11 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     const idx = val.lastIndexOf('@', pos - 1);
     if (idx >= 0 && (idx === 0 || /\s/.test(val[idx - 1]))) {
       const query = val.slice(idx + 1, pos).toLowerCase();
+      const pool = this.groupId
+        ? Object.values(this.participantsMap)
+        : this.allUsers;
 
-      this.filteredUsers = this.allUsers.filter((u) =>
+      this.filteredUsers = pool.filter((u) =>
         u.name.toLowerCase().startsWith(query)
       );
 

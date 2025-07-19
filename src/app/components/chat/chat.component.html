@@ -597,9 +597,9 @@
                                 ? 'bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px]'
                                 : 'bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px] group-hover:bg-white'
                             "
-                          >
-                            {{ msg.text }}
-                          </div>
+                            (click)="onBubbleClick($event)"
+                            [innerHTML]="formatMessageHtml(msg)"
+                          ></div>
 
                           <!-- ── thread summary (only for group chats) ── -->
                           <ng-container *ngIf="groupId && msg.id">
