@@ -449,12 +449,13 @@
                 <div *ngIf="msgs.length === 0">
                   <div class="w-full flex flex-col gap-6 px-[45px]">
                     <div
-                      class="flex gap-6 items-end cursor-pointer w-max"
+                      class="flex gap-2 items-end cursor-pointer w-max"
                       (click)="openGroupSettingsModal()"
                     >
                       <img
                         src="../../../assets/img/icons/tag.png"
                         [alt]="group.name"
+                        class="h-[32px] w-[31px]"
                       />
                       <p class="h-max font-bold text-2xl hover:text-[#535AF1]">
                         {{ group.name }}
@@ -471,7 +472,7 @@
                       }}
                       erstellt. Das is der Anfang des Channels
                       <span
-                        class="text-[#535AF1] cursor-pointer"
+                        class="text-[#535AF1] cursor-pointer hover:font-semibold"
                         (click)="openGroupSettingsModal()"
                         ># {{ group.name }}</span
                       >.

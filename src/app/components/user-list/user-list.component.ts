@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
 import { Group } from '../../models/group.model';
-import { Auth, onAuthStateChanged, user } from '@angular/fire/auth';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import {
   Firestore,
   collection,
@@ -22,6 +22,7 @@ import {
 } from '@angular/fire/firestore';
 import { Subscription } from 'rxjs';
 import { CreateGroupModalComponent } from './create-group-modal/create-group-modal.component';
+import { PresenceService } from '../../presence.service';
 
 @Component({
   selector: 'app-user-list',
@@ -61,7 +62,8 @@ export class UserListComponent implements OnInit, OnDestroy {
   constructor(
     private userService: UserService,
     private auth: Auth,
-    private firestore: Firestore
+    private firestore: Firestore,
+    private presence: PresenceService
   ) {}
 
   ngOnInit() {
@@ -85,6 +87,12 @@ export class UserListComponent implements OnInit, OnDestroy {
         if (a.uid === this.currentUserUid) return -1;
         if (b.uid === this.currentUserUid) return 1;
         return a.name.localeCompare(b.name);
+      });
+
+      this.users.forEach((u) => {
+        this.presence.getUserStatus(u.uid).subscribe((status) => {
+          u.online = status?.state === 'online';
+        });
       });
     });
   }

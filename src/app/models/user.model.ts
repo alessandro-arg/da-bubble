@@ -6,4 +6,5 @@ export interface User {
   isGuest?: boolean;
   createdAt?: Date;
   lastSeen?: any;
+  online?: boolean;
 }
