@@ -353,25 +353,9 @@
                           ? 'bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px]'
                           : 'bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px] group-hover:bg-white'
                       "
-                    >
-                      <ng-container
-                        *ngFor="
-                          let part of msg.text | mentionify : participantsMap
-                        "
-                      >
-                        <!-- plain text -->
-                        <span *ngIf="part.text">{{ part.text }}</span>
-
-                        <!-- mention -->
-                        <span
-                          *ngIf="part.mention"
-                          class="font-bold text-indigo-600 cursor-pointer hover:underline"
-                          (click)="onNameClicked(part.mention.uid)"
-                        >
-                          &#64;{{ part.mention.name }}
-                        </span>
-                      </ng-container>
-                    </div>
+                      (click)="onBubbleClick($event)"
+                      [innerHTML]="formatMessageHtml(msg)"
+                    ></div>
 
                     <!-- ─── reactions bar ──────────────────────────────────── -->
                     <app-reaction-bar

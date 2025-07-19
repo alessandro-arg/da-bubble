@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { shareReplay, take } from 'rxjs/operators';
 import { ReactionBarComponent } from '../../reaction-bar/reaction-bar.component';
 import { ChatService } from '../../chat.service';
@@ -24,11 +25,11 @@ import { User } from '../../models/user.model';
 import { Observable, Subscription } from 'rxjs';
 import { Group } from '../../models/group.model';
 import { Message } from '../../models/chat.model';
+import { MessageSegment } from '../../models/chat.model';
 import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
 import { GroupSettingsModalComponent } from '../group-settings-modal/group-settings-modal.component';
 import { GroupMembersModalComponent } from '../group-members-modal/group-members-modal.component';
 import { AddMembersModalComponent } from '../add-members-modal/add-members-modal.component';
-import { MentionifyPipe } from './mentionify.pipe';
 
 @Component({
   selector: 'app-chat',
@@ -41,7 +42,6 @@ import { MentionifyPipe } from './mentionify.pipe';
     GroupSettingsModalComponent,
     GroupMembersModalComponent,
     AddMembersModalComponent,
-    MentionifyPipe,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.component.html',
@@ -71,6 +71,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   showGroupSettingsModal = false;
 
   allUsers: User[] = [];
+  allUsersMap: Record<string, User> = {};
   currentParticipants: string[] = [];
   filteredUsers: User[] = [];
   selectedUsers: User[] = [];
@@ -116,10 +117,15 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   constructor(
     public chatService: ChatService,
     private userService: UserService,
-    private groupService: GroupService
+    private groupService: GroupService,
+    private sanitizer: DomSanitizer
   ) {
     this.userService.getAllUsersLive().subscribe((users) => {
       this.allUsers = users;
+      this.allUsersMap = users.reduce((m, u) => {
+        if (u.uid) m[u.uid] = u;
+        return m;
+      }, {} as Record<string, User>);
     });
   }
 
@@ -166,6 +172,10 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   trackById(_idx: number, msg: Message) {
     return msg.id;
+  }
+
+  private esc(str: string) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
   private async loadPrivateChat(meUid: string, them: User) {
@@ -280,23 +290,70 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   async send() {
     if (!this.newMessage.trim() || !this.currentUserUid) return;
     const text = this.newMessage.trim();
+    const mentions = this.extractMentionUids(text);
+    console.log('extractMentionUids →', mentions);
     this.newMessage = '';
 
     if (this.groupId) {
       await this.chatService.sendGroupMessage(
         this.groupId,
         this.currentUserUid,
-        text
+        text,
+        mentions
       );
     } else if (this.chatId) {
       await this.chatService.sendMessage(
         this.chatId,
         this.currentUserUid,
-        text
+        text,
+        mentions
       );
     }
 
     setTimeout(() => this.scrollToBottom(), 50);
+  }
+
+  private extractMentionUids(text: string): string[] {
+    const uids = new Set<string>();
+
+    this.allUsers.forEach((u) => {
+      const token = '@' + u.name;
+      if (text.includes(token)) {
+        uids.add(u.uid!);
+      }
+    });
+
+    return Array.from(uids);
+  }
+
+  formatMessageHtml(msg: Message): SafeHtml {
+    let raw = msg.text;
+    (msg.mentions || []).forEach((uid) => {
+      const user = this.allUsersMap[uid] || this.participantsMap[uid];
+      if (!user) return;
+      const token = '@' + user.name;
+      const re = new RegExp(this.esc(token));
+      raw = raw.replace(
+        re,
+        `<span class="mention cursor-pointer font-bold text-indigo-600" data-uid="${uid}">${token}</span>`
+      );
+    });
+    return this.sanitizer.bypassSecurityTrustHtml(raw);
+  }
+
+  async onBubbleClick(evt: MouseEvent) {
+    const t = evt.target as HTMLElement;
+    const uid = t.getAttribute('data-uid');
+    if (t.classList.contains('mention') && uid) {
+      let user: User | null = this.allUsersMap[uid] ?? null;
+      if (!user) {
+        user = await this.userService.getUser(uid);
+      }
+      if (user) {
+        this.profileUser = user;
+        this.showProfileModal = true;
+      }
+    }
   }
 
   onInput() {

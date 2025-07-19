@@ -57,12 +57,14 @@ export class ChatService {
   async sendMessage(
     chatId: string,
     senderUid: string,
-    text: string
+    text: string,
+    mentions: string[] = []
   ): Promise<void> {
     const msgsRef = collection(this.firestore, `chats/${chatId}/messages`);
     await addDoc(msgsRef, {
       sender: senderUid,
       text,
+      mentions,
       createdAt: serverTimestamp(),
     });
     const chatRef = doc(this.firestore, `chats/${chatId}`);
@@ -72,12 +74,14 @@ export class ChatService {
   async sendGroupMessage(
     groupId: string,
     senderUid: string,
-    text: string
+    text: string,
+    mentions: string[] = []
   ): Promise<void> {
     const msgsRef = collection(this.firestore, `groups/${groupId}/messages`);
     await addDoc(msgsRef, {
       sender: senderUid,
       text,
+      mentions,
       createdAt: serverTimestamp(),
     });
     const groupRef = doc(this.firestore, `groups/${groupId}`);
@@ -268,7 +272,7 @@ export class ChatService {
       editedAt: serverTimestamp(),
     });
   }
-    // diese Methode wird verwendet, um den aktuellen Chat-Partner zu setzen wenn er sich ändert bem der searchbar component  (hamidou)
+  // diese Methode wird verwendet, um den aktuellen Chat-Partner zu setzen wenn er sich ändert bem der searchbar component  (hamidou)
   setCurrentChatPartner(user: User) {
     this.currentChatPartner.next(user);
   }

@@ -4,6 +4,12 @@ export interface Message {
   text: string;
   createdAt: any;
   reactions?: Reaction[];
+  mentions?: string[];
+}
+
+export interface MessageSegment {
+  text: string;
+  mentionUid?: string;
 }
 
 export interface Chat {
