@@ -354,7 +354,23 @@
                           : 'bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px] group-hover:bg-white'
                       "
                     >
-                      {{ msg.text }}
+                      <ng-container
+                        *ngFor="
+                          let part of msg.text | mentionify : participantsMap
+                        "
+                      >
+                        <!-- plain text -->
+                        <span *ngIf="part.text">{{ part.text }}</span>
+
+                        <!-- mention -->
+                        <span
+                          *ngIf="part.mention"
+                          class="font-bold text-indigo-600 cursor-pointer hover:underline"
+                          (click)="onNameClicked(part.mention.uid)"
+                        >
+                          &#64;{{ part.mention.name }}
+                        </span>
+                      </ng-container>
                     </div>
 
                     <!-- ─── reactions bar ──────────────────────────────────── -->
@@ -777,7 +793,7 @@
   <!-- Input Field -->
   <div
     *ngIf="chatPartner || groupId"
-    class="px-[35px] pb-[35px] pt-[15px] bg-transparent"
+    class="relative px-[35px] pb-[35px] pt-[15px] bg-transparent"
   >
     <div
       class="relative flex flex-col p-5 border border-[#ADB0D9] rounded-[20px] gap-[20px] hover:border-[#797EF3]"
@@ -802,7 +818,7 @@
       <!-- Mention Menu when we hit the '@' -->
       <ul
         *ngIf="showMentionList"
-        class="absolute flex flex-col gap-3 left-[20px] bottom-full -mb-4 p-5 w-[350px] max-h-[467px] overflow-auto bg-white border border-[#ADB0D9] rounded-t-[20px] rounded-br-[20px] shadow-[0px_2px_10px_0px_#00000014 z-20"
+        class="absolute flex flex-col gap-3 left-[20px] bottom-full -mb-4 p-5 w-[350px] max-h-[467px] overflow-auto bg-white border border-[#ADB0D9] rounded-t-[20px] rounded-br-[20px] shadow-[0px_2px_10px_0px_#00000014] z-20"
       >
         <li
           #mentionItem

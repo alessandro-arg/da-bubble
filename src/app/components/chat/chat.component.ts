@@ -28,6 +28,7 @@ import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
 import { GroupSettingsModalComponent } from '../group-settings-modal/group-settings-modal.component';
 import { GroupMembersModalComponent } from '../group-members-modal/group-members-modal.component';
 import { AddMembersModalComponent } from '../add-members-modal/add-members-modal.component';
+import { MentionifyPipe } from './mentionify.pipe';
 
 @Component({
   selector: 'app-chat',
@@ -40,6 +41,7 @@ import { AddMembersModalComponent } from '../add-members-modal/add-members-modal
     GroupSettingsModalComponent,
     GroupMembersModalComponent,
     AddMembersModalComponent,
+    MentionifyPipe,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.component.html',
@@ -115,7 +117,11 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     public chatService: ChatService,
     private userService: UserService,
     private groupService: GroupService
-  ) {}
+  ) {
+    this.userService.getAllUsersLive().subscribe((users) => {
+      this.allUsers = users;
+    });
+  }
 
   async ngAfterViewInit() {
     if (typeof window !== 'undefined') {
@@ -129,14 +135,14 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   // diese Methode wird verwendet, um den aktuellen Chat-Partner zu setzen wenn er sich ändert bem der searchbar component  (hamidou)
   ngOnInit() {
-    this.chatService.currentChatPartner$.subscribe(user => {
+    this.chatService.currentChatPartner$.subscribe((user) => {
       if (user && this.currentUserUid) {
         this.chatPartner = user;
         this.loadPrivateChat(this.currentUserUid, user);
       }
     });
   }
-  // bis hier  
+  // bis hier
 
   async ngOnChanges(changes: SimpleChanges) {
     this.messagesLoading = true;
