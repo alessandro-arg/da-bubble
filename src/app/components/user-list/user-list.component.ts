@@ -119,11 +119,9 @@ export class UserListComponent implements OnInit, OnDestroy {
   }
 
   onClick(user: User) {
-    if (user.uid !== this.currentUserUid) {
-      this.activeUserUid = user.uid;
-      this.activeGroupId = null;
-      this.userSelected.emit(user);
-    }
+    this.activeUserUid = user.uid;
+    this.activeGroupId = null;
+    this.userSelected.emit(user);
   }
 
   onProfileClick(user: User) {

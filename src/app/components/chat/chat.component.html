@@ -181,31 +181,66 @@
           <ng-container *ngIf="messages$ | async as msgs">
             <!-- Placeholder when no messages yet -->
             <div *ngIf="msgs.length === 0">
-              <div class="w-full flex flex-col gap-6 px-[45px]">
-                <div
-                  class="flex gap-6 items-end cursor-pointer w-max"
-                  (click)="openProfileModal()"
-                >
-                  <img
-                    [src]="chatPartner.avatar"
-                    alt="{{ chatPartner.name }}"
-                    class="w-[100px] h-[100px] rounded-full"
-                  />
-                  <p class="h-max font-bold text-2xl hover:text-[#535AF1]">
-                    {{ chatPartner.name }}
-                  </p>
-                </div>
-                <p class="text-[#686868] font-normal text-xl whitespace-normal">
-                  Diese Unterhaltung findet nur zwischen
-                  <button
-                    class="inline text-[#535AF1] font-normal text-xl hover:font-bold whitespace-normal"
+              <ng-container
+                *ngIf="
+                  chatPartner?.uid === currentUserUid;
+                  else emptyChatPartner
+                "
+              >
+                <div class="w-full flex flex-col gap-6 px-[45px]">
+                  <div
+                    class="flex gap-6 items-end cursor-pointer w-max"
                     (click)="openProfileModal()"
                   >
-                    &#64;{{ chatPartner.name }}
-                  </button>
-                  und dir statt.
-                </p>
-              </div>
+                    <img
+                      [src]="chatPartner.avatar"
+                      alt="{{ chatPartner.name }}"
+                      class="w-[100px] h-[100px] rounded-full"
+                    />
+                    <p class="h-max font-bold text-2xl hover:text-[#535AF1]">
+                      {{ chatPartner.name }} (Du)
+                    </p>
+                  </div>
+                  <p
+                    class="text-[#686868] font-normal text-xl whitespace-normal"
+                  >
+                    <strong>Dieser Raum ist nur für dich da.</strong> Mache dir
+                    Notizen, liste deine To-dos auf oder bewahre Links und
+                    Dateien griffbereit auf. Du kannst hier auch gerne Dinge mit
+                    dir selbst besprechen.
+                  </p>
+                </div>
+              </ng-container>
+
+              <ng-template #emptyChatPartner>
+                <div class="w-full flex flex-col gap-6 px-[45px]">
+                  <div
+                    class="flex gap-6 items-end cursor-pointer w-max"
+                    (click)="openProfileModal()"
+                  >
+                    <img
+                      [src]="chatPartner.avatar"
+                      alt="{{ chatPartner.name }}"
+                      class="w-[100px] h-[100px] rounded-full"
+                    />
+                    <p class="h-max font-bold text-2xl hover:text-[#535AF1]">
+                      {{ chatPartner.name }}
+                    </p>
+                  </div>
+                  <p
+                    class="text-[#686868] font-normal text-xl whitespace-normal"
+                  >
+                    Diese Unterhaltung findet nur zwischen
+                    <button
+                      class="inline text-[#535AF1] font-normal text-xl hover:font-bold whitespace-normal"
+                      (click)="openProfileModal()"
+                    >
+                      &#64;{{ chatPartner.name }}
+                    </button>
+                    und dir statt.
+                  </p>
+                </div>
+              </ng-template>
             </div>
 
             <ng-container *ngFor="let msg of msgs; let i = index">
@@ -420,7 +455,6 @@
                       <img
                         src="../../../assets/img/icons/tag.png"
                         [alt]="group.name"
-                        class="w-[32px] h-[33px] rounded-full"
                       />
                       <p class="h-max font-bold text-2xl hover:text-[#535AF1]">
                         {{ group.name }}
@@ -429,19 +463,18 @@
                     <p
                       class="text-[#686868] font-normal text-xl whitespace-normal"
                     >
-                      Dieser Channel ist am
+                      {{ participantsMap[group.creator].name }} hat dieser
+                      Channel am
                       {{
                         group.createdAt.toDate()
                           | date : "longDate" : "" : "de-DE"
                       }}
-                      erstellt worden, von
-                      {{ participantsMap[group.creator].name }}. Das is der
-                      Anfang des Channels
+                      erstellt. Das is der Anfang des Channels
                       <span
                         class="text-[#535AF1] cursor-pointer"
                         (click)="openGroupSettingsModal()"
                         ># {{ group.name }}</span
-                      >
+                      >.
                     </p>
                   </div>
                 </div>

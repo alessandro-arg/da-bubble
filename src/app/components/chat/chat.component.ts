@@ -189,7 +189,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     } else {
       this.participantsMap = {
         [meUid]: me,
-        [them.uid]: them,
+        ...(them.uid !== meUid ? { [them.uid]: them } : {}),
       };
     }
 
