@@ -77,6 +77,7 @@ export class SearchbarComponent {
       this.searchQuery = user.name + ' ';
       this.chatService.setCurrentChatPartner(user);  // Set the current chat partner in the chat service
     }
+    this.searchQuery = '';
     this.showPopup = false;
   }
 }
