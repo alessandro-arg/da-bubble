@@ -69,14 +69,15 @@ export class SearchbarComponent {
 
       if (atPosition >= 0) {
         this.searchQuery = currentText.substring(0, atPosition) + '@' + user.name + ' ';
-        this.chatService.setCurrentChatPartner(user);   // Set the current chat partner in the chat service
+        this.chatService.setCurrentChatPartner(user);   
       } else {
         this.searchQuery = currentText + '@' + user.name + ' ';
       }
     } else {
       this.searchQuery = user.name + ' ';
-      this.chatService.setCurrentChatPartner(user);  // Set the current chat partner in the chat service
+      this.chatService.setCurrentChatPartner(user); 
     }
+    this.searchQuery = '';
     this.showPopup = false;
   }
 }

@@ -12,10 +12,9 @@
 
   <!-- Popup -->
   <div
-  *ngIf="showPopup"
-  class="show-popup-user-list absolute top-full mt-[-10px] ml-10 left-0 bg-white shadow-lg z-10 p-4 max-h-60 overflow-y-auto rounded-2xl rounded-tl-none border border-[#8f94d6]"
->
-    
+    *ngIf="showPopup"
+    class="show-popup-user-list absolute top-full mt-[-10px] ml-10 left-0 bg-white shadow-lg z-10 p-4 max-h-60 overflow-y-auto rounded-2xl rounded-tl-none border border-[#8f94d6]"
+  >
     <div
       *ngFor="let user of filteredUsers"
       class="flex items-center p-2 hover:bg-[#edeefe] rounded-full cursor-pointer gap-3 w-fit px-5"

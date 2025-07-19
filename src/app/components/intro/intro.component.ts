@@ -20,11 +20,9 @@ export class IntroComponent implements AfterViewInit {
     private ngZone: NgZone,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    console.log('IntroComponent constructor');
   }
 
   ngAfterViewInit(): void {
-    console.log('ngAfterViewInit - Starting intro sequence');
     this.startIntroSequence();
   }
 
@@ -42,11 +40,9 @@ export class IntroComponent implements AfterViewInit {
         this.navigateToLogin();
       }
     }, 100);
-}
+  }
 
   private playAnimation(): void {
-    console.log('Playing animation...');
-
     const letters = [' DABubble '];
     const element = this.animatedTitle.nativeElement;
     element.innerHTML = '';
@@ -54,7 +50,7 @@ export class IntroComponent implements AfterViewInit {
     const charDelay = 100;
     const initialOffset = -100; // Startposition weiter links
     const spacing = 30;
-    
+
 
     letters.forEach((letter, i) => {
       const span = document.createElement('span');
@@ -79,7 +75,7 @@ export class IntroComponent implements AfterViewInit {
       if (introContent) {
         introContent.classList.add('final-animation');
       }
-      
+
       setTimeout(() => {
         this.navigateToLogin();
       }, 1000);
@@ -87,16 +83,17 @@ export class IntroComponent implements AfterViewInit {
   }
 
   private navigateToLogin(): void {
-    console.log('Navigating to login...');
     this.ngZone.run(() => {
       this.router.navigate(['/login'])
-        .then(() => console.log('Navigation successful'))
+        .then(() => {
+          //console.log('Navigation to login successful');
+        })
         .catch(err => console.error('Navigation error:', err));
     });
 
     if (isPlatformBrowser(this.platformId)) {
       localStorage.clear();
-      console.log('Local storage cleared');
+     // console.log('Local storage cleared');
     }
   }
 }
