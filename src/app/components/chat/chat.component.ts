@@ -291,7 +291,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     if (!this.newMessage.trim() || !this.currentUserUid) return;
     const text = this.newMessage.trim();
     const mentions = this.extractMentionUids(text);
-    console.log('extractMentionUids →', mentions);
     this.newMessage = '';
 
     if (this.groupId) {
@@ -335,7 +334,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
       const re = new RegExp(this.esc(token));
       raw = raw.replace(
         re,
-        `<span class="mention cursor-pointer font-bold text-indigo-600" data-uid="${uid}">${token}</span>`
+        `<span class="mention cursor-pointer font-bold hover:text-[#444DF2] transition-colors duration-100" data-uid="${uid}">${token}</span>`
       );
     });
     return this.sanitizer.bypassSecurityTrustHtml(raw);
@@ -557,8 +556,10 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   }
 
   addEmoji(event: any) {
+    const ta = this.msgInput.nativeElement;
     this.newMessage += event.detail.unicode;
     this.showEmojiPicker = false;
+    ta.focus();
   }
 
   sameDay(d1: Date, d2: Date): boolean {
