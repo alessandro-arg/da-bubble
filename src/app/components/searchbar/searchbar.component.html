@@ -8,12 +8,12 @@
     (input)="onInputChange($event)"
     [value]="searchQuery"
   />
-  <img src="../../../assets/img/icons/search.png" alt="" class="size-6" />
+  <img src="assets/img/icons/search.png" alt="" class="size-6" />
 
   <!-- Popup -->
   <div
   *ngIf="showPopup"
-  class="show-popup-user-list absolute top-full mt-[-10px] ml-10 left-0 w-fit bg-white shadow-lg z-10 p-4 max-h-60 overflow-y-auto rounded-2xl rounded-tl-none border border-[#8f94d6]"
+  class="show-popup-user-list absolute top-full mt-[-10px] ml-10 left-0 bg-white shadow-lg z-10 p-4 max-h-60 overflow-y-auto rounded-2xl rounded-tl-none border border-[#8f94d6]"
 >
     
     <div
@@ -27,10 +27,6 @@
         class="w-8 h-8 rounded-full object-cover"
       />
       <div class="font-medium">{{ user.name }}</div>
-    </div>
-
-    <div *ngIf="filteredUsers.length === 0" class="p-2 text-gray-500">
-      Keine Ergebnisse
     </div>
   </div>
 </div>

@@ -105,7 +105,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     public chatService: ChatService,
     private userService: UserService,
     private groupService: GroupService
-  ) {}
+  ) { }
 
   async ngAfterViewInit() {
     if (typeof window !== 'undefined') {
@@ -116,6 +116,17 @@ export class ChatComponent implements OnChanges, AfterViewInit {
       await import('emoji-picker-element');
     }
   }
+
+  // diese Methode wird verwendet, um den aktuellen Chat-Partner zu setzen wenn er sich ändert bem der searchbar component  (hamidou)
+  ngOnInit() {
+    this.chatService.currentChatPartner$.subscribe(user => {
+      if (user && this.currentUserUid) {
+        this.chatPartner = user;
+        this.loadPrivateChat(this.currentUserUid, user);
+      }
+    });
+  }
+  // bis hier  
 
   async ngOnChanges(changes: SimpleChanges) {
     this.messagesLoading = true;

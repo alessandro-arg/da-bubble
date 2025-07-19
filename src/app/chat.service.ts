@@ -19,11 +19,15 @@ import { Message, Reaction } from './models/chat.model';
 import { UserService } from './user.service';
 import { User } from './models/user.model';
 import { Group } from './models/group.model';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   readonly emptyStream: Observable<Message[]> = of([]);
-
+  // diese Methode wird verwendet, um den aktuellen Chat-Partner zu setzen wenn er sich ändert bem der searchbar component  (hamidoudiallo)
+  private currentChatPartner = new BehaviorSubject<User | null>(null);
+  currentChatPartner$ = this.currentChatPartner.asObservable();
+  // bis hier
   constructor(private firestore: Firestore, private userService: UserService) {}
 
   private getChatId(uid1: string, uid2: string): string {
@@ -263,5 +267,9 @@ export class ChatService {
       text: newText,
       editedAt: serverTimestamp(),
     });
+  }
+    // diese Methode wird verwendet, um den aktuellen Chat-Partner zu setzen wenn er sich ändert bem der searchbar component  (hamidou)
+  setCurrentChatPartner(user: User) {
+    this.currentChatPartner.next(user);
   }
 }

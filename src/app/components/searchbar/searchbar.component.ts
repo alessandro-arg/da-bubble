@@ -2,6 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
+import { ChatService } from '../../chat.service';
 
 @Component({
   selector: 'app-searchbar',
@@ -14,10 +15,10 @@ export class SearchbarComponent {
   showPopup = false;
   searchQuery = '';
   filteredUsers: User[] = [];
-  allUsers: User[] = []; 
+  allUsers: User[] = [];
   searchMode: 'name' | 'mention' = 'name';
 
-  constructor(private userService: UserService) {
+  constructor(private userService: UserService, private chatService: ChatService) {
     this.loadAllUsers();
   }
 
@@ -38,20 +39,20 @@ export class SearchbarComponent {
   async onInputChange(event: Event) {
     const input = event.target as HTMLInputElement;
     this.searchQuery = input.value;
-    
+
     if (this.searchQuery.includes('@')) {
       this.searchMode = 'mention';
       const query = this.searchQuery.split('@').pop()?.trim() || '';
-      
+
       this.filteredUsers = query.length > 0
-        ? this.allUsers.filter(user => 
-            user.name.toLowerCase().includes(query.toLowerCase()))
+        ? this.allUsers.filter(user =>
+          user.name.toLowerCase().includes(query.toLowerCase()))
         : [...this.allUsers];
-      
+
       this.showPopup = true;
     } else if (this.searchQuery.length > 0) {
       this.searchMode = 'name';
-      this.filteredUsers = this.allUsers.filter(user => 
+      this.filteredUsers = this.allUsers.filter(user =>
         user.name.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
       this.showPopup = this.filteredUsers.length > 0;
@@ -60,18 +61,21 @@ export class SearchbarComponent {
     }
   }
 
+  // searchbar.component.ts
   selectUser(user: User) {
     if (this.searchMode === 'mention') {
       const currentText = this.searchQuery;
       const atPosition = currentText.lastIndexOf('@');
-      
+
       if (atPosition >= 0) {
         this.searchQuery = currentText.substring(0, atPosition) + '@' + user.name + ' ';
+        this.chatService.setCurrentChatPartner(user);   // Set the current chat partner in the chat service
       } else {
         this.searchQuery = currentText + '@' + user.name + ' ';
       }
     } else {
       this.searchQuery = user.name + ' ';
+      this.chatService.setCurrentChatPartner(user);  // Set the current chat partner in the chat service
     }
     this.showPopup = false;
   }
