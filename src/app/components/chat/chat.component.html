@@ -1,162 +1,221 @@
 <div class="w-full h-full flex flex-col">
   <!-- ── HEADER ─────────────────────────────────────────────────────── -->
-  <ng-container *ngIf="chatPartner || groupId">
-    <!-- private header -->
+  <ng-container
+    *ngIf="isNewMessage && !chatPartner && !groupId; else normalHeader"
+  >
+    <!-- top bar -->
     <div
-      *ngIf="chatPartner; else groupHeader"
-      class="w-full flex justify-between px-[45px] pt-[28px] pb-[16px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
+      class="w-full flex flex-col gap-5 px-[45px] pt-[32px] pb-[20px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014]"
     >
-      <div
-        class="flex items-center gap-4 px-2 py-1 rounded-[35px] cursor-pointer hover:bg-[#ECEEFE]"
-        (click)="openProfileModal()"
-      >
-        <img
-          [src]="chatPartner!.avatar"
-          class="w-[45px] h-[45px] rounded-full"
+      <h3 class="text-2xl font-bold">Neue Nachricht</h3>
+      <div class="w-full">
+        <input
+          type="text"
+          placeholder="An: #channel, oder @jemand oder Mail Adresse"
+          class="w-full rounded-full border border-[#ADB0D9] px-4 py-2 focus:outline-none"
         />
-        <p class="text-2xl font-bold">{{ chatPartner!.name }}</p>
       </div>
     </div>
 
-    <ng-container
-      *ngIf="showAddMembersModal || showMembersModal || showGroupSettingsModal"
+    <ul
+      *ngIf="showMentionList"
+      class="absolute flex flex-col gap-3 left-[20px] bottom-full -mb-4 p-5 w-[350px] max-h-[467px] overflow-auto bg-white border border-[#ADB0D9] rounded-t-[20px] rounded-br-[20px] shadow-[0px_2px_10px_0px_#00000014] z-20"
     >
-      <div
-        class="fixed inset-0 bg-black bg-opacity-30 z-40"
-        (click)="
-          closeAddMembersModal(); closeMembersModal(); closeGroupSettingsModal()
-        "
-      ></div>
-    </ng-container>
-
-    <!-- group header -->
-    <ng-template #groupHeader>
-      <ng-container *ngIf="group$ | async as group">
-        <div
-          class="w-full flex justify-between gap-[10px] px-[45px] pt-[28px] pb-[16px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
+      <li
+        #mentionItem
+        *ngFor="let u of filteredUsers; let i = index"
+        (mousedown)="onMentionMouseDown($event, u)"
+        [ngClass]="{
+          'bg-[#ECEEFE]': i === activeMentionIndex
+        }"
+        class="w-max ml-4 mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+      >
+        <div class="relative w-12 h-12">
+          <img
+            [src]="u.avatar || '../../../assets/img/profile.svg'"
+            alt="User"
+            class="w-full h-full rounded-full object-cover"
+          />
+          <div
+            class="absolute bottom-0 right-[-2px] w-4 h-4 bg-[#92C83E] rounded-full border-2 border-white"
+          ></div>
+        </div>
+        <p
+          class="text-base transition-colors duration-200"
+          [ngClass]="{
+            'font-bold text-[#535AF1]': i === activeMentionIndex,
+            'font-normal text-black': i !== activeMentionIndex
+          }"
         >
-          <div class="relative inline-block">
-            <div
-              class="flex items-center gap-[10px] py-[6px] px-[10px] cursor-pointer hover:text-[#535AF1] rounded-full hover:bg-[#ECEEFE] transition-all duration-300"
-              (click)="openGroupSettingsModal()"
-              (mouseenter)="isGroupTitleHovered = true"
-              (mouseleave)="isGroupTitleHovered = false"
-            >
-              <img
-                [src]="
-                  isGroupTitleHovered
-                    ? '../../../assets/img/icons/tag_purple.png'
-                    : '../../../assets/img/icons/tag.png'
-                "
-                class="w-6 h-6"
-              />
-              <p class="text-xl font-bold">{{ group.name }}</p>
-              <img
-                [src]="
-                  isGroupTitleHovered
-                    ? '../../../assets/img/icons/arrow_down_purple.png'
-                    : '../../../assets/img/icons/arrow_down.png'
-                "
-                class="w-[30px] h-[30px]"
-              />
-            </div>
+          {{ u.name }} <span *ngIf="u.uid === currentUserUid">(Du)</span>
+        </p>
+      </li>
+    </ul>
+  </ng-container>
 
-            <div
-              *ngIf="showGroupSettingsModal && currentGroup && currentUserUid"
-              class="absolute p-10 left-0 mt-2 w-max bg-white rounded-b-[30px] rounded-tr-[30px] shadow-[0px_6px_10px_0px_#00000033] z-50 add-members-modal"
-              (click)="$event.stopPropagation()"
-            >
-              <ng-container *ngIf="group$ | async as group">
-                <app-group-settings-modal
-                  [group]="group"
-                  [participantsMap]="participantsMap"
-                  [isCreator]="isCreator"
-                  [currentUserUid]="currentUserUid"
-                  (close)="closeGroupSettingsModal()"
-                  (closedChannel)="closedChannel.emit()"
-                ></app-group-settings-modal>
-              </ng-container>
-            </div>
-          </div>
-          <div class="flex gap-2 px-[10px] py-[3px] items-center">
+  <ng-template #normalHeader>
+    <ng-container *ngIf="chatPartner || groupId">
+      <!-- private header -->
+      <div
+        *ngIf="chatPartner; else groupHeader"
+        class="w-full flex justify-between px-[45px] pt-[28px] pb-[16px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
+      >
+        <div
+          class="flex items-center gap-4 px-2 py-1 rounded-[35px] cursor-pointer hover:bg-[#ECEEFE]"
+          (click)="openProfileModal()"
+        >
+          <img
+            [src]="chatPartner!.avatar"
+            class="w-[45px] h-[45px] rounded-full"
+          />
+          <p class="text-2xl font-bold">{{ chatPartner!.name }}</p>
+        </div>
+      </div>
+
+      <ng-container
+        *ngIf="
+          showAddMembersModal || showMembersModal || showGroupSettingsModal
+        "
+      >
+        <div
+          class="fixed inset-0 bg-black bg-opacity-30 z-40"
+          (click)="
+            closeAddMembersModal();
+            closeMembersModal();
+            closeGroupSettingsModal()
+          "
+        ></div>
+      </ng-container>
+
+      <!-- group header -->
+      <ng-template #groupHeader>
+        <ng-container *ngIf="group$ | async as group">
+          <div
+            class="w-full flex justify-between gap-[10px] px-[45px] pt-[28px] pb-[16px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
+          >
             <div class="relative inline-block">
               <div
-                class="flex items-center gap-[10px] py-1 px-2 cursor-pointer rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] transition-colors duration-200"
-                (click)="openMembersModal()"
+                class="flex items-center gap-[10px] py-[6px] px-[10px] cursor-pointer hover:text-[#535AF1] rounded-full hover:bg-[#ECEEFE] transition-all duration-300"
+                (click)="openGroupSettingsModal()"
+                (mouseenter)="isGroupTitleHovered = true"
+                (mouseleave)="isGroupTitleHovered = false"
               >
-                <ng-container
-                  *ngFor="
-                    let uid of group.participants | slice : 0 : 3;
-                    let i = index
+                <img
+                  [src]="
+                    isGroupTitleHovered
+                      ? '../../../assets/img/icons/tag_purple.png'
+                      : '../../../assets/img/icons/tag.png'
                   "
-                >
-                  <img
-                    *ngIf="participantsMap[uid]"
-                    [src]="participantsMap[uid].avatar"
-                    [alt]="participantsMap[uid].name"
-                    class="w-10 h-10 border-2 border-white rounded-full"
-                    [ngClass]="{ '-ml-5': i > 0 }"
-                  />
-                </ng-container>
-                <span class="font-semibold text-xl">
-                  {{ group.participants.length }}
-                </span>
+                  class="w-6 h-6"
+                />
+                <p class="text-xl font-bold">{{ group.name }}</p>
+                <img
+                  [src]="
+                    isGroupTitleHovered
+                      ? '../../../assets/img/icons/arrow_down_purple.png'
+                      : '../../../assets/img/icons/arrow_down.png'
+                  "
+                  class="w-[30px] h-[30px]"
+                />
               </div>
 
-              <!-- MITGLIEDER MODAL -->
               <div
-                *ngIf="showMembersModal && currentGroup && currentUserUid"
-                class="absolute top-full right-0 mt-2 p-10 bg-white rounded-b-[30px] rounded-tl-[30px] shadow-[0px_6px_10px_0px_#00000033] flex flex-col gap-5 z-50"
+                *ngIf="showGroupSettingsModal && currentGroup && currentUserUid"
+                class="absolute p-10 left-0 mt-2 w-max bg-white rounded-b-[30px] rounded-tr-[30px] shadow-[0px_6px_10px_0px_#00000033] z-50 add-members-modal"
                 (click)="$event.stopPropagation()"
               >
                 <ng-container *ngIf="group$ | async as group">
-                  <app-group-members-modal
+                  <app-group-settings-modal
                     [group]="group"
                     [participantsMap]="participantsMap"
+                    [isCreator]="isCreator"
                     [currentUserUid]="currentUserUid"
-                    (close)="closeMembersModal()"
-                    (addMembers)="onClickAddMembersFromMembersModal()"
-                    (memberClicked)="onMemberClicked($event)"
-                  ></app-group-members-modal>
+                    (close)="closeGroupSettingsModal()"
+                    (closedChannel)="closedChannel.emit()"
+                  ></app-group-settings-modal>
                 </ng-container>
               </div>
             </div>
+            <div class="flex gap-2 px-[10px] py-[3px] items-center">
+              <div class="relative inline-block">
+                <div
+                  class="flex items-center gap-[10px] py-1 px-2 cursor-pointer rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] transition-colors duration-200"
+                  (click)="openMembersModal()"
+                >
+                  <ng-container
+                    *ngFor="
+                      let uid of group.participants | slice : 0 : 3;
+                      let i = index
+                    "
+                  >
+                    <img
+                      *ngIf="participantsMap[uid]"
+                      [src]="participantsMap[uid].avatar"
+                      [alt]="participantsMap[uid].name"
+                      class="w-10 h-10 border-2 border-white rounded-full"
+                      [ngClass]="{ '-ml-5': i > 0 }"
+                    />
+                  </ng-container>
+                  <span class="font-semibold text-xl">
+                    {{ group.participants.length }}
+                  </span>
+                </div>
 
-            <div class="relative inline-block add-members-button">
-              <img
-                [src]="
-                  isAddMembersHovered
-                    ? '../../../assets/img/icons/add_members_purple.png'
-                    : '../../../assets/img/icons/add_members.png'
-                "
-                alt="Add members"
-                class="cursor-pointer"
-                (mouseenter)="isAddMembersHovered = true"
-                (mouseleave)="isAddMembersHovered = false"
-                (click)="openAddMembersModal()"
-              />
+                <!-- MITGLIEDER MODAL -->
+                <div
+                  *ngIf="showMembersModal && currentGroup && currentUserUid"
+                  class="absolute top-full right-0 mt-2 p-10 bg-white rounded-b-[30px] rounded-tl-[30px] shadow-[0px_6px_10px_0px_#00000033] flex flex-col gap-5 z-50"
+                  (click)="$event.stopPropagation()"
+                >
+                  <ng-container *ngIf="group$ | async as group">
+                    <app-group-members-modal
+                      [group]="group"
+                      [participantsMap]="participantsMap"
+                      [currentUserUid]="currentUserUid"
+                      (close)="closeMembersModal()"
+                      (addMembers)="onClickAddMembersFromMembersModal()"
+                      (memberClicked)="onMemberClicked($event)"
+                    ></app-group-members-modal>
+                  </ng-container>
+                </div>
+              </div>
 
-              <!-- 2) the small modal dropdown -->
-              <div
-                *ngIf="showAddMembersModal && currentGroup"
-                class="absolute p-10 right-0 mt-2 w-max bg-white rounded-b-[30px] rounded-tl-[30px] shadow-[0px_6px_10px_0px_#00000033] z-50 add-members-modal"
-                (click)="$event.stopPropagation()"
-              >
-                <ng-container *ngIf="group$ | async as group">
-                  <app-add-members-modal
-                    [groupId]="group.id"
-                    [groupName]="group.name"
-                    [currentParticipants]="group.participants"
-                    (close)="closeAddMembersModal()"
-                  ></app-add-members-modal>
-                </ng-container>
+              <div class="relative inline-block add-members-button">
+                <img
+                  [src]="
+                    isAddMembersHovered
+                      ? '../../../assets/img/icons/add_members_purple.png'
+                      : '../../../assets/img/icons/add_members.png'
+                  "
+                  alt="Add members"
+                  class="cursor-pointer"
+                  (mouseenter)="isAddMembersHovered = true"
+                  (mouseleave)="isAddMembersHovered = false"
+                  (click)="openAddMembersModal()"
+                />
+
+                <!-- 2) the small modal dropdown -->
+                <div
+                  *ngIf="showAddMembersModal && currentGroup"
+                  class="absolute p-10 right-0 mt-2 w-max bg-white rounded-b-[30px] rounded-tl-[30px] shadow-[0px_6px_10px_0px_#00000033] z-50 add-members-modal"
+                  (click)="$event.stopPropagation()"
+                >
+                  <ng-container *ngIf="group$ | async as group">
+                    <app-add-members-modal
+                      [groupId]="group.id"
+                      [groupName]="group.name"
+                      [currentParticipants]="group.participants"
+                      (close)="closeAddMembersModal()"
+                    ></app-add-members-modal>
+                  </ng-container>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </ng-container>
-    </ng-template>
-  </ng-container>
+        </ng-container>
+      </ng-template>
+    </ng-container>
+  </ng-template>
 
   <!-- Chat Body -->
   <div
@@ -716,7 +775,10 @@
 
     <!-- NOTHING SELECTED -->
     <ng-template #pickAChat>
-      <div class="flex-1 flex items-center justify-center text-gray-400">
+      <div
+        *ngIf="!isNewMessage"
+        class="flex-1 flex items-center justify-center text-gray-400"
+      >
         Wähle einen Nutzer oder Kanal, um zu chatten.
       </div>
     </ng-template>
@@ -810,7 +872,7 @@
 
   <!-- Input Field -->
   <div
-    *ngIf="chatPartner || groupId"
+    *ngIf="chatPartner || groupId || isNewMessage"
     class="relative px-[35px] pb-[35px] pt-[15px] bg-transparent"
   >
     <div
@@ -822,9 +884,11 @@
         [(ngModel)]="newMessage"
         (input)="onInput()"
         (keydown)="onTextareaKeydown($event)"
-        [disabled]="!chatPartner && !groupId"
+        [disabled]="!chatPartner && !groupId && !isNewMessage"
         [placeholder]="
-          chatPartner
+          isNewMessage
+            ? 'Starte eine neue Nachricht'
+            : chatPartner
             ? 'Nachricht an ' + chatPartner.name
             : (group$ | async)?.name
             ? 'Nachricht an #' + (group$ | async)?.name

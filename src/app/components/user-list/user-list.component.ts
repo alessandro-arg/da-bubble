@@ -37,6 +37,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   @Output() userSelected = new EventEmitter<User>();
   @Output() groupSelected = new EventEmitter<string>();
   @Output() userProfileClicked = new EventEmitter<User>();
+  @Output() editClicked = new EventEmitter<void>();
 
   users: User[] = [];
   groups: Group[] = [];
@@ -116,6 +117,10 @@ export class UserListComponent implements OnInit, OnDestroy {
         this.groups = groups;
       }
     );
+  }
+
+  onEditClick() {
+    this.editClicked.emit();
   }
 
   openAddGroupModal() {

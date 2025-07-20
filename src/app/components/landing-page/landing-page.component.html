@@ -206,6 +206,7 @@
           (userSelected)="openPrivateChat($event)"
           (groupSelected)="openGroupChat($event)"
           (userProfileClicked)="openProfileModalFromUser($event)"
+          (editClicked)="onNewMessage()"
         ></app-user-list>
       </div>
     </div>
@@ -223,7 +224,8 @@
         [chatPartner]="selectedUser"
         [groupId]="selectedGroupId"
         [currentUserUid]="currentUserUid"
-        [attr.key]="selectedUser?.uid || selectedGroupId"
+        [isNewMessage]="newMessageMode"
+        (cancelNewMessage)="newMessageMode = false"
         (userSelected)="openPrivateChat($event)"
         (threadSelected)="onThreadSelected($event)"
         (closedChannel)="onChannelClosed()"
