@@ -27,8 +27,10 @@ export class ChatService {
   // diese Methode wird verwendet, um den aktuellen Chat-Partner zu setzen wenn er sich ändert bem der searchbar component  (hamidoudiallo)
   private currentChatPartner = new BehaviorSubject<User | null>(null);
   currentChatPartner$ = this.currentChatPartner.asObservable();
+  private currentGroup = new BehaviorSubject<Group | null>(null);
+  currentGroup$ = this.currentGroup.asObservable();
   // bis hier
-  constructor(private firestore: Firestore, private userService: UserService) {}
+  constructor(private firestore: Firestore, private userService: UserService) { }
 
   private getChatId(uid1: string, uid2: string): string {
     return [uid1, uid2].sort().join('_');
@@ -275,5 +277,9 @@ export class ChatService {
   // diese Methode wird verwendet, um den aktuellen Chat-Partner zu setzen wenn er sich ändert bem der searchbar component  (hamidou)
   setCurrentChatPartner(user: User) {
     this.currentChatPartner.next(user);
+  }
+
+  setCurrentGroup(group: Group) {
+    this.currentGroup.next(group);
   }
 }

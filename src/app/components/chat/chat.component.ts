@@ -139,12 +139,19 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     }
   }
 
-  // diese Methode wird verwendet, um den aktuellen Chat-Partner zu setzen wenn er sich ändert bem der searchbar component  (hamidou)
+  // diese Methode wird verwendet, um den aktuellen Chat-Partner zu setzen wenn er sich ändert bem der searchbar component
   ngOnInit() {
     this.chatService.currentChatPartner$.subscribe((user) => {
       if (user && this.currentUserUid) {
         this.chatPartner = user;
         this.loadPrivateChat(this.currentUserUid, user);
+      }
+    });
+
+    this.chatService.currentGroup$.subscribe((group) => {
+      if (group) {
+        this.groupId = group.id;
+        this.loadGroupChat(group.id);
       }
     });
   }
