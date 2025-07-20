@@ -80,6 +80,7 @@ export class LandingPageComponent implements OnInit {
     this.threadGroupId = null;
     this.threadMessageId = null;
     this.threadVisible = false;
+    this.newMessageMode = false;
   }
 
   openProfileModalFromUser(user: User) {
@@ -93,6 +94,7 @@ export class LandingPageComponent implements OnInit {
     this.threadGroupId = null;
     this.threadMessageId = null;
     this.threadVisible = false;
+    this.newMessageMode = false;
   }
 
   onThreadSelected(ev: { groupId: string; messageId: string }) {
@@ -111,6 +113,7 @@ export class LandingPageComponent implements OnInit {
     this.selectedGroupId = null;
     this.selectedUser = null;
     this.threadVisible = false;
+    this.newMessageMode = false;
   }
 
   toggleWorkspace() {
@@ -178,9 +181,9 @@ export class LandingPageComponent implements OnInit {
   }
 
   onNewMessage() {
-    this.newMessageMode = true;
     this.selectedUser = null;
     this.selectedGroupId = null;
+    this.newMessageMode = true;
   }
 
   @HostListener('document:click', ['$event'])

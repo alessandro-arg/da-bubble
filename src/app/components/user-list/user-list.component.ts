@@ -59,6 +59,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   addChannelHover2 = false;
   hoveredGroupId: string | null = null;
   showAddGroupModal = false;
+  editSquareHovered = false;
 
   constructor(
     private userService: UserService,

@@ -25,7 +25,6 @@ import { User } from '../../models/user.model';
 import { Observable, Subscription } from 'rxjs';
 import { Group } from '../../models/group.model';
 import { Message } from '../../models/chat.model';
-import { MessageSegment } from '../../models/chat.model';
 import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
 import { GroupSettingsModalComponent } from '../group-settings-modal/group-settings-modal.component';
 import { GroupMembersModalComponent } from '../group-members-modal/group-members-modal.component';
@@ -59,7 +58,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     messageId: string;
   }>();
   @Input() isNewMessage = false;
-  @Output() cancelNewMessage = new EventEmitter<void>();
 
   group$!: Observable<Group>;
   messages$ = this.chatService.emptyStream;
@@ -205,7 +203,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     this.finishLoading();
   }
 
-  private loadGroupChat(groupId: string) {
+  private async loadGroupChat(groupId: string) {
     this.messagesSub?.unsubscribe();
     this.chatId = groupId;
     this.messages$ = this.chatService.getGroupMessages(groupId);
@@ -672,5 +670,18 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   addEmojiToEdit(emoji: string) {
     this.editText += emoji;
+  }
+
+  get placeholderText(): string {
+    if (this.isNewMessage) {
+      return 'Starte eine neue Nachricht';
+    }
+    if (this.chatPartner) {
+      return `Nachricht an ${this.chatPartner.name}`;
+    }
+    if (this.currentGroup) {
+      return `Nachricht an #${this.currentGroup.name}`;
+    }
+    return '';
   }
 }

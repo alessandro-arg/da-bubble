@@ -6,12 +6,22 @@
       <img src="../../../assets/img/workspace-logo.png" alt="Image" />
       <h2 class="font-bold text-xl w-full">Devspace</h2>
     </div>
-    <img
-      src="../../../assets/img/icons/edit_square.png"
-      alt="new chat"
-      class="cursor-pointer"
-      (click)="onEditClick(); $event.stopPropagation()"
-    />
+    <button
+      class="p-2 rounded-[20px] hover:bg-[#ECEEFE] transition-colors duration-200"
+      (mouseenter)="editSquareHovered = true"
+      (mouseleave)="editSquareHovered = false"
+    >
+      <img
+        [src]="
+          editSquareHovered
+            ? '../../../assets/img/icons/edit_square_purple.png'
+            : '../../../assets/img/icons/edit_square.png'
+        "
+        alt="new chat"
+        class="cursor-pointer"
+        (click)="onEditClick(); $event.stopPropagation()"
+      />
+    </button>
   </div>
 
   <div class="flex-1 overflow-y-auto flex flex-col">
