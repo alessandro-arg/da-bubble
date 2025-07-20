@@ -58,6 +58,8 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     groupId: string;
     messageId: string;
   }>();
+  @Input() isNewMessage = false;
+  @Output() cancelNewMessage = new EventEmitter<void>();
 
   group$!: Observable<Group>;
   messages$ = this.chatService.emptyStream;

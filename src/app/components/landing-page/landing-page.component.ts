@@ -49,6 +49,8 @@ export class LandingPageComponent implements OnInit {
   isCollapsed = false;
   threadVisible = false;
 
+  newMessageMode = false;
+
   constructor(
     private authService: AuthService,
     private auth: Auth,
@@ -173,6 +175,12 @@ export class LandingPageComponent implements OnInit {
     } catch (error) {
       console.error('Logout error:', error);
     }
+  }
+
+  onNewMessage() {
+    this.newMessageMode = true;
+    this.selectedUser = null;
+    this.selectedGroupId = null;
   }
 
   @HostListener('document:click', ['$event'])

@@ -6,7 +6,12 @@
       <img src="../../../assets/img/workspace-logo.png" alt="Image" />
       <h2 class="font-bold text-xl w-full">Devspace</h2>
     </div>
-    <img src="../../../assets/img/icons/edit_square.png" alt="" />
+    <img
+      src="../../../assets/img/icons/edit_square.png"
+      alt="new chat"
+      class="cursor-pointer"
+      (click)="onEditClick(); $event.stopPropagation()"
+    />
   </div>
 
   <div class="flex-1 overflow-y-auto flex flex-col">
