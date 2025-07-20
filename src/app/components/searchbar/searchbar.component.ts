@@ -1,8 +1,11 @@
+// searchbar.component.ts
 import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
 import { ChatService } from '../../chat.service';
+import { GroupService } from '../../group.service';
+import { Group } from '../../models/group.model';
 
 @Component({
   selector: 'app-searchbar',
@@ -15,17 +18,31 @@ export class SearchbarComponent {
   showPopup = false;
   searchQuery = '';
   filteredUsers: User[] = [];
+  filteredGroups: Group[] = [];
   allUsers: User[] = [];
+  allGroups: Group[] = [];
   searchMode: 'name' | 'mention' = 'name';
+  currentSearchType: 'users' | 'groups' = 'users';
 
-  constructor(private userService: UserService, private chatService: ChatService) {
+  constructor(
+    private userService: UserService, 
+    private chatService: ChatService,
+    private groupService: GroupService
+  ) {
     this.loadAllUsers();
+    this.loadAllGroups();
   }
 
   private async loadAllUsers() {
     this.allUsers = await this.userService.getAllUsers();
     this.allUsers.sort((a, b) => a.name.localeCompare(b.name));
     this.filteredUsers = [...this.allUsers];
+  }
+
+  private async loadAllGroups() {
+    const groups = await this.groupService.getAllGroups();
+    this.allGroups = groups;
+    this.filteredGroups = [...this.allGroups];
   }
 
   @HostListener('document:click', ['$event'])
@@ -42,6 +59,7 @@ export class SearchbarComponent {
 
     if (this.searchQuery.includes('@')) {
       this.searchMode = 'mention';
+      this.currentSearchType = 'users';
       const query = this.searchQuery.split('@').pop()?.trim() || '';
 
       this.filteredUsers = query.length > 0
@@ -51,17 +69,23 @@ export class SearchbarComponent {
 
       this.showPopup = true;
     } else if (this.searchQuery.length > 0) {
-      this.searchMode = 'name';
+      // Suche nach Benutzern und Gruppen
+      const query = this.searchQuery.toLowerCase();
+      
       this.filteredUsers = this.allUsers.filter(user =>
-        user.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+        user.name.toLowerCase().includes(query)
       );
-      this.showPopup = this.filteredUsers.length > 0;
+      
+      this.filteredGroups = this.allGroups.filter(group =>
+        group.name.toLowerCase().includes(query)
+      );
+      
+      this.showPopup = this.filteredUsers.length > 0 || this.filteredGroups.length > 0;
     } else {
       this.showPopup = false;
     }
   }
 
-  // searchbar.component.ts
   selectUser(user: User) {
     if (this.searchMode === 'mention') {
       const currentText = this.searchQuery;
@@ -79,5 +103,12 @@ export class SearchbarComponent {
     }
     this.searchQuery = '';
     this.showPopup = false;
+  }
+
+  selectGroup(group: Group) {
+    this.searchQuery = group.name + ' ';
+    this.chatService.setCurrentGroup(group);
+    this.showPopup = false;
+    this.searchQuery = '';
   }
 }
