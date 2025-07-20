@@ -34,37 +34,7 @@ export class LoginComponent {
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
-  /*
-    async guestLogin() {
-      this.loading = true;
-      this.errorMessage = null;
   
-      try {
-        const userCredential = await firstValueFrom(this.authService.guestLogin());
-  
-        // Prüfe ob Gast bereits existiert, falls nicht erstellen
-        const userExists = await this.userService.getUser(userCredential.user.uid);
-        if (!userExists) {
-          await this.userService.createUser({
-            uid: userCredential.user.uid,
-            name: 'Gast',
-            email: userCredential.user.email || environment.guestEmail,
-            avatar: 'assets/img/avatar.png',
-            isGuest: true // Neue Eigenschaft für Gast-User
-          });
-        }
-  
-        // Ändere die Weiterleitung zu einer existierenden Route
-        const redirectUrl = this.authService.redirectUrl || '/landingpage/gast';
-        this.router.navigateByUrl(redirectUrl);
-      } catch (error: any) {
-        console.error('Guest login error:', error);
-        this.errorMessage = error.message || 'Gast-Login fehlgeschlagen.';
-      } finally {
-        this.loading = false;
-      }
-    }*/
-
   async onSubmit(form: NgForm) {
     if (form.invalid) return;
 
