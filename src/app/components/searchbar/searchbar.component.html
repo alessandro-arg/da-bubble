@@ -13,19 +13,44 @@
   <!-- Popup -->
   <div
     *ngIf="showPopup"
-    class="show-popup-user-list absolute top-full mt-[-10px] ml-10 left-0 bg-white shadow-lg z-10 p-4 max-h-60 overflow-y-auto rounded-2xl rounded-tl-none border border-[#8f94d6]"
+    class="show-popup-user-list absolute top-full mt-[-10px] ml-10 left-0 w-fit bg-white shadow-lg z-10 p-4 max-h-60 overflow-y-auto rounded-2xl rounded-tl-none border border-[#8f94d6]"
   >
-    <div
-      *ngFor="let user of filteredUsers"
-      class="flex items-center p-2 hover:bg-[#edeefe] rounded-full cursor-pointer gap-3 w-fit px-5"
-      (click)="selectUser(user)"
-    >
-      <img
-        [src]="user.avatar || 'assets/img/profile.svg'"
-        alt="Avatar"
-        class="w-8 h-8 rounded-full object-cover"
-      />
-      <div class="font-medium">{{ user.name }}</div>
+    <!-- Gruppen Ergebnisse -->
+    <div *ngIf="filteredGroups.length > 0">
+      <div class="text-sm font-semibold text-gray-500 mb-2">Gruppen</div>
+      <div
+        *ngFor="let group of filteredGroups"
+        class="flex items-center p-2 hover:bg-[#edeefe] rounded-full cursor-pointer gap-3 w-fit px-5"
+        (click)="selectGroup(group)"
+      >
+        <img
+          src="assets/img/icons/tag.png"
+          alt="Gruppen Icon"
+          class="w-8 h-8 rounded-full object-cover"
+        />
+        <div class="font-medium">{{ group.name }}</div>
+      </div>
+    </div>
+
+    <!-- Benutzer Ergebnisse -->
+    <div *ngIf="filteredUsers.length > 0">
+      <div class="text-sm font-semibold text-gray-500 mb-2 mt-4">Benutzer</div>
+      <div
+        *ngFor="let user of filteredUsers"
+        class="flex items-center p-2 hover:bg-[#edeefe] rounded-full cursor-pointer gap-3 w-fit px-5"
+        (click)="selectUser(user)"
+      >
+        <img
+          [src]="user.avatar || 'assets/img/profile.svg'"
+          alt="Avatar"
+          class="w-8 h-8 rounded-full object-cover"
+        />
+        <div class="font-medium">{{ user.name }}</div>
+      </div>
+    </div>
+
+    <div *ngIf="filteredUsers.length === 0 && filteredGroups.length === 0" class="p-2 text-gray-500">
+      Keine Ergebnisse
     </div>
   </div>
 </div>
