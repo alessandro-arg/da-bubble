@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GroupService } from '../../group.service';
 import { User } from '../../models/user.model';
+import { PresenceService, PresenceRecord } from '../../presence.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-add-members-modal',
@@ -15,6 +17,7 @@ export class AddMembersModalComponent implements OnInit {
   @Input() groupId!: string;
   @Input() groupName!: string;
   @Input() currentParticipants: string[] = [];
+
   @Output() close = new EventEmitter<void>();
   @Output() added = new EventEmitter<void>();
 
@@ -23,10 +26,27 @@ export class AddMembersModalComponent implements OnInit {
   selectedUsers: User[] = [];
   searchTerm = '';
 
-  constructor(private groupService: GroupService) {}
+  statusMap: Record<string, boolean> = {};
+  private subs: Subscription[] = [];
+
+  constructor(
+    private groupService: GroupService,
+    private presence: PresenceService
+  ) {}
 
   ngOnInit() {
-    this.groupService.getAllUsers().then((users) => (this.allUsers = users));
+    this.groupService.getAllUsers().then((users) => {
+      this.allUsers = users;
+
+      users.forEach((u) => {
+        const sub = this.presence
+          .getUserStatus(u.uid!)
+          .subscribe((rec: PresenceRecord) => {
+            this.statusMap[u.uid!] = rec.state === 'online';
+          });
+        this.subs.push(sub);
+      });
+    });
   }
 
   onClose() {

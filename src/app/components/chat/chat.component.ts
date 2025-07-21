@@ -29,6 +29,7 @@ import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
 import { GroupSettingsModalComponent } from '../group-settings-modal/group-settings-modal.component';
 import { GroupMembersModalComponent } from '../group-members-modal/group-members-modal.component';
 import { AddMembersModalComponent } from '../add-members-modal/add-members-modal.component';
+import { PresenceRecord, PresenceService } from '../../presence.service';
 
 @Component({
   selector: 'app-chat',
@@ -81,6 +82,9 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   selectedUsers: User[] = [];
   searchTerm = '';
 
+  profileUserOnline = false;
+  private profilePresenceSub?: Subscription;
+
   messagePicker: Record<string, boolean> = {};
   participantsMap: Record<string, User> = {};
 
@@ -127,6 +131,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     public chatService: ChatService,
     private userService: UserService,
     private groupService: GroupService,
+    private presence: PresenceService,
     private sanitizer: DomSanitizer
   ) {
     this.userService.getAllUsersLive().subscribe((users) => {
@@ -594,14 +599,18 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   }
 
   openProfileModal() {
-    if (this.chatPartner) {
-      this.profileUser = this.chatPartner;
-    }
+    this.profilePresenceSub?.unsubscribe();
     this.showProfileModal = true;
+    this.profilePresenceSub = this.presence
+      .getUserStatus(this.profileUser?.uid!)
+      .subscribe((rec: PresenceRecord) => {
+        this.profileUserOnline = rec.state === 'online';
+      });
   }
 
   closeProfileModal() {
     this.showProfileModal = false;
+    this.profilePresenceSub?.unsubscribe();
   }
 
   onNameClicked(uid: string) {

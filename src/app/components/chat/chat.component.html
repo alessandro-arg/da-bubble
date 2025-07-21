@@ -25,7 +25,7 @@
       >
         <div
           class="flex items-center gap-4 px-2 py-1 rounded-[35px] cursor-pointer hover:bg-[#ECEEFE]"
-          (click)="openProfileModal()"
+          (click)="onMemberClicked(chatPartner)"
         >
           <div class="relative w-12 h-12">
             <img
@@ -801,19 +801,17 @@
 
         <!-- Name & Edit -->
         <div class="flex flex-col justify-between gap-4 items-center">
-          <span *ngIf="profileUser" class="font-bold text-3xl w-full">{{
-            profileUser.name
-          }}</span>
+          <span *ngIf="profileUser" class="font-bold text-3xl w-full">
+            {{ profileUser.name }}</span
+          >
           <div class="flex items-center gap-4 w-full">
             <div
               class="w-4 h-4 rounded-full"
-              [ngClass]="
-                profileUser?.online === true ? 'bg-[#92C83E]' : 'bg-[#686868]'
-              "
+              [ngClass]="profileUserOnline ? 'bg-[#92C83E]' : 'bg-[#686868]'"
             ></div>
-            <span class="font-normal text-lg text-[#686868]">{{
-              profileUser?.online === true ? "Aktiv" : "Abwesend"
-            }}</span>
+            <span class="font-normal text-lg text-[#686868]">
+              {{ profileUserOnline ? "Aktiv" : "Abwesend" }}
+            </span>
           </div>
         </div>
 
