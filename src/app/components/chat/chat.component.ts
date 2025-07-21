@@ -51,13 +51,14 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   @Input() currentUserUid!: string | null;
   @Input() groupId!: string | null;
   @Input() profileUser: User | null = null;
+  @Input() isNewMessage = false;
   @Output() closedChannel = new EventEmitter<void>();
   @Output() userSelected = new EventEmitter<User>();
   @Output() threadSelected = new EventEmitter<{
     groupId: string;
     messageId: string;
   }>();
-  @Input() isNewMessage = false;
+  @Output() groupSelected = new EventEmitter<string>();
 
   group$!: Observable<Group>;
   messages$ = this.chatService.emptyStream;
@@ -70,6 +71,9 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   showMembersModal = false;
   showGroupSettingsModal = false;
 
+  allGroups: Group[] = [];
+  allGroupsMap: Record<string, Group> = {};
+  filteredGroups: Group[] = [];
   allUsers: User[] = [];
   allUsersMap: Record<string, User> = {};
   currentParticipants: string[] = [];
@@ -113,6 +117,11 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   showMentionList = false;
   activeMentionIndex = 0;
   private mentionStartIndex = 0;
+  @ViewChildren('groupMentionItem', { read: ElementRef })
+  groupMentionItems!: QueryList<ElementRef<HTMLLIElement>>;
+  showGroupList = false;
+  activeGroupIndex = 0;
+  private groupMentionStartIndex = 0;
 
   constructor(
     public chatService: ChatService,
@@ -126,6 +135,14 @@ export class ChatComponent implements OnChanges, AfterViewInit {
         if (u.uid) m[u.uid] = u;
         return m;
       }, {} as Record<string, User>);
+    });
+
+    this.groupService.getAllGroupsLive().subscribe((groups) => {
+      this.allGroups = groups;
+      this.allGroupsMap = groups.reduce((m, g) => {
+        if (g.id) m[g.id] = g;
+        return m;
+      }, {} as Record<string, Group>);
     });
   }
 
@@ -150,6 +167,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
     this.chatService.currentGroup$.subscribe((group) => {
       if (group) {
+        this.chatPartner = null;
         this.groupId = group.id;
         this.loadGroupChat(group.id);
       }
@@ -297,7 +315,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   async send() {
     if (!this.newMessage.trim() || !this.currentUserUid) return;
     const text = this.newMessage.trim();
-    const mentions = this.extractMentionUids(text);
+    const mentions = this.extractMentionIds(text);
     this.newMessage = '';
 
     if (this.groupId) {
@@ -319,45 +337,79 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     setTimeout(() => this.scrollToBottom(), 50);
   }
 
-  private extractMentionUids(text: string): string[] {
-    const uids = new Set<string>();
+  private extractMentionIds(text: string): string[] {
+    const ids = new Set<string>();
 
+    // 1) Users: look for every "@Name" in allUsers
     this.allUsers.forEach((u) => {
       const token = '@' + u.name;
-      if (text.includes(token)) {
-        uids.add(u.uid!);
-      }
+      if (text.includes(token)) ids.add(u.uid!);
     });
 
-    return Array.from(uids);
+    // 2) Groups: look for every "#Name" in allGroups
+    this.allGroups.forEach((g) => {
+      const token = '#' + g.name;
+      if (text.includes(token)) ids.add(g.id!);
+    });
+
+    return Array.from(ids);
   }
 
   formatMessageHtml(msg: Message): SafeHtml {
     let raw = msg.text;
-    (msg.mentions || []).forEach((uid) => {
-      const user = this.allUsersMap[uid] || this.participantsMap[uid];
-      if (!user) return;
-      const token = '@' + user.name;
-      const re = new RegExp(this.esc(token));
-      raw = raw.replace(
-        re,
-        `<span class="mention cursor-pointer font-bold hover:text-[#444DF2] transition-colors duration-100" data-uid="${uid}">${token}</span>`
-      );
+
+    (msg.mentions || []).forEach((id) => {
+      if (this.allUsersMap[id]) {
+        const u = this.allUsersMap[id] || this.participantsMap[id];
+        const token = '@' + u.name;
+        raw = raw.replace(
+          new RegExp(this.esc(token)),
+          `<span 
+            class="mention mention-user cursor-pointer font-bold hover:text-[#444DF2] transition-colors duration-100" 
+            data-type="user" 
+            data-id="${id}"
+          >${token}</span>`
+        );
+      } else if (this.allGroupsMap[id]) {
+        const g = this.allGroupsMap[id];
+        const token = '#' + g.name;
+        raw = raw.replace(
+          new RegExp(this.esc(token)),
+          `<span 
+            class="mention mention-group cursor-pointer font-bold hover:text-[#444DF2] transition-colors duration-100" 
+            data-type="group" 
+            data-id="${id}"
+          >${token}</span>`
+        );
+      }
     });
+
     return this.sanitizer.bypassSecurityTrustHtml(raw);
   }
 
   async onBubbleClick(evt: MouseEvent) {
     const t = evt.target as HTMLElement;
-    const uid = t.getAttribute('data-uid');
-    if (t.classList.contains('mention') && uid) {
-      let user: User | null = this.allUsersMap[uid] ?? null;
-      if (!user) {
-        user = await this.userService.getUser(uid);
-      }
-      if (user) {
-        this.profileUser = user;
+    if (!t.classList.contains('mention')) return;
+    const id = t.getAttribute('data-id')!;
+    const type = t.getAttribute('data-type');
+
+    if (type === 'user') {
+      let u = this.allUsersMap[id] ?? (await this.userService.getUser(id));
+      if (u) {
+        this.profileUser = u;
         this.showProfileModal = true;
+      }
+    } else if (type === 'group') {
+      this.chatPartner = null;
+      const g =
+        this.allGroupsMap[id] ??
+        (await this.groupService
+          .getAllGroups()
+          .then((gs) => gs.find((x) => x.id === id)!));
+      if (g) {
+        this.groupId = g.id;
+        this.chatService.setCurrentGroup(g);
+        this.groupSelected.emit(g.id);
       }
     }
   }
@@ -366,28 +418,89 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     const ta = this.msgInput.nativeElement;
     const val = this.newMessage;
     const pos = ta.selectionStart;
-    const idx = val.lastIndexOf('@', pos - 1);
-    if (idx >= 0 && (idx === 0 || /\s/.test(val[idx - 1]))) {
-      const query = val.slice(idx + 1, pos).toLowerCase();
+    const hashIdx = val.lastIndexOf('#', pos - 1);
+    const atIdx = val.lastIndexOf('@', pos - 1);
+
+    if (hashIdx > atIdx && (hashIdx === 0 || /\s/.test(val[hashIdx - 1]))) {
+      // --- GROUP MENTION (#) ---
+      const query = val.slice(hashIdx + 1, pos).toLowerCase();
+      this.showMentionList = false;
+      let pool = this.allGroups;
+      if (this.groupId) {
+        const parts = this.currentParticipants;
+        pool = pool.filter((g) =>
+          parts.every((uid) => g.participants?.includes(uid))
+        );
+      } else if (this.chatPartner && this.currentUserUid) {
+        pool = pool.filter(
+          (g) =>
+            g.participants?.includes(this.currentUserUid!) &&
+            g.participants.includes(this.chatPartner!.uid!)
+        );
+      }
+      const matches = pool.filter((g) =>
+        g.name.toLowerCase().startsWith(query)
+      );
+      if (matches.length) {
+        this.filteredGroups = matches;
+        this.showGroupList = true;
+        this.groupMentionStartIndex = hashIdx;
+        this.activeGroupIndex = 0;
+      } else {
+        this.showGroupList = false;
+      }
+      return;
+    }
+
+    if (atIdx > hashIdx && (atIdx === 0 || /\s/.test(val[atIdx - 1]))) {
+      // --- USER MENTION (@) ---
+      const query = val.slice(atIdx + 1, pos).toLowerCase();
+      this.showGroupList = false;
       const pool = this.groupId
         ? Object.values(this.participantsMap)
         : this.allUsers;
-
-      this.filteredUsers = pool.filter((u) =>
+      const matches = pool.filter((u) =>
         u.name.toLowerCase().startsWith(query)
       );
-
-      if (this.filteredUsers.length) {
+      if (matches.length) {
+        this.filteredUsers = matches;
         this.showMentionList = true;
+        this.mentionStartIndex = atIdx;
         this.activeMentionIndex = 0;
-        this.mentionStartIndex = idx;
-        return;
+      } else {
+        this.showMentionList = false;
       }
+      return;
     }
+
     this.showMentionList = false;
+    this.showGroupList = false;
   }
 
   onTextareaKeydown(e: KeyboardEvent) {
+    if (this.showGroupList) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        this.activeGroupIndex =
+          (this.activeGroupIndex + 1) % this.filteredGroups.length;
+        setTimeout(() => this.scrollGroupIntoView(), 0);
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        this.activeGroupIndex =
+          (this.activeGroupIndex - 1 + this.filteredGroups.length) %
+          this.filteredGroups.length;
+        setTimeout(() => this.scrollGroupIntoView(), 0);
+        return;
+      }
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        e.preventDefault();
+        this.selectGroup(this.filteredGroups[this.activeGroupIndex]);
+        return;
+      }
+    }
+
     if (this.showMentionList) {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -423,6 +536,12 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     if (el) el.scrollIntoView({ block: 'nearest' });
   }
 
+  private scrollGroupIntoView() {
+    const items = this.groupMentionItems.toArray();
+    const el = items[this.activeGroupIndex]?.nativeElement;
+    if (el) el.scrollIntoView({ block: 'nearest' });
+  }
+
   triggerMention() {
     const ta = this.msgInput.nativeElement;
     ta.focus();
@@ -450,6 +569,19 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     this.showMentionList = false;
 
     const newPos = before.length + user.name.length + 2;
+    setTimeout(() => {
+      ta.setSelectionRange(newPos, newPos);
+      ta.focus();
+    }, 0);
+  }
+
+  selectGroup(g: Group) {
+    const ta = this.msgInput.nativeElement;
+    const before = this.newMessage.slice(0, this.groupMentionStartIndex);
+    const after = this.newMessage.slice(ta.selectionStart);
+    this.newMessage = `${before}#${g.name} ${after}`;
+    this.showGroupList = false;
+    const newPos = before.length + g.name.length + 2;
     setTimeout(() => {
       ta.setSelectionRange(newPos, newPos);
       ta.focus();

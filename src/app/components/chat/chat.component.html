@@ -888,6 +888,30 @@
         </li>
       </ul>
 
+      <!-- Group Mention Menu when we hit the '#' -->
+      <ul
+        *ngIf="showGroupList"
+        class="absolute flex flex-col gap-3 left-[20px] bottom-full -mb-4 p-5 w-[350px] max-h-[467px] overflow-auto bg-white border border-[#ADB0D9] rounded-t-[20px] rounded-br-[20px] shadow-[0px_2px_10px_0px_#00000014] z-20"
+      >
+        <li
+          #groupMentionItem
+          *ngFor="let g of filteredGroups; let i = index"
+          (mousedown)="$event.preventDefault(); selectGroup(g)"
+          [ngClass]="{ 'bg-[#ECEEFE]': i === activeGroupIndex }"
+          class="w-max ml-4 mr-[5px] px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+        >
+          <p
+            class="text-base"
+            [ngClass]="{
+              'font-bold text-[#535AF1]': i === activeGroupIndex,
+              'font-normal text-black': i !== activeGroupIndex
+            }"
+          >
+            # {{ g.name }}
+          </p>
+        </li>
+      </ul>
+
       <!-- Icon row at bottom -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-1">

@@ -227,6 +227,7 @@
         [isNewMessage]="newMessageMode"
         (cancelNewMessage)="newMessageMode = false"
         (userSelected)="openPrivateChat($event)"
+        (groupSelected)="openGroupChat($event)"
         (threadSelected)="onThreadSelected($event)"
         (closedChannel)="onChannelClosed()"
       ></app-chat>

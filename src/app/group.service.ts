@@ -9,16 +9,19 @@ import {
   doc,
   updateDoc,
   arrayRemove,
+  collectionData,
+  CollectionReference,
 } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { User } from './models/user.model';
 import { Group } from './models/group.model';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GroupService {
-  constructor(private firestore: Firestore, private auth: Auth) { }
+  constructor(private firestore: Firestore, private auth: Auth) {}
 
   async createGroup(
     name: string,
@@ -96,9 +99,20 @@ export class GroupService {
   async getAllGroups(): Promise<Group[]> {
     const groupsRef = collection(this.firestore, 'groups');
     const querySnapshot = await getDocs(groupsRef);
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as Group));
+    return querySnapshot.docs.map(
+      (doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        } as Group)
+    );
+  }
+
+  getAllGroupsLive(): Observable<Group[]> {
+    const groupsRef = collection(
+      this.firestore,
+      'groups'
+    ) as CollectionReference<Group>;
+    return collectionData(groupsRef, { idField: 'id' }) as Observable<Group[]>;
   }
 }
