@@ -57,13 +57,13 @@
       (click)="openProfileModal(); $event.stopPropagation()"
       class="flex justify-center w-[222px] items-center text-xl font-semibold px-[70px] py-[10px] hover:bg-[#ECEEFE] hover:text-[#535AF1] rounded-[100px]"
     >
-      Profile
+      Profil
     </button>
     <button
       (click)="logout(); $event.stopPropagation()"
       class="flex justify-center w-[222px] items-center text-xl font-semibold px-[70px] py-[10px] hover:bg-[#ECEEFE] hover:text-[#535AF1] rounded-[100px]"
     >
-      Logout
+      Log out
     </button>
   </div>
 
@@ -75,9 +75,9 @@
   >
     <!-- Modal Header -->
     <div class="flex justify-between items-center">
-      <span *ngIf="!isEditingName" class="font-bold text-xl">Profile</span>
+      <span *ngIf="!isEditingName" class="font-bold text-xl">Profil</span>
       <span *ngIf="isEditingName" class="font-bold text-xl"
-        >Edit your profile</span
+        >Dein Profil bearbeiten</span
       >
       <button
         (click)="closeProfileModal(); $event.stopPropagation()"
@@ -120,12 +120,12 @@
           class="text-[#535AF1] font-semibold text-lg hover:font-bold"
           (click)="enableEdit()"
         >
-          Edit
+          Bearbeiten
         </button>
       </div>
-      <div class="flex items-center gap-4 text-[#92C83E] w-full">
+      <div class="flex items-center gap-4 text-[#686868] w-full">
         <div class="w-4 h-4 rounded-full bg-[#92C83E]"></div>
-        <span class="font-normal text-lg">Active</span>
+        <span class="font-normal text-lg">Aktiv</span>
       </div>
     </div>
 
@@ -147,7 +147,7 @@
           src="../../../assets/img/icons/account_circle.png"
           alt="user icon"
         />
-        <span class="font-semibold text-lg">Full name</span>
+        <span class="font-semibold text-lg">Vollständiger Name</span>
       </div>
 
       <input
@@ -156,7 +156,7 @@
         name="editedName"
         class="w-full p-2 rounded-full border-[0.5px] border-[#ADB0D9] focus:outline-none focus:border-[#444DF2] hover:border-[#444DF2] cursor-pointer placeholder:text-[#686868] px-[20px] py-[15px]"
         type="text"
-        [placeholder]="currentUser?.name"
+        placeholder="Dein Name hier"
       />
       <div
         class="text-[#ED1E79] text-sm mt-1 ml-5 transition-opacity duration-200 h-4"
@@ -172,7 +172,7 @@
           class="bg-white text-[#444DF2] px-[25px] py-[12px] rounded-full border border-[#797EF3] font-semibold text-lg hover:bg-[#535AF1] hover:text-white active:bg-[#444DF2]"
           (click)="closeProfileModal(); $event.stopPropagation()"
         >
-          Cancel
+          Abbrechen
         </button>
         <button
           class="text-white font-semibold text-lg px-[25px] py-[12px] rounded-full"
@@ -183,7 +183,7 @@
           [disabled]="!!nameError"
           (click)="saveName()"
         >
-          Save changes
+          Speichern
         </button>
       </div>
     </div>

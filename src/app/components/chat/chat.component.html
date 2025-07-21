@@ -27,10 +27,19 @@
           class="flex items-center gap-4 px-2 py-1 rounded-[35px] cursor-pointer hover:bg-[#ECEEFE]"
           (click)="openProfileModal()"
         >
-          <img
-            [src]="chatPartner!.avatar"
-            class="w-[45px] h-[45px] rounded-full"
-          />
+          <div class="relative w-12 h-12">
+            <img
+              [src]="chatPartner!.avatar || '../../../assets/img/profile.svg'"
+              alt="User"
+              class="w-full h-full rounded-full object-cover"
+            />
+            <div
+              class="absolute bottom-0 right-[-2px] w-4 h-4 rounded-full border-2 border-white"
+              [style.background-color]="
+                chatPartner!.online ? '#92C83E' : '#686868'
+              "
+            ></div>
+          </div>
           <p class="text-2xl font-bold">{{ chatPartner!.name }}</p>
         </div>
       </div>
@@ -795,9 +804,16 @@
           <span *ngIf="profileUser" class="font-bold text-3xl w-full">{{
             profileUser.name
           }}</span>
-          <div class="flex items-center gap-4 text-[#92C83E] w-full">
-            <div class="w-4 h-4 rounded-full bg-[#92C83E]"></div>
-            <span class="font-normal text-lg">Active</span>
+          <div class="flex items-center gap-4 w-full">
+            <div
+              class="w-4 h-4 rounded-full"
+              [ngClass]="
+                profileUser?.online === true ? 'bg-[#92C83E]' : 'bg-[#686868]'
+              "
+            ></div>
+            <span class="font-normal text-lg text-[#686868]">{{
+              profileUser?.online === true ? "Aktiv" : "Abwesend"
+            }}</span>
           </div>
         </div>
 

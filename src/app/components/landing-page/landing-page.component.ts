@@ -12,6 +12,7 @@ import { WorkspaceToggleButtonComponent } from '../../components/workspace-toggl
 import { ChatComponent } from '../chat/chat.component';
 import { ThreadComponent } from '../thread/thread.component';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
+import { PresenceService } from '../../presence.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -57,7 +58,8 @@ export class LandingPageComponent implements OnInit {
     private userService: UserService,
     private router: Router,
     private route: ActivatedRoute,
-    private eRef: ElementRef
+    private eRef: ElementRef,
+    private presence: PresenceService
   ) {
     this.route.paramMap.subscribe(async (params) => {
       const uid = params.get('uid');
@@ -173,7 +175,10 @@ export class LandingPageComponent implements OnInit {
 
   async logout() {
     try {
-      this.authService.logout();
+      if (this.currentUserUid) {
+        await this.presence.forceOffline(this.currentUserUid);
+      }
+      await this.authService.logout();
       this.router.navigate(['/login']);
     } catch (error) {
       console.error('Logout error:', error);

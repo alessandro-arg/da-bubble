@@ -7,11 +7,11 @@ import {
   User,
   GoogleAuthProvider,
   signInWithPopup,
-  authState
+  authState,
 } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, from } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 import { UserCredential } from 'firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { sendPasswordResetEmail, confirmPasswordReset } from 'firebase/auth';
@@ -23,11 +23,8 @@ export class AuthService {
   currentUser$ = this.currentUserSubject.asObservable();
   redirectUrl: string | null = null;
 
-  constructor(
-    private auth: Auth,
-    private router: Router
-  ) {
-    authState(this.auth).subscribe(user => {
+  constructor(private auth: Auth, private router: Router) {
+    authState(this.auth).subscribe((user) => {
       this.currentUserSubject.next(user);
     });
   }
@@ -40,7 +37,8 @@ export class AuthService {
 
         switch (error.code) {
           case 'auth/invalid-credential':
-            errorMessage = 'Ungültige Anmeldedaten. Bitte überprüfen Sie E-Mail und Passwort.';
+            errorMessage =
+              'Ungültige Anmeldedaten. Bitte überprüfen Sie E-Mail und Passwort.';
             break;
           case 'auth/user-not-found':
             errorMessage = 'Kein Konto mit dieser E-Mail gefunden.';
@@ -49,7 +47,8 @@ export class AuthService {
             errorMessage = 'Falsches Passwort.';
             break;
           case 'auth/too-many-requests':
-            errorMessage = 'Zu viele fehlgeschlagene Versuche. Bitte später erneut versuchen.';
+            errorMessage =
+              'Zu viele fehlgeschlagene Versuche. Bitte später erneut versuchen.';
             break;
         }
 
@@ -72,7 +71,7 @@ export class AuthService {
   }
 
   isLoggedIn(): Observable<boolean> {
-    return this.currentUser$.pipe(map(user => !!user));
+    return this.currentUser$.pipe(map((user) => !!user));
   }
 
   loginWithGoogle(): Observable<any> {
@@ -89,21 +88,25 @@ export class AuthService {
         console.error('Google login error:', error);
         // Spezifische Fehlerbehandlung
         if (error.code === 'auth/account-exists-with-different-credential') {
-          throw new Error('Ein Konto mit dieser E-Mail existiert bereits mit einer anderen Anmeldemethode.');
+          throw new Error(
+            'Ein Konto mit dieser E-Mail existiert bereits mit einer anderen Anmeldemethode.'
+          );
         } else {
-          throw new Error('Google-Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.');
+          throw new Error(
+            'Google-Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.'
+          );
         }
       })
     );
   }
 
-
-
   guestLogin(): Observable<UserCredential> {
     const guestEmail = environment.guestEmail;
     const guestPassword = environment.guestPassword;
 
-    return from(signInWithEmailAndPassword(this.auth, guestEmail, guestPassword)).pipe(
+    return from(
+      signInWithEmailAndPassword(this.auth, guestEmail, guestPassword)
+    ).pipe(
       catchError((error: FirebaseError) => {
         console.error('Guest login error:', error);
         let errorMessage = 'Gast-Login fehlgeschlagen.';
@@ -113,7 +116,8 @@ export class AuthService {
             errorMessage = 'Ungültige Gast-Zugangsdaten.';
             break;
           case 'auth/too-many-requests':
-            errorMessage = 'Zu viele Login-Versuche. Bitte später erneut versuchen.';
+            errorMessage =
+              'Zu viele Login-Versuche. Bitte später erneut versuchen.';
             break;
         }
 
@@ -123,26 +127,32 @@ export class AuthService {
   }
 
   generateRandomGuestName(): string {
-    const adjectives = ['Freundlicher', 'Neugieriger', 'Glücklicher', 'Mutiger', 'Kreativer'];
+    const adjectives = [
+      'Freundlicher',
+      'Neugieriger',
+      'Glücklicher',
+      'Mutiger',
+      'Kreativer',
+    ];
     const nouns = ['Besucher', 'Entdecker', 'Gast', 'Reisender', 'Teilnehmer'];
     const randomAdj = adjectives[Math.floor(Math.random() * adjectives.length)];
     const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
     return `${randomAdj} ${randomNoun}`;
   }
 
-
-
   sendPasswordResetEmail(email: string): Observable<void> {
     const actionCodeSettings = {
       url: 'http://localhost:4200/reset-password',
-      handleCodeInApp: true
+      handleCodeInApp: true,
     };
-  
-    return from(sendPasswordResetEmail(this.auth, email, actionCodeSettings)).pipe(
+
+    return from(
+      sendPasswordResetEmail(this.auth, email, actionCodeSettings)
+    ).pipe(
       catchError((error: FirebaseError) => {
         console.error('Password reset error:', error);
         let errorMessage = 'Fehler beim Senden der Zurücksetzen-E-Mail.';
-  
+
         switch (error.code) {
           case 'auth/invalid-email':
             errorMessage = 'Ungültige E-Mail-Adresse.';
@@ -151,16 +161,15 @@ export class AuthService {
             errorMessage = 'Kein Benutzer mit dieser E-Mail-Adresse gefunden.';
             break;
           case 'auth/too-many-requests':
-            errorMessage = 'Zu viele Anfragen. Bitte versuchen Sie es später erneut.';
+            errorMessage =
+              'Zu viele Anfragen. Bitte versuchen Sie es später erneut.';
             break;
         }
-  
+
         throw new Error(errorMessage);
       })
     );
   }
-
-  
 
   confirmPasswordReset(code: string, newPassword: string): Observable<void> {
     return from(confirmPasswordReset(this.auth, code, newPassword)).pipe(
@@ -191,10 +200,6 @@ export class AuthService {
     );
   }
 }
-
-
-
-
 
 /*
 
