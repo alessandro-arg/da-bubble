@@ -887,7 +887,8 @@
               class="w-full h-full rounded-full object-cover"
             />
             <div
-              class="absolute bottom-0 right-[-2px] w-4 h-4 bg-[#92C83E] rounded-full border-2 border-white"
+              class="absolute bottom-0 right-[-2px] w-4 h-4 rounded-full border-2 border-white"
+              [style.backgroundColor]="statusMap[u.uid] ? '#92C83E' : '#686868'"
             ></div>
           </div>
           <p

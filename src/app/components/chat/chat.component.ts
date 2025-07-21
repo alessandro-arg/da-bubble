@@ -85,6 +85,9 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   profileUserOnline = false;
   private profilePresenceSub?: Subscription;
 
+  statusMap: Record<string, boolean> = {};
+  private presenceSubs: Subscription[] = [];
+
   messagePicker: Record<string, boolean> = {};
   participantsMap: Record<string, User> = {};
 
@@ -140,6 +143,17 @@ export class ChatComponent implements OnChanges, AfterViewInit {
         if (u.uid) m[u.uid] = u;
         return m;
       }, {} as Record<string, User>);
+      this.presenceSubs.forEach((s) => s.unsubscribe());
+      this.presenceSubs = [];
+      users.forEach((u) => {
+        if (!u.uid) return;
+        const sub = this.presence
+          .getUserStatus(u.uid)
+          .subscribe((rec: PresenceRecord) => {
+            this.statusMap[u.uid!] = rec.state === 'online';
+          });
+        this.presenceSubs.push(sub);
+      });
     });
 
     this.groupService.getAllGroupsLive().subscribe((groups) => {
@@ -401,8 +415,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     if (type === 'user') {
       let u = this.allUsersMap[id] ?? (await this.userService.getUser(id));
       if (u) {
-        this.profileUser = u;
-        this.showProfileModal = true;
+        this.onMemberClicked(u);
       }
     } else if (type === 'group') {
       this.chatPartner = null;

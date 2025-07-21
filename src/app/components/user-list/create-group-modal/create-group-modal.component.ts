@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { GroupService } from '../../../group.service';
 import { User } from '../../../models/user.model';
 import { Auth } from '@angular/fire/auth';
+import { Subscription } from 'rxjs';
+import { PresenceRecord, PresenceService } from '../../../presence.service';
 
 @Component({
   selector: 'app-create-group-modal',
@@ -25,16 +27,31 @@ export class CreateGroupModalComponent implements OnInit {
   selectedUsers: User[] = [];
   searchTerm = '';
   currentUserUid = '';
-
   step = 1;
 
-  constructor(private groupService: GroupService, private auth: Auth) {}
+  statusMap: Record<string, boolean> = {};
+  private subs: Subscription[] = [];
+
+  constructor(
+    private groupService: GroupService,
+    private auth: Auth,
+    private presence: PresenceService
+  ) {}
 
   async ngOnInit() {
     const me = this.auth.currentUser;
     this.currentUserUid = me ? me.uid : '';
     const users = await this.groupService.getAllUsers();
     this.allUsers = users.filter((u) => u.uid !== this.currentUserUid);
+
+    this.allUsers.forEach((u) => {
+      const sub = this.presence
+        .getUserStatus(u.uid!)
+        .subscribe((rec: PresenceRecord) => {
+          this.statusMap[u.uid!] = rec.state === 'online';
+        });
+      this.subs.push(sub);
+    });
   }
 
   stopPropagation(event: MouseEvent) {
