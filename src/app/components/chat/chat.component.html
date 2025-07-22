@@ -28,7 +28,7 @@
 
         <ng-container *ngFor="let g of selectedGroupRecipients">
           <div class="flex items-center bg-[#ECEEFE] rounded-full px-3 py-1">
-            <span class="font-bold text-[#535AF1]">#{{ g.name }}</span>
+            <span># {{ g.name }}</span>
             <button
               type="button"
               (click)="removeGroupRecipient(g)"
@@ -1024,7 +1024,7 @@
 
       <div
         *ngIf="showSentPopup && isNewMessage"
-        class="absolute right-5 bottom-full mb-2 bg-green-100 text-green-800 px-4 py-2 rounded shadow"
+        class="absolute right-5 bottom-full mb-2 bg-[#444DF2] text-white font-semibold text-lg p-[20px] rounded-t-[30px] rounded-bl-[30px] shadow-[0px_6px_10px_0px_#00000033]"
       >
         Nachricht erfolgreich gesendet!
       </div>

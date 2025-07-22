@@ -916,7 +916,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
         (u) =>
           u.name.toLowerCase().startsWith(q) &&
           u.uid !== this.currentUserUid &&
-          !this.selectedUserRecipients.some((s) => s.uid === u.uid)
+          !this.selectedRecipients.some((s) => s.uid === u.uid)
       );
       this.showRecipientList = this.filteredRecipients.length > 0;
       this.activeRecipientIndex = 0;
@@ -1006,20 +1006,13 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   }
 
   selectRecipient(u: User) {
-    const inputEl = this.recipientInputRef.nativeElement;
-
-    // 1) push chip
+    // push into the *same* selectedRecipients array…
     this.selectedRecipients.push(u);
 
-    // 2) clear the input box completely (you could also only delete the "@foo" fragment)
+    // …and clear/hide exactly as before
     this.recipientQuery = '';
     this.showRecipientList = false;
-
-    // 3) put focus back
-    setTimeout(() => inputEl.focus(), 0);
-
-    // optionally emit up to parent
-    // this.userSelected.emit(u);
+    setTimeout(() => this.recipientInputRef.nativeElement.focus(), 0);
   }
 
   selectRecipientGroup(g: Group) {
