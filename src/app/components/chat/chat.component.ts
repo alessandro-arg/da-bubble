@@ -348,6 +348,27 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     const mentions = this.extractMentionIds(text);
     this.newMessage = '';
 
+    if (this.selectedRecipients.length) {
+      for (const u of this.selectedRecipients) {
+        // ensure there's a 1:1 chat
+        const chatId = await this.chatService.ensureChat(
+          this.currentUserUid!,
+          u.uid!
+        );
+        // send the very same text+mentions
+        await this.chatService.sendMessage(
+          chatId,
+          this.currentUserUid!,
+          text,
+          mentions
+        );
+      }
+
+      // scroll each chat? we'll just scroll the last one
+      setTimeout(() => this.scrollToBottom(), 50);
+      return;
+    }
+
     if (this.groupId) {
       await this.chatService.sendGroupMessage(
         this.groupId,
