@@ -17,7 +17,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { shareReplay, take } from 'rxjs/operators';
-import { ReactionBarComponent } from '../../reaction-bar/reaction-bar.component';
+import { ReactionBarComponent } from '../../components/reaction-bar/reaction-bar.component';
 import { ChatService } from '../../chat.service';
 import { GroupService } from '../../group.service';
 import { UserService } from '../../user.service';
@@ -25,7 +25,7 @@ import { User } from '../../models/user.model';
 import { Observable, Subscription } from 'rxjs';
 import { Group } from '../../models/group.model';
 import { Message } from '../../models/chat.model';
-import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
+import { HoverMenuComponent } from '../../components/hover-menu/hover-menu.component';
 import { GroupSettingsModalComponent } from '../group-settings-modal/group-settings-modal.component';
 import { GroupMembersModalComponent } from '../group-members-modal/group-members-modal.component';
 import { AddMembersModalComponent } from '../add-members-modal/add-members-modal.component';
@@ -37,11 +37,11 @@ import { PresenceRecord, PresenceService } from '../../presence.service';
   imports: [
     CommonModule,
     FormsModule,
-    ReactionBarComponent,
     HoverMenuComponent,
     GroupSettingsModalComponent,
     GroupMembersModalComponent,
     AddMembersModalComponent,
+    ReactionBarComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.component.html',
@@ -129,6 +129,17 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   showGroupList = false;
   activeGroupIndex = 0;
   private groupMentionStartIndex = 0;
+
+  // Input on a new Chat
+  @ViewChild('recipientInput') recipientInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChildren('inputMentionItem', { read: ElementRef })
+  inputMentionItems!: QueryList<ElementRef<HTMLLIElement>>;
+  selectedRecipients: User[] = [];
+  recipientQuery = '';
+  filteredRecipients: User[] = [];
+  showRecipientList = false;
+  activeRecipientIndex = 0;
+  recipientMentionStartIndex = 0;
 
   constructor(
     public chatService: ChatService,
@@ -626,19 +637,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     this.profilePresenceSub?.unsubscribe();
   }
 
-  onNameClicked(uid: string) {
-    const user = this.participantsMap[uid];
-    if (user) {
-      this.profileUser = {
-        uid,
-        name: user.name,
-        email: user.email || '',
-        avatar: user.avatar || '',
-      };
-      this.showProfileModal = true;
-    }
-  }
-
   openAddMembersModal() {
     this.showAddMembersModal = true;
     if (!this.allUsers.length) {
@@ -837,5 +835,89 @@ export class ChatComponent implements OnChanges, AfterViewInit {
       return `Nachricht an #${this.currentGroup.name}`;
     }
     return '';
+  }
+
+  onRecipientInput() {
+    const inputEl = this.recipientInputRef.nativeElement;
+    const val = inputEl.value;
+    const pos = inputEl.selectionStart ?? val.length;
+    // find last "@"
+    const atIdx = val.lastIndexOf('@', pos - 1);
+
+    // valid mention trigger if it's start or preceded by whitespace
+    if (atIdx >= 0 && (atIdx === 0 || /\s/.test(val[atIdx - 1]))) {
+      const query = val.slice(atIdx + 1, pos).toLowerCase();
+
+      // exclude current user + already‑selected ones
+      this.filteredRecipients = this.allUsers.filter(
+        (u) =>
+          u.name.toLowerCase().startsWith(query) &&
+          u.uid !== this.currentUserUid &&
+          !this.selectedRecipients.some((s) => s.uid === u.uid)
+      );
+
+      if (this.filteredRecipients.length) {
+        this.showRecipientList = true;
+        this.recipientMentionStartIndex = atIdx;
+        this.activeRecipientIndex = 0;
+      } else {
+        this.showRecipientList = false;
+      }
+    } else {
+      this.showRecipientList = false;
+    }
+  }
+
+  onRecipientKeydown(e: KeyboardEvent) {
+    if (!this.showRecipientList) return;
+
+    const max = this.filteredRecipients.length;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.activeRecipientIndex = (this.activeRecipientIndex + 1) % max;
+      this.scrollRecipientIntoView();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.activeRecipientIndex = (this.activeRecipientIndex - 1 + max) % max;
+      this.scrollRecipientIntoView();
+    } else if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault();
+      this.selectRecipient(this.filteredRecipients[this.activeRecipientIndex]);
+    }
+  }
+
+  private scrollRecipientIntoView() {
+    const items = this.inputMentionItems.toArray();
+    const el = items[this.activeRecipientIndex]?.nativeElement;
+    if (el) el.scrollIntoView({ block: 'nearest' });
+  }
+
+  onRecipientMouseDown(evt: MouseEvent, u: User) {
+    evt.preventDefault();
+    this.selectRecipient(u);
+  }
+
+  selectRecipient(u: User) {
+    const inputEl = this.recipientInputRef.nativeElement;
+
+    // 1) push chip
+    this.selectedRecipients.push(u);
+
+    // 2) clear the input box completely (you could also only delete the "@foo" fragment)
+    this.recipientQuery = '';
+    this.showRecipientList = false;
+
+    // 3) put focus back
+    setTimeout(() => inputEl.focus(), 0);
+
+    // optionally emit up to parent
+    // this.userSelected.emit(u);
+  }
+
+  // — remove a chip by clicking its “×” —
+  removeRecipient(u: User) {
+    this.selectedRecipients = this.selectedRecipients.filter(
+      (r) => r.uid !== u.uid
+    );
   }
 }

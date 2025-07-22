@@ -7,11 +7,6 @@ export interface Message {
   mentions?: string[];
 }
 
-export interface MessageSegment {
-  text: string;
-  mentionUid?: string;
-}
-
 export interface Chat {
   id: string;
   participants: string[];

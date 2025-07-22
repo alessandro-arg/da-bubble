@@ -18,8 +18,8 @@ import { Observable } from 'rxjs';
 import { Message, Reaction } from '../../models/chat.model';
 import { Group } from '../../models/group.model';
 import { User } from '../../models/user.model';
-import { ReactionBarComponent } from '../../reaction-bar/reaction-bar.component';
-import { HoverMenuComponent } from '../../hover-menu/hover-menu.component';
+import { ReactionBarComponent } from '../../components/reaction-bar/reaction-bar.component';
+import { HoverMenuComponent } from '../../components/hover-menu/hover-menu.component';
 import { doc, Firestore, getDoc } from '@angular/fire/firestore';
 
 @Component({
