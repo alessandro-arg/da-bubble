@@ -178,7 +178,6 @@ export class LandingPageComponent implements OnInit {
       if (this.currentUserUid) {
         await this.presence.forceOffline(this.currentUserUid);
       }
-      await this.authService.logout();
       this.router.navigate(['/login']);
     } catch (error) {
       console.error('Logout error:', error);

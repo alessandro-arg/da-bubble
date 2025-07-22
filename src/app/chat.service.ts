@@ -30,7 +30,7 @@ export class ChatService {
   private currentGroup = new BehaviorSubject<Group | null>(null);
   currentGroup$ = this.currentGroup.asObservable();
   // bis hier
-  constructor(private firestore: Firestore, private userService: UserService) { }
+  constructor(private firestore: Firestore, private userService: UserService) {}
 
   private getChatId(uid1: string, uid2: string): string {
     return [uid1, uid2].sort().join('_');
@@ -199,10 +199,10 @@ export class ChatService {
 
   /**
    * Edit the text of a chat or group message.
-   * @param id         chatId or groupId
-   * @param messageId  the message.document ID
-   * @param newText    the updated text
-   * @param isGroup    true if this is a group message
+   * @param id chatId or groupId
+   * @param messageId the message.document ID
+   * @param newText the updated text
+   * @param isGroup true if this is a group message
    */
   async updateMessage(
     id: string,
