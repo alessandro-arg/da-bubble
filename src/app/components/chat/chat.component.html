@@ -26,13 +26,26 @@
           </div>
         </ng-container>
 
+        <ng-container *ngFor="let g of selectedGroupRecipients">
+          <div class="flex items-center bg-[#ECEEFE] rounded-full px-3 py-1">
+            <span class="font-bold text-[#535AF1]">#{{ g.name }}</span>
+            <button
+              type="button"
+              (click)="removeGroupRecipient(g)"
+              class="ml-2"
+            >
+              &times;
+            </button>
+          </div>
+        </ng-container>
+
         <input
           #recipientInput
           type="text"
           [(ngModel)]="recipientQuery"
           (input)="onRecipientInput()"
           (keydown)="onRecipientKeydown($event)"
-          placeholder="An: #channel, oder @jemand oder Mail Adresse"
+          placeholder="An: #channel, oder @jemand oder @E-Mail-Adresse"
           class="flex-1 min-w-[120px] focus:outline-none"
         />
       </div>
@@ -68,6 +81,30 @@
           >
             {{ u.name }}
             <span *ngIf="u.uid === currentUserUid">(Du)</span>
+          </p>
+        </li>
+      </ul>
+
+      <!-- Group list -->
+      <ul
+        *ngIf="showRecipientGroupList"
+        class="absolute flex flex-col gap-3 left-[45px] top-full mt-2 p-5 w-[350px] max-h-[467px] overflow-auto bg-white border border-[#ADB0D9] rounded-t-[20px] rounded-br-[20px] shadow-[0px_2px_10px_0px_#00000014] z-20"
+      >
+        <li
+          #inputGroupItem
+          *ngFor="let g of filteredRecipientGroups; let i = index"
+          (mousedown)="onRecipientGroupMouseDown($event, g)"
+          [ngClass]="{ 'bg-[#ECEEFE]': i === activeRecipientGroupIndex }"
+          class="w-max ml-4 mr-[5px] px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+        >
+          <p
+            class="text-base"
+            [ngClass]="{
+              'font-bold text-[#535AF1]': i === activeRecipientGroupIndex,
+              'font-normal text-black': i !== activeRecipientGroupIndex
+            }"
+          >
+            # {{ g.name }}
           </p>
         </li>
       </ul>
@@ -984,6 +1021,13 @@
           </p>
         </li>
       </ul>
+
+      <div
+        *ngIf="showSentPopup && isNewMessage"
+        class="absolute right-5 bottom-full mb-2 bg-green-100 text-green-800 px-4 py-2 rounded shadow"
+      >
+        Nachricht erfolgreich gesendet!
+      </div>
 
       <!-- Icon row at bottom -->
       <div class="flex items-center justify-between">

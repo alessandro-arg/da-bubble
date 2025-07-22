@@ -131,6 +131,8 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   private groupMentionStartIndex = 0;
 
   // Input on a new Chat
+  @ViewChildren('inputGroupItem', { read: ElementRef })
+  inputGroupItems!: QueryList<ElementRef<HTMLLIElement>>;
   @ViewChild('recipientInput') recipientInputRef!: ElementRef<HTMLInputElement>;
   @ViewChildren('inputMentionItem', { read: ElementRef })
   inputMentionItems!: QueryList<ElementRef<HTMLLIElement>>;
@@ -140,6 +142,14 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   showRecipientList = false;
   activeRecipientIndex = 0;
   recipientMentionStartIndex = 0;
+  // # for Groups
+  showRecipientGroupList = false;
+  filteredRecipientGroups: Group[] = [];
+  activeRecipientGroupIndex = 0;
+  selectedUserRecipients: User[] = [];
+  selectedGroupRecipients: Group[] = [];
+
+  showSentPopup = false;
 
   constructor(
     public chatService: ChatService,
@@ -344,18 +354,22 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   async send() {
     if (!this.newMessage.trim() || !this.currentUserUid) return;
+
     const text = this.newMessage.trim();
     const mentions = this.extractMentionIds(text);
+
+    // clear the textarea immediately
     this.newMessage = '';
 
+    let didSend = false;
+
+    // 1) DM selected users
     if (this.selectedRecipients.length) {
       for (const u of this.selectedRecipients) {
-        // ensure there's a 1:1 chat
         const chatId = await this.chatService.ensureChat(
           this.currentUserUid!,
           u.uid!
         );
-        // send the very same text+mentions
         await this.chatService.sendMessage(
           chatId,
           this.currentUserUid!,
@@ -363,8 +377,29 @@ export class ChatComponent implements OnChanges, AfterViewInit {
           mentions
         );
       }
+      didSend = true;
+    }
 
-      // scroll each chat? we'll just scroll the last one
+    // 2) Send to selected groups
+    if (this.selectedGroupRecipients.length) {
+      for (const g of this.selectedGroupRecipients) {
+        await this.chatService.sendGroupMessage(
+          g.id!,
+          this.currentUserUid!,
+          text,
+          mentions
+        );
+      }
+      didSend = true;
+    }
+
+    // 3) If we just sent to any custom recipients/groups…
+    if (didSend) {
+      // show popup if in “new message” mode
+      if (this.isNewMessage) {
+        this.showSentPopup = true;
+        setTimeout(() => (this.showSentPopup = false), 3000);
+      }
       setTimeout(() => this.scrollToBottom(), 50);
       return;
     }
@@ -583,12 +618,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   private scrollActiveItemIntoView() {
     const items = this.mentionItems.toArray();
     const el = items[this.activeMentionIndex]?.nativeElement;
-    if (el) el.scrollIntoView({ block: 'nearest' });
-  }
-
-  private scrollGroupIntoView() {
-    const items = this.groupMentionItems.toArray();
-    const el = items[this.activeGroupIndex]?.nativeElement;
     if (el) el.scrollIntoView({ block: 'nearest' });
   }
 
@@ -860,50 +889,97 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   onRecipientInput() {
     const inputEl = this.recipientInputRef.nativeElement;
-    const val = inputEl.value;
-    const pos = inputEl.selectionStart ?? val.length;
-    // find last "@"
-    const atIdx = val.lastIndexOf('@', pos - 1);
+    const raw = inputEl.value;
+    const pos = inputEl.selectionStart ?? raw.length;
+    // detect "#" vs "@"
+    const hashIdx = raw.lastIndexOf('#', pos - 1);
+    const atIdx = raw.lastIndexOf('@', pos - 1);
 
-    // valid mention trigger if it's start or preceded by whitespace
-    if (atIdx >= 0 && (atIdx === 0 || /\s/.test(val[atIdx - 1]))) {
-      const query = val.slice(atIdx + 1, pos).toLowerCase();
+    // — group trigger (#) has priority if it’s more recent —
+    if (hashIdx > atIdx && (hashIdx === 0 || /\s/.test(raw[hashIdx - 1]))) {
+      const q = raw.slice(hashIdx + 1, pos).toLowerCase();
+      this.filteredRecipientGroups = this.allGroups.filter(
+        (g) =>
+          g.name.toLowerCase().startsWith(q) &&
+          !this.selectedGroupRecipients?.some((s) => s.id === g.id)
+      );
+      this.showRecipientGroupList = this.filteredRecipientGroups.length > 0;
+      this.activeRecipientGroupIndex = 0;
+      this.showRecipientList = false;
+      return;
+    }
 
-      // exclude current user + already‑selected ones
+    // — user trigger (@) as before —
+    if (atIdx >= 0 && (atIdx === 0 || /\s/.test(raw[atIdx - 1]))) {
+      const q = raw.slice(atIdx + 1, pos).toLowerCase();
       this.filteredRecipients = this.allUsers.filter(
         (u) =>
-          u.name.toLowerCase().startsWith(query) &&
+          u.name.toLowerCase().startsWith(q) &&
           u.uid !== this.currentUserUid &&
-          !this.selectedRecipients.some((s) => s.uid === u.uid)
+          !this.selectedUserRecipients.some((s) => s.uid === u.uid)
       );
-
-      if (this.filteredRecipients.length) {
-        this.showRecipientList = true;
-        this.recipientMentionStartIndex = atIdx;
-        this.activeRecipientIndex = 0;
-      } else {
-        this.showRecipientList = false;
-      }
-    } else {
-      this.showRecipientList = false;
+      this.showRecipientList = this.filteredRecipients.length > 0;
+      this.activeRecipientIndex = 0;
+      this.showRecipientGroupList = false;
+      return;
     }
+
+    // no trigger → hide both
+    this.showRecipientList = false;
+    this.showRecipientGroupList = false;
   }
 
   onRecipientKeydown(e: KeyboardEvent) {
-    if (!this.showRecipientList) return;
+    if (!this.showRecipientList && !this.showRecipientGroupList) return;
 
-    const max = this.filteredRecipients.length;
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      this.activeRecipientIndex = (this.activeRecipientIndex + 1) % max;
-      this.scrollRecipientIntoView();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      this.activeRecipientIndex = (this.activeRecipientIndex - 1 + max) % max;
-      this.scrollRecipientIntoView();
-    } else if (e.key === 'Enter' || e.key === 'Tab') {
-      e.preventDefault();
-      this.selectRecipient(this.filteredRecipients[this.activeRecipientIndex]);
+    // — USER list navigation —
+    if (this.showRecipientList) {
+      const max = this.filteredRecipients.length;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        this.activeRecipientIndex = (this.activeRecipientIndex + 1) % max;
+        this.scrollRecipientIntoView();
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        this.activeRecipientIndex = (this.activeRecipientIndex - 1 + max) % max;
+        this.scrollRecipientIntoView();
+        return;
+      }
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        e.preventDefault();
+        this.selectRecipient(
+          this.filteredRecipients[this.activeRecipientIndex]
+        );
+        return;
+      }
+    }
+
+    // — GROUP list navigation —
+    if (this.showRecipientGroupList) {
+      const maxG = this.filteredRecipientGroups.length;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        this.activeRecipientGroupIndex =
+          (this.activeRecipientGroupIndex + 1) % maxG;
+        this.scrollGroupIntoView();
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        this.activeRecipientGroupIndex =
+          (this.activeRecipientGroupIndex - 1 + maxG) % maxG;
+        this.scrollGroupIntoView();
+        return;
+      }
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        e.preventDefault();
+        this.selectRecipientGroup(
+          this.filteredRecipientGroups[this.activeRecipientGroupIndex]
+        );
+        return;
+      }
     }
   }
 
@@ -911,6 +987,17 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     const items = this.inputMentionItems.toArray();
     const el = items[this.activeRecipientIndex]?.nativeElement;
     if (el) el.scrollIntoView({ block: 'nearest' });
+  }
+
+  private scrollGroupIntoView() {
+    const items = this.inputGroupItems.toArray();
+    const el = items[this.activeRecipientGroupIndex]?.nativeElement;
+    if (el) el.scrollIntoView({ block: 'nearest' });
+  }
+
+  onRecipientGroupMouseDown(evt: MouseEvent, g: Group) {
+    evt.preventDefault();
+    this.selectRecipientGroup(g);
   }
 
   onRecipientMouseDown(evt: MouseEvent, u: User) {
@@ -935,10 +1022,23 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     // this.userSelected.emit(u);
   }
 
-  // — remove a chip by clicking its “×” —
+  selectRecipientGroup(g: Group) {
+    this.selectedGroupRecipients.push(g);
+    // clear the input box just like for users
+    this.recipientQuery = '';
+    this.showRecipientGroupList = false;
+    setTimeout(() => this.recipientInputRef.nativeElement.focus(), 0);
+  }
+
   removeRecipient(u: User) {
     this.selectedRecipients = this.selectedRecipients.filter(
       (r) => r.uid !== u.uid
+    );
+  }
+
+  removeGroupRecipient(g: Group) {
+    this.selectedGroupRecipients = this.selectedGroupRecipients.filter(
+      (x) => x.id !== g.id
     );
   }
 }
