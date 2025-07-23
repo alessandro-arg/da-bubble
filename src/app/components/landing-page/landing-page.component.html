@@ -1,10 +1,18 @@
-<div class="max-w-[1800px] mx-auto flex items-center px-6 py-4">
-  <div class="w-1/4">
-    <img src="../assets/img/logo.png" alt="Logo" class="h-16 cursor-pointer" />
+<div
+  class="max-w-[1800px] mx-auto flex items-center px-6 py-4 justify-between lg:justify-normal"
+>
+  <div class="w-max lg:w-1/4">
+    <img
+      src="../assets/img/logo.png"
+      alt="Logo"
+      class="h-16 w-max cursor-pointer"
+      [ngClass]="isMobile ? 'h-[45px] w-[161px]' : ''"
+    />
   </div>
 
   <app-searchbar
-    class="w-2/4 items-center flex justify-center pl-16"
+    class="w-2/4 items-center justify-center pl-16 hidden lg:flex"
+    [ngClass]="isMobile ? 'hidden' : ''"
   ></app-searchbar>
 
   <div
@@ -14,14 +22,18 @@
     (mouseleave)="currentUserHovered = false"
     (click)="toggleDropdown(); $event.stopPropagation()"
   >
-    <h2 class="font-bold text-3xl">
+    <h2 class="font-bold text-3xl" [ngClass]="isMobile ? 'hidden' : ''">
       {{ currentUser.name }}
     </h2>
-    <div class="relative w-16 h-16">
+    <div
+      class="relative"
+      [ngClass]="isMobile ? 'w-[50px] h-[50px]' : 'w-16 h-16'"
+    >
       <img
         [src]="currentUser.avatar || './assets/img/profile.svg'"
         alt="Profilbild"
-        class="w-16 h-16 rounded-full object-cover"
+        class="rounded-full object-cover"
+        [ngClass]="isMobile ? 'w-[50px] h-[50px]' : 'w-16 h-16'"
       />
       <div
         class="absolute bottom-0 right-0 w-4 h-4 bg-[#92C83E] rounded-full border-2 border-[#edeefe]"
@@ -33,6 +45,7 @@
           ? '../assets/img/icons/arrow_down_purple.png'
           : '../assets/img/icons/arrow_down.png'
       "
+      [ngClass]="isMobile ? 'hidden' : ''"
     />
   </div>
 </div>
@@ -45,7 +58,7 @@
 ></div>
 
 <div
-  class="relative max-w-[1800px] mx-auto flex h-[calc(100vh-96px)] px-6 pb-6 gap-4"
+  class="relative w-full h-[100%] p-0 max-w-[1800px] mx-auto flex lg:h-[calc(100%-96px)] lg:px-6 lg:pb-6 gap-4"
 >
   <!-- Dropdown Modal -->
   <div
@@ -189,65 +202,77 @@
     </div>
   </div>
 
-  <div class="flex h-full w-full">
-    <div
-      class="sidebar mr-4"
-      [ngClass]="{
-        'w-1/4': !isCollapsed,
-        'w-0': isCollapsed,
-        collapsed: isCollapsed
-      }"
-    >
-      <div class="content h-full w-full flex">
-        <app-user-list
-          class="block h-full w-full"
-          [selectedUserUid]="selectedUser?.uid ?? null"
-          [selectedGroupId]="selectedGroupId"
+  <div class="flex flex-1 w-full flex-col lg:flex-row">
+    <ng-container *ngIf="!isMobile || (!selectedUser && !selectedGroupId)">
+      <div
+        class="lg:mr-4 relative h-full shadow-sm lg:rounded-[32px] transition-all duration-300 ease-in-out bg-white"
+        [ngClass]="{
+          'lg:w-1/4': !isCollapsed,
+          'lg:w-0 lg:overflow-hidden': isCollapsed
+        }"
+      >
+        <div
+          class="h-full w-full flex transition-opacity duration-200 ease-in-out opacity-100"
+          [ngClass]="{
+            'opacity-0 delay-0': isCollapsed
+          }"
+        >
+          <app-user-list
+            class="h-full w-full"
+            [selectedUserUid]="selectedUser?.uid ?? null"
+            [selectedGroupId]="selectedGroupId"
+            (userSelected)="openPrivateChat($event)"
+            (groupSelected)="openGroupChat($event)"
+            (userProfileClicked)="openProfileModalFromUser($event)"
+            (editClicked)="onNewMessage()"
+          ></app-user-list>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="!isMobile || selectedUser || selectedGroupId">
+      <div
+        class="bg-white h-full w-full shadow-sm lg:rounded-[32px] transition-all duration-300 ease-in-out"
+        [ngClass]="{
+          'lg:w-2/4': !isCollapsed && threadVisible,
+          'lg:w-3/4':
+            (isCollapsed && threadVisible) || (!isCollapsed && !threadVisible),
+          'lg:w-full': isCollapsed && !threadVisible
+        }"
+      >
+        <app-chat
+          class="h-full w-full"
+          [chatPartner]="selectedUser"
+          [groupId]="selectedGroupId"
+          [currentUserUid]="currentUserUid"
+          [isNewMessage]="newMessageMode"
+          (cancelNewMessage)="newMessageMode = false"
           (userSelected)="openPrivateChat($event)"
           (groupSelected)="openGroupChat($event)"
-          (userProfileClicked)="openProfileModalFromUser($event)"
-          (editClicked)="onNewMessage()"
-        ></app-user-list>
+          (threadSelected)="onThreadSelected($event)"
+          (closedChannel)="onChannelClosed()"
+        ></app-chat>
       </div>
-    </div>
+    </ng-container>
 
-    <div
-      class="bg-white h-full shadow-sm rounded-[32px] transition-all duration-300 ease-in-out"
-      [ngClass]="{
-        'w-2/4': !isCollapsed && threadVisible,
-        'w-3/4':
-          (isCollapsed && threadVisible) || (!isCollapsed && !threadVisible),
-        'w-full': isCollapsed && !threadVisible
-      }"
-    >
-      <app-chat
-        [chatPartner]="selectedUser"
-        [groupId]="selectedGroupId"
-        [currentUserUid]="currentUserUid"
-        [isNewMessage]="newMessageMode"
-        (cancelNewMessage)="newMessageMode = false"
-        (userSelected)="openPrivateChat($event)"
-        (groupSelected)="openGroupChat($event)"
-        (threadSelected)="onThreadSelected($event)"
-        (closedChannel)="onChannelClosed()"
-      ></app-chat>
-    </div>
-
-    <div
-      class="bg-white h-full shadow-sm rounded-[32px] overflow-hidden transition-all duration-300 ease-in-out ml-4"
-      [ngClass]="{
-        'w-1/4': threadVisible,
-        'w-0': !threadVisible
-      }"
-    >
-      <app-thread
-        *ngIf="threadVisible"
-        [groupId]="threadGroupId"
-        [messageId]="threadMessageId"
-        [currentUserUid]="currentUserUid"
-        (closeThread)="onCloseThread()"
-      ></app-thread>
-    </div>
+    <ng-container *ngIf="!isMobile || threadVisible">
+      <div
+        class="bg-white h-full e-full shadow-sm lg:rounded-[32px] overflow-hidden transition-all duration-300 ease-in-out lg:ml-4"
+        [ngClass]="{
+          'lg:w-1/4': threadVisible,
+          'lg:w-0': !threadVisible
+        }"
+      >
+        <app-thread
+          class="h-full w-full"
+          *ngIf="threadVisible"
+          [groupId]="threadGroupId"
+          [messageId]="threadMessageId"
+          [currentUserUid]="currentUserUid"
+          (closeThread)="onCloseThread()"
+        ></app-thread>
+      </div>
+    </ng-container>
   </div>
 </div>
 

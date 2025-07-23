@@ -13,6 +13,7 @@ import { ChatComponent } from '../chat/chat.component';
 import { ThreadComponent } from '../thread/thread.component';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { PresenceService } from '../../presence.service';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-landing-page',
@@ -30,6 +31,7 @@ import { PresenceService } from '../../presence.service';
   styleUrl: './landing-page.component.scss',
 })
 export class LandingPageComponent implements OnInit {
+  isMobile = false;
   showDropdown = false;
   showProfileModal = false;
 
@@ -59,7 +61,8 @@ export class LandingPageComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private eRef: ElementRef,
-    private presence: PresenceService
+    private presence: PresenceService,
+    private bp: BreakpointObserver
   ) {
     this.route.paramMap.subscribe(async (params) => {
       const uid = params.get('uid');
@@ -70,6 +73,10 @@ export class LandingPageComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.bp
+      .observe([Breakpoints.Handset])
+      .subscribe((result) => (this.isMobile = result.matches));
+
     onAuthStateChanged(
       this.auth,
       (user) => (this.currentUserUid = user?.uid ?? null)
