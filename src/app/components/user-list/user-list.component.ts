@@ -178,7 +178,7 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   get channelsAccountSrc() {
     return this.channelsAccountHover
-      ? 'assets/img/icons/account_circle_purple.png'
-      : 'assets/img/icons/account_circle.png';
+      ? 'assets/img/icons/workspaces_purple.png'
+      : 'assets/img/icons/workspaces.png';
   }
 }
