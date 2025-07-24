@@ -10,8 +10,6 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   Output,
   EventEmitter,
-  QueryList,
-  ViewChildren,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -30,6 +28,7 @@ import { PresenceRecord, PresenceService } from '../../presence.service';
 import { ProfileModalComponent } from '../profile-modal/profile-modal.component';
 import { NewMessageHeaderComponent } from '../new-message-header/new-message-header.component';
 import { GroupHeaderComponent } from '../group-header/group-header.component';
+import { ChatInputComponent } from '../chat-input/chat-input.component';
 
 @Component({
   selector: 'app-chat',
@@ -41,6 +40,7 @@ import { GroupHeaderComponent } from '../group-header/group-header.component';
     ReactionBarComponent,
     ProfileModalComponent,
     NewMessageHeaderComponent,
+    ChatInputComponent,
     GroupHeaderComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -66,7 +66,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   chatId: string | null = null;
   newMessage = '';
   messagesLoading = false;
-  showEmojiPicker = false;
   showProfileModal = false;
 
   allGroups: Group[] = [];
@@ -76,8 +75,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   allUsersMap: Record<string, User> = {};
   currentParticipants: string[] = [];
   filteredUsers: User[] = [];
-  selectedUsers: User[] = [];
-  searchTerm = '';
 
   @ViewChild('grpHeader') grpHeader!: GroupHeaderComponent;
 
@@ -103,26 +100,11 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   editText = '';
   optionsOpen: Record<string, boolean> = {};
 
-  @ViewChild('emojiBtn', { read: ElementRef }) emojiBtn!: ElementRef;
-  @ViewChild('picker', { read: ElementRef }) picker!: ElementRef;
   @ViewChild('chatContainer', { read: ElementRef })
   private chatContainer!: ElementRef<HTMLElement>;
 
   @ViewChild('editInput', { read: ElementRef })
   editInput?: ElementRef<HTMLTextAreaElement>;
-
-  @ViewChild('messageInput', { read: ElementRef })
-  msgInput!: ElementRef<HTMLTextAreaElement>;
-  @ViewChildren('mentionItem', { read: ElementRef })
-  mentionItems!: QueryList<ElementRef<HTMLLIElement>>;
-  showMentionList = false;
-  activeMentionIndex = 0;
-  private mentionStartIndex = 0;
-  @ViewChildren('groupMentionItem', { read: ElementRef })
-  groupMentionItems!: QueryList<ElementRef<HTMLLIElement>>;
-  showGroupList = false;
-  activeGroupIndex = 0;
-  private groupMentionStartIndex = 0;
 
   selectedRecipients: User[] = [];
   selectedGroupRecipients: Group[] = [];
@@ -306,11 +288,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    if (target.closest('.emoji-input-container')) return;
-    if (target.closest('.picker-container')) return;
-    this.showEmojiPicker = false;
-    this.messagePicker = {};
-
     if (!Object.values(this.optionsOpen).some((v) => v)) return;
     if (target.closest('.options-button') || target.closest('.options-popup')) {
       return;
@@ -471,172 +448,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     }
   }
 
-  onInput() {
-    const ta = this.msgInput.nativeElement;
-    const val = this.newMessage;
-    const pos = ta.selectionStart;
-    const hashIdx = val.lastIndexOf('#', pos - 1);
-    const atIdx = val.lastIndexOf('@', pos - 1);
-
-    if (hashIdx > atIdx && (hashIdx === 0 || /\s/.test(val[hashIdx - 1]))) {
-      // --- GROUP MENTION (#) ---
-      const query = val.slice(hashIdx + 1, pos).toLowerCase();
-      this.showMentionList = false;
-      let pool = this.allGroups;
-      if (this.groupId) {
-        const parts = this.currentParticipants;
-        pool = pool.filter((g) =>
-          parts.every((uid) => g.participants?.includes(uid))
-        );
-      } else if (this.chatPartner && this.currentUserUid) {
-        pool = pool.filter(
-          (g) =>
-            g.participants?.includes(this.currentUserUid!) &&
-            g.participants.includes(this.chatPartner!.uid!)
-        );
-      }
-      const matches = pool.filter((g) =>
-        g.name.toLowerCase().startsWith(query)
-      );
-      if (matches.length) {
-        this.filteredGroups = matches;
-        this.showGroupList = true;
-        this.groupMentionStartIndex = hashIdx;
-        this.activeGroupIndex = 0;
-      } else {
-        this.showGroupList = false;
-      }
-      return;
-    }
-
-    if (atIdx > hashIdx && (atIdx === 0 || /\s/.test(val[atIdx - 1]))) {
-      // --- USER MENTION (@) ---
-      const query = val.slice(atIdx + 1, pos).toLowerCase();
-      this.showGroupList = false;
-      const pool = this.groupId
-        ? Object.values(this.participantsMap)
-        : this.allUsers;
-      const matches = pool.filter((u) =>
-        u.name.toLowerCase().startsWith(query)
-      );
-      if (matches.length) {
-        this.filteredUsers = matches;
-        this.showMentionList = true;
-        this.mentionStartIndex = atIdx;
-        this.activeMentionIndex = 0;
-      } else {
-        this.showMentionList = false;
-      }
-      return;
-    }
-
-    this.showMentionList = false;
-    this.showGroupList = false;
-  }
-
-  onTextareaKeydown(e: KeyboardEvent) {
-    if (this.showGroupList) {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        this.activeGroupIndex =
-          (this.activeGroupIndex + 1) % this.filteredGroups.length;
-        return;
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        this.activeGroupIndex =
-          (this.activeGroupIndex - 1 + this.filteredGroups.length) %
-          this.filteredGroups.length;
-        return;
-      }
-      if (e.key === 'Enter' || e.key === 'Tab') {
-        e.preventDefault();
-        this.selectGroup(this.filteredGroups[this.activeGroupIndex]);
-        return;
-      }
-    }
-
-    if (this.showMentionList) {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        this.activeMentionIndex =
-          (this.activeMentionIndex + 1) % this.filteredUsers.length;
-        this.scrollActiveItemIntoView();
-        return;
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        this.activeMentionIndex =
-          (this.activeMentionIndex - 1 + this.filteredUsers.length) %
-          this.filteredUsers.length;
-        this.scrollActiveItemIntoView();
-        return;
-      }
-      if (e.key === 'Enter' || e.key === 'Tab') {
-        e.preventDefault();
-        this.selectMentionUser(this.filteredUsers[this.activeMentionIndex]);
-        return;
-      }
-    }
-
-    if (e.key === 'Enter' && !e.altKey) {
-      e.preventDefault();
-      this.send();
-    }
-  }
-
-  private scrollActiveItemIntoView() {
-    const items = this.mentionItems.toArray();
-    const el = items[this.activeMentionIndex]?.nativeElement;
-    if (el) el.scrollIntoView({ block: 'nearest' });
-  }
-
-  triggerMention() {
-    const ta = this.msgInput.nativeElement;
-    ta.focus();
-    const start = ta.selectionStart ?? this.newMessage.length;
-    const before = this.newMessage.slice(0, start);
-    const after = this.newMessage.slice(start);
-    this.newMessage = `${before}@${after}`;
-    this.mentionStartIndex = start;
-    setTimeout(() => {
-      ta.setSelectionRange(start + 1, start + 1);
-      this.onInput();
-    }, 0);
-  }
-
-  onMentionMouseDown(event: MouseEvent, user: User) {
-    event.preventDefault();
-    this.selectMentionUser(user);
-  }
-
-  selectMentionUser(user: User) {
-    const ta = this.msgInput.nativeElement;
-    const before = this.newMessage.slice(0, this.mentionStartIndex);
-    const after = this.newMessage.slice(ta.selectionStart);
-    this.newMessage = `${before}@${user.name} ${after}`;
-    this.showMentionList = false;
-
-    const newPos = before.length + user.name.length + 2;
-    setTimeout(() => {
-      ta.setSelectionRange(newPos, newPos);
-      ta.focus();
-    }, 0);
-  }
-
-  selectGroup(g: Group) {
-    const ta = this.msgInput.nativeElement;
-    const before = this.newMessage.slice(0, this.groupMentionStartIndex);
-    const after = this.newMessage.slice(ta.selectionStart);
-    this.newMessage = `${before}#${g.name} ${after}`;
-    this.showGroupList = false;
-    const newPos = before.length + g.name.length + 2;
-    setTimeout(() => {
-      ta.setSelectionRange(newPos, newPos);
-      ta.focus();
-    }, 0);
-  }
-
   startChatWithPartner() {
     if (!this.profileUser) return;
     const userCopy = { ...this.profileUser };
@@ -655,17 +466,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   closeProfileModal() {
     this.showProfileModal = false;
-  }
-
-  toggleEmojiPicker() {
-    this.showEmojiPicker = !this.showEmojiPicker;
-  }
-
-  addEmoji(event: any) {
-    const ta = this.msgInput.nativeElement;
-    this.newMessage += event.detail.unicode;
-    this.showEmojiPicker = false;
-    ta.focus();
   }
 
   sameDay(d1: Date, d2: Date): boolean {
@@ -769,18 +569,5 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   addEmojiToEdit(emoji: string) {
     this.editText += emoji;
-  }
-
-  get placeholderText(): string {
-    if (this.isNewMessage) {
-      return 'Starte eine neue Nachricht';
-    }
-    if (this.chatPartner) {
-      return `Nachricht an ${this.chatPartner.name}`;
-    }
-    if (this.currentGroup) {
-      return `Nachricht an #${this.currentGroup.name}`;
-    }
-    return '';
   }
 }

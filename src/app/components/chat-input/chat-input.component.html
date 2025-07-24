@@ -1,0 +1,146 @@
+<div
+  *ngIf="chatPartner || groupId || isNewMessage"
+  class="relative px-[35px] pb-[35px] pt-[15px] bg-transparent"
+>
+  <div
+    class="relative flex flex-col p-5 border border-[#ADB0D9] rounded-[20px] gap-[20px] hover:border-[#797EF3]"
+  >
+    <!-- textarea -->
+    <textarea
+      #messageInput
+      [(ngModel)]="newMessage"
+      (ngModelChange)="onTextChange()"
+      (input)="onInput()"
+      (keydown)="onTextareaKeydown($event)"
+      [disabled]="!chatPartner && !groupId && !isNewMessage"
+      [placeholder]="placeholderText"
+      class="w-full resize-none border-none focus:outline-none text-lg placeholder-[#686868] bg-transparent pr-[30px]"
+    ></textarea>
+
+    <!-- user mention list -->
+    <ul
+      *ngIf="showMentionList"
+      class="mention-list absolute flex flex-col gap-3 left-[20px] bottom-full -mb-4 p-5 w-[350px] max-h-[467px] overflow-auto bg-white border border-[#ADB0D9] rounded-t-[20px] rounded-br-[20px] shadow-[0px_2px_10px_0px_#00000014] z-20"
+    >
+      <li
+        #mentionItem
+        *ngFor="let u of filteredUsers; let i = index"
+        (mousedown)="selectMentionUser(u)"
+        [ngClass]="{ 'bg-[#ECEEFE]': i === activeMentionIndex }"
+        class="w-max ml-4 mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+      >
+        <div class="relative w-12 h-12">
+          <img
+            [src]="u.avatar || '/assets/img/profile.svg'"
+            alt="User"
+            class="w-full h-full rounded-full object-cover"
+          />
+          <div
+            class="absolute bottom-0 right-[-2px] w-4 h-4 rounded-full border-2 border-white"
+            [style.backgroundColor]="statusMap[u.uid] ? '#92C83E' : '#686868'"
+          ></div>
+        </div>
+        <p
+          class="text-base transition-colors duration-200"
+          [ngClass]="{
+            'font-bold text-[#535AF1]': i === activeMentionIndex,
+            'font-normal text-black': i !== activeMentionIndex
+          }"
+        >
+          {{ u.name }} <span *ngIf="u.uid === currentUserUid">(Du)</span>
+        </p>
+      </li>
+    </ul>
+
+    <!-- group mention list -->
+    <ul
+      *ngIf="showGroupList"
+      class="mention-list absolute flex flex-col gap-3 left-[20px] bottom-full -mb-4 p-5 w-[350px] max-h-[467px] overflow-auto bg-white border border-[#ADB0D9] rounded-t-[20px] rounded-br-[20px] shadow-[0px_2px_10px_0px_#00000014] z-20"
+    >
+      <li
+        #groupMentionItem
+        *ngFor="let g of filteredGroups; let i = index"
+        (mousedown)="selectGroup(g)"
+        [ngClass]="{ 'bg-[#ECEEFE]': i === activeGroupIndex }"
+        class="w-max ml-4 mr-[5px] px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+      >
+        <p
+          class="text-base"
+          [ngClass]="{
+            'font-bold text-[#535AF1]': i === activeGroupIndex,
+            'font-normal text-black': i !== activeGroupIndex
+          }"
+        >
+          # {{ g.name }}
+        </p>
+      </li>
+    </ul>
+
+    <!-- “sent” popup -->
+    <div
+      *ngIf="isNewMessage && showSentPopup"
+      class="absolute right-5 bottom-full mb-2 bg-[#444DF2] text-white font-semibold text-lg p-[20px] rounded-t-[30px] rounded-bl-[30px] shadow-[0px_6px_10px_0px_#00000033]"
+    >
+      Nachricht erfolgreich gesendet!
+    </div>
+
+    <!-- icon row -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-1">
+        <div class="relative emoji-input-container">
+          <button
+            #emojiBtn
+            class="p-2 rounded-full transition-colors"
+            [ngClass]="{ 'bg-[#F0EDFF]': isEmojiHovered }"
+            (mouseenter)="isEmojiHovered = true"
+            (mouseleave)="isEmojiHovered = false"
+            (click)="toggleEmojiPicker()"
+          >
+            <img
+              [src]="
+                isEmojiHovered
+                  ? '/assets/img/icons/sentiment_satisfied_purple.png'
+                  : '/assets/img/icons/sentiment_satisfied.png'
+              "
+              class="w-6 h-6"
+              alt="emoji"
+            />
+          </button>
+          <div
+            *ngIf="showEmojiPicker"
+            #picker
+            class="picker-container absolute z-50 bottom-10 left-0"
+          >
+            <emoji-picker (emoji-click)="addEmoji($event)"></emoji-picker>
+          </div>
+        </div>
+
+        <button
+          class="p-2 rounded-full transition-colors"
+          [ngClass]="{ 'bg-[#F0EDFF]': isAttachHovered }"
+          (mouseenter)="isAttachHovered = true"
+          (mouseleave)="isAttachHovered = false"
+          (click)="triggerMention()"
+        >
+          <img
+            [src]="
+              isAttachHovered
+                ? '/assets/img/icons/alternate_email_purple.png'
+                : '/assets/img/icons/alternate_email.png'
+            "
+            class="w-6 h-6"
+            alt="mention"
+          />
+        </button>
+      </div>
+
+      <button
+        (click)="onSendClick()"
+        [disabled]="!newMessage.trim()"
+        class="p-2 disabled:opacity-0 hover:opacity-70"
+      >
+        <img src="/assets/img/icons/send.png" class="w-6 h-6" alt="send" />
+      </button>
+    </div>
+  </div>
+</div>
