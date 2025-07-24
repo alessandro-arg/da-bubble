@@ -30,6 +30,7 @@ import { GroupSettingsModalComponent } from '../group-settings-modal/group-setti
 import { GroupMembersModalComponent } from '../group-members-modal/group-members-modal.component';
 import { AddMembersModalComponent } from '../add-members-modal/add-members-modal.component';
 import { PresenceRecord, PresenceService } from '../../presence.service';
+import { ProfileModalComponent } from '../profile-modal/profile-modal.component';
 
 @Component({
   selector: 'app-chat',
@@ -42,6 +43,7 @@ import { PresenceRecord, PresenceService } from '../../presence.service';
     GroupMembersModalComponent,
     AddMembersModalComponent,
     ReactionBarComponent,
+    ProfileModalComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.component.html',
@@ -81,9 +83,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   filteredUsers: User[] = [];
   selectedUsers: User[] = [];
   searchTerm = '';
-
-  profileUserOnline = false;
-  private profilePresenceSub?: Subscription;
 
   statusMap: Record<string, boolean> = {};
   private presenceSubs: Subscription[] = [];
@@ -309,18 +308,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
       this.messagesLoading = false;
       setTimeout(() => this.scrollToBottom(), 150);
     });
-  }
-
-  startChatWithPartner() {
-    if (!this.profileUser) return;
-    const userCopy = { ...this.profileUser };
-    this.showProfileModal = false;
-    this.showMembersModal = false;
-
-    setTimeout(() => {
-      this.userSelected.emit(userCopy);
-      this.profileUser = null;
-    }, 10);
   }
 
   openThread(msg: Message) {
@@ -667,24 +654,25 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     }, 0);
   }
 
-  onMemberClicked(user: User) {
-    this.profileUser = user;
-    this.openProfileModal();
+  startChatWithPartner() {
+    if (!this.profileUser) return;
+    const userCopy = { ...this.profileUser };
+    this.showProfileModal = false;
+    this.showMembersModal = false;
+
+    setTimeout(() => {
+      this.userSelected.emit(userCopy);
+      this.profileUser = null;
+    }, 10);
   }
 
-  openProfileModal() {
-    this.profilePresenceSub?.unsubscribe();
+  onMemberClicked(user: User) {
+    this.profileUser = user;
     this.showProfileModal = true;
-    this.profilePresenceSub = this.presence
-      .getUserStatus(this.profileUser?.uid!)
-      .subscribe((rec: PresenceRecord) => {
-        this.profileUserOnline = rec.state === 'online';
-      });
   }
 
   closeProfileModal() {
     this.showProfileModal = false;
-    this.profilePresenceSub?.unsubscribe();
   }
 
   openAddMembersModal() {

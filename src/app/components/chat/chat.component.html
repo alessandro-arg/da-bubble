@@ -316,7 +316,7 @@
                 <div class="w-full flex flex-col gap-6 px-[45px]">
                   <div
                     class="flex gap-6 items-end cursor-pointer w-max"
-                    (click)="openProfileModal()"
+                    (click)="onMemberClicked(chatPartner)"
                   >
                     <img
                       [src]="chatPartner.avatar"
@@ -342,7 +342,7 @@
                 <div class="w-full flex flex-col gap-6 px-[45px]">
                   <div
                     class="flex gap-6 items-end cursor-pointer w-max"
-                    (click)="openProfileModal()"
+                    (click)="onMemberClicked(chatPartner)"
                   >
                     <img
                       [src]="chatPartner.avatar"
@@ -359,7 +359,7 @@
                     Diese Unterhaltung findet nur zwischen
                     <button
                       class="inline text-[#535AF1] font-normal text-xl hover:font-bold whitespace-normal"
-                      (click)="openProfileModal()"
+                      (click)="onMemberClicked(chatPartner)"
                     >
                       &#64;{{ chatPartner.name }}
                     </button>
@@ -851,95 +851,12 @@
     </ng-template>
 
     <!-- Show Profile Modal -->
-    <div
-      *ngIf="showProfileModal"
-      class="fixed inset-0 z-50 flex items-center flex-col gap-9 justify-center bg-black bg-opacity-40"
-      (click)="closeProfileModal()"
-    >
-      <div
-        class="flex flex-col gap-9 w-fit bg-white shadow-xl rounded-[30px] border px-[40px] py-[45px] cursor-default"
-        (click)="$event.stopPropagation()"
-      >
-        <!-- Modal Header -->
-        <div class="flex justify-between items-center">
-          <span class="font-bold text-xl">Profile</span>
-          <button
-            (click)="closeProfileModal(); $event.stopPropagation()"
-            class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] group transition-colors duration-200"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-6 h-6 text-black group-hover:text-[#535AF1]"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
-
-        <!-- Avatar -->
-        <div class="flex justify-center w-[420px]">
-          <img
-            *ngIf="profileUser"
-            [src]="profileUser.avatar"
-            class="w-[200px] h-[200px] rounded-full object-cover"
-            alt="Avatar"
-          />
-        </div>
-
-        <!-- Name & Edit -->
-        <div class="flex flex-col justify-between gap-4 items-center">
-          <span *ngIf="profileUser" class="font-bold text-3xl w-full">
-            {{ profileUser.name }}</span
-          >
-          <div class="flex items-center gap-4 w-full">
-            <div
-              class="w-4 h-4 rounded-full"
-              [ngClass]="profileUserOnline ? 'bg-[#92C83E]' : 'bg-[#686868]'"
-            ></div>
-            <span class="font-normal text-lg text-[#686868]">
-              {{ profileUserOnline ? "Aktiv" : "Abwesend" }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Email -->
-        <div>
-          <div class="flex items-center gap-5 font-bold text-xl">
-            <img src="../../../assets/img/icons/mail.png" alt="" />
-            <span>E-Mail-Adresse</span>
-          </div>
-          <div
-            *ngIf="profileUser"
-            class="ml-[50px] mt-[15px] font-medium text-lg text-[#1381FF]"
-          >
-            {{ profileUser.email }}
-          </div>
-        </div>
-
-        <!-- Message button -->
-        <div class="w-full flex justify-center items-center">
-          <button
-            class="flex gap-2 items-center text-white font-semibold text-lg bg-[#444DF2] px-[25px] py-[12px] rounded-full hover:bg-[#797EF3]"
-            (click)="startChatWithPartner()"
-          >
-            <img
-              src="../../../assets/img/icons/mode_comment.png"
-              alt="Nachricht Icon"
-              class="h-6 w-6"
-            />
-            Nachricht
-          </button>
-        </div>
-      </div>
-    </div>
+    <app-profile-modal
+      [profileUser]="profileUser"
+      [show]="showProfileModal"
+      (close)="closeProfileModal()"
+      (message)="startChatWithPartner()"
+    ></app-profile-modal>
   </div>
 
   <!-- Input Field -->
