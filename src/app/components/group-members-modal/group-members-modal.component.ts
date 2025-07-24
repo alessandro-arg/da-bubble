@@ -21,7 +21,7 @@ import { PresenceService, PresenceRecord } from '../../presence.service';
 export class GroupMembersModalComponent implements OnInit, OnDestroy {
   @Input() group!: Group;
   @Input() participantsMap!: Record<string, { avatar: string; name: string }>;
-  @Input() currentUserUid!: string;
+  @Input() currentUserUid!: string | null;
 
   @Output() close = new EventEmitter<void>();
   @Output() addMembers = new EventEmitter<void>();

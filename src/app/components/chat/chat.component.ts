@@ -26,12 +26,10 @@ import { Observable, Subscription } from 'rxjs';
 import { Group } from '../../models/group.model';
 import { Message } from '../../models/chat.model';
 import { HoverMenuComponent } from '../../components/hover-menu/hover-menu.component';
-import { GroupSettingsModalComponent } from '../group-settings-modal/group-settings-modal.component';
-import { GroupMembersModalComponent } from '../group-members-modal/group-members-modal.component';
-import { AddMembersModalComponent } from '../add-members-modal/add-members-modal.component';
 import { PresenceRecord, PresenceService } from '../../presence.service';
 import { ProfileModalComponent } from '../profile-modal/profile-modal.component';
 import { NewMessageHeaderComponent } from '../new-message-header/new-message-header.component';
+import { GroupHeaderComponent } from '../group-header/group-header.component';
 
 @Component({
   selector: 'app-chat',
@@ -40,12 +38,10 @@ import { NewMessageHeaderComponent } from '../new-message-header/new-message-hea
     CommonModule,
     FormsModule,
     HoverMenuComponent,
-    GroupSettingsModalComponent,
-    GroupMembersModalComponent,
-    AddMembersModalComponent,
     ReactionBarComponent,
     ProfileModalComponent,
     NewMessageHeaderComponent,
+    GroupHeaderComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.component.html',
@@ -72,9 +68,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   messagesLoading = false;
   showEmojiPicker = false;
   showProfileModal = false;
-  showAddMembersModal = false;
-  showMembersModal = false;
-  showGroupSettingsModal = false;
 
   allGroups: Group[] = [];
   allGroupsMap: Record<string, Group> = {};
@@ -85,6 +78,8 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   filteredUsers: User[] = [];
   selectedUsers: User[] = [];
   searchTerm = '';
+
+  @ViewChild('grpHeader') grpHeader!: GroupHeaderComponent;
 
   statusMap: Record<string, boolean> = {};
   private presenceSubs: Subscription[] = [];
@@ -103,8 +98,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   isEmojiHovered = false;
   isAttachHovered = false;
-  isAddMembersHovered = false;
-  isGroupTitleHovered = false;
 
   editingMsgId: string | null = null;
   editText = '';
@@ -226,6 +219,12 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   private esc(str: string) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  openGroupSettings() {
+    if (this.grpHeader) {
+      this.grpHeader.toggleGroupSettings();
+    }
   }
 
   private async loadPrivateChat(meUid: string, them: User) {
@@ -642,7 +641,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     if (!this.profileUser) return;
     const userCopy = { ...this.profileUser };
     this.showProfileModal = false;
-    this.showMembersModal = false;
 
     setTimeout(() => {
       this.userSelected.emit(userCopy);
@@ -657,79 +655,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   closeProfileModal() {
     this.showProfileModal = false;
-  }
-
-  openAddMembersModal() {
-    this.showAddMembersModal = true;
-    if (!this.allUsers.length) {
-      this.groupService.getAllUsers().then((users) => (this.allUsers = users));
-    }
-  }
-
-  closeAddMembersModal() {
-    this.showAddMembersModal = false;
-    this.searchTerm = '';
-    this.filteredUsers = [];
-  }
-
-  filterUsers() {
-    const t = this.searchTerm.trim().toLowerCase();
-    if (!t) {
-      this.filteredUsers = [];
-      return;
-    }
-
-    this.filteredUsers = this.allUsers
-      .filter((u) => {
-        const isCurrent = this.currentParticipants.includes(u.uid!);
-        const notSelected = !this.selectedUsers.some((x) => x.uid === u.uid);
-        const matchesName = (u.name || u.email || '').toLowerCase().includes(t);
-        return !isCurrent && notSelected && matchesName;
-      })
-      .slice(0, 5);
-  }
-
-  selectUser(u: User) {
-    if (!this.selectedUsers.find((x) => x.uid === u.uid)) {
-      this.selectedUsers.push(u);
-    }
-    this.searchTerm = '';
-    this.filteredUsers = [];
-  }
-
-  removeSelected(u: User) {
-    this.selectedUsers = this.selectedUsers.filter((x) => x.uid !== u.uid);
-  }
-
-  async confirmAdd() {
-    if (!this.groupId) return;
-    for (let u of this.selectedUsers) {
-      await this.groupService.addUserToGroup(this.groupId, u.uid!);
-      this.participantsMap[u.uid!] = u;
-    }
-    this.selectedUsers = [];
-    this.closeAddMembersModal();
-  }
-
-  openMembersModal() {
-    this.showMembersModal = true;
-  }
-
-  closeMembersModal() {
-    this.showMembersModal = false;
-  }
-
-  onClickAddMembersFromMembersModal() {
-    this.closeMembersModal();
-    this.openAddMembersModal();
-  }
-
-  openGroupSettingsModal() {
-    this.showGroupSettingsModal = true;
-  }
-
-  closeGroupSettingsModal() {
-    this.showGroupSettingsModal = false;
   }
 
   toggleEmojiPicker() {

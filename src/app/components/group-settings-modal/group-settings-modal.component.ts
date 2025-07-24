@@ -22,7 +22,7 @@ export class GroupSettingsModalComponent {
   @Input() group!: Group;
   @Input() participantsMap!: Record<string, { name: string }>;
   @Input() isCreator = false;
-  @Input() currentUserUid!: string;
+  @Input() currentUserUid!: string | null;
 
   @Output() close = new EventEmitter<void>();
   @Output() closedChannel = new EventEmitter<void>();
@@ -91,7 +91,7 @@ export class GroupSettingsModalComponent {
   async leaveChannel() {
     await this.groupService.removeUserFromGroup(
       this.group.id,
-      this.currentUserUid
+      this.currentUserUid!
     );
     this.onClose();
     this.closedChannel.emit();

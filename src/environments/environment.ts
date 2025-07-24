@@ -13,6 +13,6 @@ export const environment = {
   guestPassword: 'guest1234',
   guestSettings: {
     defaultAvatar: 'assets/img/guest-avatar.svg',
-    namePrefix: 'Gast-'
-  }
+    namePrefix: 'Gast-',
+  },
 };
