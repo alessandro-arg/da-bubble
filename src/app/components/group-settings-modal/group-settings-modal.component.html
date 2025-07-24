@@ -91,7 +91,7 @@
     [ngClass]="editingGroupDescription ? 'border-none p-[21px]' : 'border'"
   >
     <ng-container *ngIf="!editingGroupDescription; else editDesc">
-      <div class="rounded-xl relative flex flex-col gap-5">
+      <div class="rounded-xl relative flex flex-col gap-5 max-w-[750px]">
         <div class="flex justify-between items-center">
           <span class="text-lg font-bold">Beschreibung</span>
           <button

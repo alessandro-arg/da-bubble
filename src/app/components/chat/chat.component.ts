@@ -31,6 +31,7 @@ import { GroupMembersModalComponent } from '../group-members-modal/group-members
 import { AddMembersModalComponent } from '../add-members-modal/add-members-modal.component';
 import { PresenceRecord, PresenceService } from '../../presence.service';
 import { ProfileModalComponent } from '../profile-modal/profile-modal.component';
+import { NewMessageHeaderComponent } from '../new-message-header/new-message-header.component';
 
 @Component({
   selector: 'app-chat',
@@ -44,6 +45,7 @@ import { ProfileModalComponent } from '../profile-modal/profile-modal.component'
     AddMembersModalComponent,
     ReactionBarComponent,
     ProfileModalComponent,
+    NewMessageHeaderComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.component.html',
@@ -129,23 +131,7 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   activeGroupIndex = 0;
   private groupMentionStartIndex = 0;
 
-  // Input on a new Chat
-  @ViewChildren('inputGroupItem', { read: ElementRef })
-  inputGroupItems!: QueryList<ElementRef<HTMLLIElement>>;
-  @ViewChild('recipientInput') recipientInputRef!: ElementRef<HTMLInputElement>;
-  @ViewChildren('inputMentionItem', { read: ElementRef })
-  inputMentionItems!: QueryList<ElementRef<HTMLLIElement>>;
   selectedRecipients: User[] = [];
-  recipientQuery = '';
-  filteredRecipients: User[] = [];
-  showRecipientList = false;
-  activeRecipientIndex = 0;
-  recipientMentionStartIndex = 0;
-  // # for Groups
-  showRecipientGroupList = false;
-  filteredRecipientGroups: Group[] = [];
-  activeRecipientGroupIndex = 0;
-  selectedUserRecipients: User[] = [];
   selectedGroupRecipients: Group[] = [];
 
   showSentPopup = false;
@@ -555,7 +541,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
         e.preventDefault();
         this.activeGroupIndex =
           (this.activeGroupIndex + 1) % this.filteredGroups.length;
-        setTimeout(() => this.scrollGroupIntoView(), 0);
         return;
       }
       if (e.key === 'ArrowUp') {
@@ -563,7 +548,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
         this.activeGroupIndex =
           (this.activeGroupIndex - 1 + this.filteredGroups.length) %
           this.filteredGroups.length;
-        setTimeout(() => this.scrollGroupIntoView(), 0);
         return;
       }
       if (e.key === 'Enter' || e.key === 'Tab') {
@@ -873,153 +857,5 @@ export class ChatComponent implements OnChanges, AfterViewInit {
       return `Nachricht an #${this.currentGroup.name}`;
     }
     return '';
-  }
-
-  onRecipientInput() {
-    const inputEl = this.recipientInputRef.nativeElement;
-    const raw = inputEl.value;
-    const pos = inputEl.selectionStart ?? raw.length;
-    // detect "#" vs "@"
-    const hashIdx = raw.lastIndexOf('#', pos - 1);
-    const atIdx = raw.lastIndexOf('@', pos - 1);
-
-    // — group trigger (#) has priority if it’s more recent —
-    if (hashIdx > atIdx && (hashIdx === 0 || /\s/.test(raw[hashIdx - 1]))) {
-      const q = raw.slice(hashIdx + 1, pos).toLowerCase();
-      this.filteredRecipientGroups = this.allGroups.filter(
-        (g) =>
-          g.name.toLowerCase().startsWith(q) &&
-          !this.selectedGroupRecipients?.some((s) => s.id === g.id)
-      );
-      this.showRecipientGroupList = this.filteredRecipientGroups.length > 0;
-      this.activeRecipientGroupIndex = 0;
-      this.showRecipientList = false;
-      return;
-    }
-
-    // — user trigger (@) as before —
-    if (atIdx >= 0 && (atIdx === 0 || /\s/.test(raw[atIdx - 1]))) {
-      const q = raw.slice(atIdx + 1, pos).toLowerCase();
-      this.filteredRecipients = this.allUsers.filter(
-        (u) =>
-          u.name.toLowerCase().startsWith(q) &&
-          u.uid !== this.currentUserUid &&
-          !this.selectedRecipients.some((s) => s.uid === u.uid)
-      );
-      this.showRecipientList = this.filteredRecipients.length > 0;
-      this.activeRecipientIndex = 0;
-      this.showRecipientGroupList = false;
-      return;
-    }
-
-    // no trigger → hide both
-    this.showRecipientList = false;
-    this.showRecipientGroupList = false;
-  }
-
-  onRecipientKeydown(e: KeyboardEvent) {
-    if (!this.showRecipientList && !this.showRecipientGroupList) return;
-
-    // — USER list navigation —
-    if (this.showRecipientList) {
-      const max = this.filteredRecipients.length;
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        this.activeRecipientIndex = (this.activeRecipientIndex + 1) % max;
-        this.scrollRecipientIntoView();
-        return;
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        this.activeRecipientIndex = (this.activeRecipientIndex - 1 + max) % max;
-        this.scrollRecipientIntoView();
-        return;
-      }
-      if (e.key === 'Enter' || e.key === 'Tab') {
-        e.preventDefault();
-        this.selectRecipient(
-          this.filteredRecipients[this.activeRecipientIndex]
-        );
-        return;
-      }
-    }
-
-    // — GROUP list navigation —
-    if (this.showRecipientGroupList) {
-      const maxG = this.filteredRecipientGroups.length;
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        this.activeRecipientGroupIndex =
-          (this.activeRecipientGroupIndex + 1) % maxG;
-        this.scrollGroupIntoView();
-        return;
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        this.activeRecipientGroupIndex =
-          (this.activeRecipientGroupIndex - 1 + maxG) % maxG;
-        this.scrollGroupIntoView();
-        return;
-      }
-      if (e.key === 'Enter' || e.key === 'Tab') {
-        e.preventDefault();
-        this.selectRecipientGroup(
-          this.filteredRecipientGroups[this.activeRecipientGroupIndex]
-        );
-        return;
-      }
-    }
-  }
-
-  private scrollRecipientIntoView() {
-    const items = this.inputMentionItems.toArray();
-    const el = items[this.activeRecipientIndex]?.nativeElement;
-    if (el) el.scrollIntoView({ block: 'nearest' });
-  }
-
-  private scrollGroupIntoView() {
-    const items = this.inputGroupItems.toArray();
-    const el = items[this.activeRecipientGroupIndex]?.nativeElement;
-    if (el) el.scrollIntoView({ block: 'nearest' });
-  }
-
-  onRecipientGroupMouseDown(evt: MouseEvent, g: Group) {
-    evt.preventDefault();
-    this.selectRecipientGroup(g);
-  }
-
-  onRecipientMouseDown(evt: MouseEvent, u: User) {
-    evt.preventDefault();
-    this.selectRecipient(u);
-  }
-
-  selectRecipient(u: User) {
-    // push into the *same* selectedRecipients array…
-    this.selectedRecipients.push(u);
-
-    // …and clear/hide exactly as before
-    this.recipientQuery = '';
-    this.showRecipientList = false;
-    setTimeout(() => this.recipientInputRef.nativeElement.focus(), 0);
-  }
-
-  selectRecipientGroup(g: Group) {
-    this.selectedGroupRecipients.push(g);
-    // clear the input box just like for users
-    this.recipientQuery = '';
-    this.showRecipientGroupList = false;
-    setTimeout(() => this.recipientInputRef.nativeElement.focus(), 0);
-  }
-
-  removeRecipient(u: User) {
-    this.selectedRecipients = this.selectedRecipients.filter(
-      (r) => r.uid !== u.uid
-    );
-  }
-
-  removeGroupRecipient(g: Group) {
-    this.selectedGroupRecipients = this.selectedGroupRecipients.filter(
-      (x) => x.id !== g.id
-    );
   }
 }
