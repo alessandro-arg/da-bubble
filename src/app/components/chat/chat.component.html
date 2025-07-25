@@ -113,6 +113,7 @@
                     [(editText)]="editText"
                     (cancel)="cancelEdit()"
                     (save)="saveEdit(msg)"
+                    class="w-full"
                   ></app-chat-message-edit>
                 </ng-container>
 
@@ -124,71 +125,25 @@
                     class="w-[70px] h-[70px] rounded-full"
                   />
 
-                  <div
-                    class="picker-container flex flex-col max-w-[80%] gap-1"
-                    [ngClass]="{
-                      'items-end': msg.sender === currentUserUid,
-                      'items-start': msg.sender !== currentUserUid
-                    }"
-                  >
-                    <div
-                      class="flex items-center gap-5 cursor-default"
-                      [ngClass]="{
-                        'flex-row-reverse': msg.sender === currentUserUid
-                      }"
-                    >
-                      <span
-                        class="font-bold text-lg cursor-pointer hover:text-[#535AF1]"
-                      >
-                        {{ participantsMap[msg.sender].name }}
-                      </span>
-                      <span
-                        *ngIf="msg.createdAt"
-                        class="text-[#686868] font-normal text-sm"
-                      >
-                        {{ msg.createdAt.toDate() | date : "HH:mm" }} Uhr
-                      </span>
-                    </div>
-                    <div
-                      class="p-[15px] text-base cursor-default transition-colors duration-200"
-                      [ngClass]="
-                        msg.sender === currentUserUid
-                          ? 'bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px]'
-                          : 'bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px] group-hover:bg-white'
-                      "
-                      (click)="onBubbleClick($event)"
-                      [innerHTML]="formatMessageHtml(msg)"
-                    ></div>
+                  <app-private-message-bubble
+                    [msg]="msg"
+                    [currentUserUid]="currentUserUid"
+                    [participantsMap]="participantsMap"
+                    [chatId]="chatId"
+                    [formatMessageHtml]="formatMessageHtml.bind(this)"
+                    (bubbleClick)="onBubbleClick($event)"
+                    (quickReaction)="onQuickReaction($event.msg, $event.emoji)"
+                    (toggleOptions)="toggleOptions($event.msgId, $event.event)"
+                    (openEdit)="openEditFromOptions($event.msg, $event.event)"
+                  ></app-private-message-bubble>
 
-                    <!-- ─── reactions bar ──────────────────────────────────── -->
-                    <app-reaction-bar
-                      #bar
-                      [msg]="msg"
-                      [currentUserUid]="currentUserUid"
-                      [participantsMap]="participantsMap"
-                      [chatId]="chatId"
-                      [maxVisible]="7"
-                    ></app-reaction-bar>
-
-                    <!-- hover‐menu for *other* people’s messages (left side) -->
-                    <app-hover-menu
-                      [msg]="msg"
-                      [currentUserUid]="currentUserUid"
-                      [showQuickButtons]="true"
-                      (quickReaction)="onQuickReaction(msg, $event)"
-                      (togglePicker)="bar.togglePicker()"
-                      (toggleOptions)="toggleOptions(msg.id!, $event)"
-                      (openEdit)="openEditFromOptions(msg, $event)"
-                    ></app-hover-menu>
-                  </div>
+                  <img
+                    *ngIf="msg.sender === currentUserUid"
+                    [src]="participantsMap[msg.sender].avatar"
+                    alt="{{ participantsMap[msg.sender].name }}"
+                    class="w-[70px] h-[70px] rounded-full"
+                  />
                 </ng-template>
-
-                <img
-                  *ngIf="msg.sender === currentUserUid"
-                  [src]="participantsMap[msg.sender].avatar"
-                  alt="{{ participantsMap[msg.sender].name }}"
-                  class="w-[70px] h-[70px] rounded-full"
-                />
               </div>
             </ng-container>
           </ng-container>
@@ -251,6 +206,7 @@
                         [(editText)]="editText"
                         (cancel)="cancelEdit()"
                         (save)="saveEdit(msg)"
+                        class="w-full"
                       ></app-chat-message-edit>
                     </ng-container>
 
@@ -263,113 +219,35 @@
                           class="w-[70px] h-[70px] rounded-full"
                         />
 
-                        <div
-                          class="picker-container flex flex-col max-w-[80%] gap-1 cursor-default"
-                          [ngClass]="{
-                            'items-end': msg.sender === currentUserUid,
-                            'items-start': msg.sender !== currentUserUid
-                          }"
-                        >
-                          <div
-                            class="flex items-center gap-5"
-                            [ngClass]="{
-                              'flex-row-reverse': msg.sender === currentUserUid
-                            }"
-                          >
-                            <span
-                              class="font-bold text-lg cursor-pointer hover:text-[#535AF1]"
-                              (click)="onMemberClicked(user)"
-                            >
-                              {{ user.name }}
-                            </span>
-                            <span
-                              *ngIf="msg.createdAt"
-                              class="text-[#686868] font-normal text-sm"
-                            >
-                              {{ msg.createdAt.toDate() | date : "HH:mm" }} Uhr
-                            </span>
-                          </div>
-                          <div
-                            class="p-[15px] text-base cursor-default transition-colors duration-200"
-                            [ngClass]="
-                              msg.sender === currentUserUid
-                                ? 'bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px]'
-                                : 'bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px] group-hover:bg-white'
-                            "
-                            (click)="onBubbleClick($event)"
-                            [innerHTML]="formatMessageHtml(msg)"
-                          ></div>
+                        <app-group-message-bubble
+                          [msg]="msg"
+                          [currentUserUid]="currentUserUid"
+                          [participantsMap]="participantsMap"
+                          [groupId]="groupId"
+                          [threadStreams]="threadStreams"
+                          [formatMessageHtml]="formatMessageHtml.bind(this)"
+                          (bubbleClick)="onBubbleClick($event)"
+                          (quickReaction)="
+                            onQuickReaction($event.msg, $event.emoji)
+                          "
+                          (toggleOptions)="
+                            toggleOptions($event.msgId, $event.event)
+                          "
+                          (openEdit)="
+                            openEditFromOptions($event.msg, $event.event)
+                          "
+                          (openThread)="openThread(msg)"
+                          (memberClicked)="onMemberClicked($event)"
+                        ></app-group-message-bubble>
 
-                          <!-- ── thread summary (only for group chats) ── -->
-                          <ng-container *ngIf="groupId && msg.id">
-                            <ng-container
-                              *ngIf="threadStreams[msg.id] | async as threads"
-                            >
-                              <div
-                                *ngIf="threads.length > 0"
-                                class="flex items-center gap-5"
-                                [ngClass]="
-                                  msg.sender === currentUserUid
-                                    ? 'flex-row-reverse'
-                                    : 'flex-row'
-                                "
-                              >
-                                <span
-                                  (click)="openThread(msg)"
-                                  class="text-[#535AF1] font-normal text-base cursor-pointer hover:font-bold"
-                                  >{{ threads.length }}
-                                  {{
-                                    threads.length === 1
-                                      ? "Antwort"
-                                      : "Antworten"
-                                  }}</span
-                                >
-                                <span
-                                  class="text-[#686868] font-normal text-sm"
-                                >
-                                  Letzte Antwort
-                                  {{
-                                    threads[
-                                      threads.length - 1
-                                    ].createdAt?.toDate() | date : "HH:mm"
-                                  }}
-                                </span>
-                              </div>
-                            </ng-container>
-                          </ng-container>
-
-                          <!-- ─── reactions bar ──────────────────────────────────── -->
-                          <app-reaction-bar
-                            #bar
-                            [msg]="msg"
-                            [currentUserUid]="currentUserUid"
-                            [participantsMap]="participantsMap"
-                            [groupId]="groupId"
-                            [maxVisible]="7"
-                          ></app-reaction-bar>
-
-                          <!-- hover‐menu for *other* people’s messages (left side) -->
-                          <app-hover-menu
-                            [msg]="msg"
-                            [currentUserUid]="currentUserUid"
-                            [showThreadButton]="!!groupId"
-                            [showQuickButtons]="true"
-                            (quickReaction)="onQuickReaction(msg, $event)"
-                            (togglePicker)="bar.togglePicker()"
-                            (toggleOptions)="toggleOptions(msg.id!, $event)"
-                            (openEdit)="openEditFromOptions(msg, $event)"
-                            (openThread)="openThread($event)"
-                          ></app-hover-menu>
-                        </div>
+                        <img
+                          *ngIf="msg.sender === currentUserUid"
+                          [src]="participantsMap[msg.sender].avatar"
+                          alt="{{ participantsMap[msg.sender].name }}"
+                          class="w-[70px] h-[70px] rounded-full"
+                        />
                       </ng-container>
                     </ng-template>
-
-                    <img
-                      *ngIf="msg.sender === currentUserUid"
-                      [src]="participantsMap[msg.sender].avatar"
-                      alt="{{ participantsMap[msg.sender].name }}"
-                      class="w-[70px] h-[70px] rounded-full"
-                    />
                   </div>
                 </ng-container>
               </ng-container>

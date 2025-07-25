@@ -33,6 +33,8 @@ import { PrivateChatEmptyComponent } from '../private-chat-empty/private-chat-em
 import { DateSeparatorComponent } from '../date-separator/date-separator.component';
 import { GroupChatEmptyComponent } from '../group-chat-empty/group-chat-empty.component';
 import { ChatMessageEditComponent } from '../chat-message-edit/chat-message-edit.component';
+import { PrivateMessageBubbleComponent } from '../private-message-bubble/private-message-bubble.component';
+import { GroupMessageBubbleComponent } from '../group-message-bubble/group-message-bubble.component';
 
 @Component({
   selector: 'app-chat',
@@ -40,8 +42,6 @@ import { ChatMessageEditComponent } from '../chat-message-edit/chat-message-edit
   imports: [
     CommonModule,
     FormsModule,
-    HoverMenuComponent,
-    ReactionBarComponent,
     ProfileModalComponent,
     NewMessageHeaderComponent,
     ChatInputComponent,
@@ -50,6 +50,8 @@ import { ChatMessageEditComponent } from '../chat-message-edit/chat-message-edit
     DateSeparatorComponent,
     GroupChatEmptyComponent,
     ChatMessageEditComponent,
+    PrivateMessageBubbleComponent,
+    GroupMessageBubbleComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.component.html',

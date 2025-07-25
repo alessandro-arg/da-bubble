@@ -1,0 +1,82 @@
+<div
+  class="picker-container flex flex-col gap-1 cursor-default"
+  [ngClass]="{
+    'items-end': msg.sender === currentUserUid,
+    'items-start': msg.sender !== currentUserUid
+  }"
+>
+  <div
+    class="flex items-center gap-5"
+    [ngClass]="{ 'flex-row-reverse': msg.sender === currentUserUid }"
+  >
+    <span
+      class="font-bold text-lg cursor-pointer hover:text-[#535AF1]"
+      (click)="memberClicked.emit(author)"
+    >
+      {{ author.name }}
+    </span>
+    <span *ngIf="msg.createdAt" class="text-[#686868] font-normal text-sm">
+      {{ msg.createdAt.toDate() | date : "HH:mm" }} Uhr
+    </span>
+  </div>
+
+  <!-- Message body -->
+  <div
+    class="p-[15px] text-base cursor-default transition-colors duration-200 max-w-[80%]"
+    [ngClass]="
+      msg.sender === currentUserUid
+        ? 'bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px]'
+        : 'bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px] group-hover:bg-white'
+    "
+    (click)="bubbleClick.emit($event)"
+    [innerHTML]="formatMessageHtml(msg)"
+  ></div>
+
+  <!-- Thread summary -->
+  <ng-container *ngIf="groupId && msg.id">
+    <ng-container *ngIf="threadStreams[msg.id] | async as threads">
+      <div
+        *ngIf="threads.length > 0"
+        class="flex items-center gap-5"
+        [ngClass]="
+          msg.sender === currentUserUid ? 'flex-row-reverse' : 'flex-row'
+        "
+      >
+        <span
+          (click)="openThread.emit(msg)"
+          class="text-[#535AF1] font-normal text-base cursor-pointer hover:font-bold"
+        >
+          {{ threads.length }}
+          {{ threads.length === 1 ? "Antwort" : "Antworten" }}
+        </span>
+        <span class="text-[#686868] font-normal text-sm">
+          Letzte Antwort
+          {{ threads[threads.length - 1].createdAt?.toDate() | date : "HH:mm" }}
+        </span>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <!-- Reactions -->
+  <app-reaction-bar
+    #bar
+    [msg]="msg"
+    [currentUserUid]="currentUserUid"
+    [participantsMap]="participantsMap"
+    [groupId]="groupId"
+    [maxVisible]="7"
+  ></app-reaction-bar>
+
+  <!-- Hover menu -->
+  <app-hover-menu
+    [msg]="msg"
+    [currentUserUid]="currentUserUid"
+    [showThreadButton]="!!groupId"
+    [showQuickButtons]="true"
+    (quickReaction)="quickReaction.emit({ msg, emoji: $event })"
+    (togglePicker)="bar.togglePicker()"
+    (toggleOptions)="toggleOptions.emit({ msgId: msg.id!, event: $event })"
+    (openEdit)="openEdit.emit({ msg, event: $event })"
+    (openThread)="openThread.emit(msg)"
+  ></app-hover-menu>
+</div>
