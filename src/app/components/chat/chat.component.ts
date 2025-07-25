@@ -5,8 +5,6 @@ import {
   Input,
   ViewChild,
   ElementRef,
-  AfterViewInit,
-  HostListener,
   CUSTOM_ELEMENTS_SCHEMA,
   Output,
   EventEmitter,
@@ -15,7 +13,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { shareReplay, take } from 'rxjs/operators';
-import { ReactionBarComponent } from '../../components/reaction-bar/reaction-bar.component';
 import { ChatService } from '../../chat.service';
 import { GroupService } from '../../group.service';
 import { UserService } from '../../user.service';
@@ -23,7 +20,6 @@ import { User } from '../../models/user.model';
 import { Observable, Subscription } from 'rxjs';
 import { Group } from '../../models/group.model';
 import { Message } from '../../models/chat.model';
-import { HoverMenuComponent } from '../../components/hover-menu/hover-menu.component';
 import { PresenceRecord, PresenceService } from '../../presence.service';
 import { ProfileModalComponent } from '../profile-modal/profile-modal.component';
 import { NewMessageHeaderComponent } from '../new-message-header/new-message-header.component';
@@ -57,12 +53,13 @@ import { GroupMessageBubbleComponent } from '../group-message-bubble/group-messa
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
 })
-export class ChatComponent implements OnChanges, AfterViewInit {
+export class ChatComponent implements OnChanges {
   @Input() chatPartner!: User | null;
   @Input() currentUserUid!: string | null;
   @Input() groupId!: string | null;
   @Input() profileUser: User | null = null;
   @Input() isNewMessage = false;
+
   @Output() closedChannel = new EventEmitter<void>();
   @Output() userSelected = new EventEmitter<User>();
   @Output() threadSelected = new EventEmitter<{
@@ -80,21 +77,13 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   allGroups: Group[] = [];
   allGroupsMap: Record<string, Group> = {};
-  filteredGroups: Group[] = [];
   allUsers: User[] = [];
   allUsersMap: Record<string, User> = {};
-  currentParticipants: string[] = [];
-  filteredUsers: User[] = [];
-
   statusMap: Record<string, boolean> = {};
   private presenceSubs: Subscription[] = [];
-  participantsMap: Record<string, User> = {};
 
+  participantsMap: Record<string, User> = {};
   currentGroup: Group | null = null;
-  editingGroupName = false;
-  editingGroupDescription = false;
-  newGroupName = '';
-  newGroupDescription = '';
 
   threadStreams: Record<string, Observable<Message[]>> = {};
   private messagesSub?: Subscription;
@@ -121,60 +110,24 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   ) {
     this.userService.getAllUsersLive().subscribe((users) => {
       this.allUsers = users;
-      this.allUsersMap = users.reduce((m, u) => {
-        if (u.uid) m[u.uid] = u;
-        return m;
-      }, {} as Record<string, User>);
+      this.allUsersMap = Object.fromEntries(users.map((u) => [u.uid!, u]));
       this.presenceSubs.forEach((s) => s.unsubscribe());
-      this.presenceSubs = [];
-      users.forEach((u) => {
-        if (!u.uid) return;
-        const sub = this.presence
-          .getUserStatus(u.uid)
-          .subscribe((rec: PresenceRecord) => {
-            this.statusMap[u.uid!] = rec.state === 'online';
-          });
-        this.presenceSubs.push(sub);
-      });
+      this.presenceSubs = users
+        .filter((u) => u.uid)
+        .map((u) =>
+          this.presence
+            .getUserStatus(u.uid!)
+            .subscribe((rec: PresenceRecord) => {
+              this.statusMap[u.uid!] = rec.state === 'online';
+            })
+        );
     });
 
     this.groupService.getAllGroupsLive().subscribe((groups) => {
       this.allGroups = groups;
-      this.allGroupsMap = groups.reduce((m, g) => {
-        if (g.id) m[g.id] = g;
-        return m;
-      }, {} as Record<string, Group>);
+      this.allGroupsMap = Object.fromEntries(groups.map((g) => [g.id!, g]));
     });
   }
-
-  async ngAfterViewInit() {
-    if (typeof window !== 'undefined') {
-      if (!('requestAnimationFrame' in window)) {
-        (window as any).requestAnimationFrame = (cb: FrameRequestCallback) =>
-          setTimeout(cb, 0);
-      }
-      await import('emoji-picker-element');
-    }
-  }
-
-  // diese Methode wird verwendet, um den aktuellen Chat-Partner zu setzen wenn er sich ändert bem der searchbar component
-  ngOnInit() {
-    this.chatService.currentChatPartner$.subscribe((user) => {
-      if (user && this.currentUserUid) {
-        this.chatPartner = user;
-        this.loadPrivateChat(this.currentUserUid, user);
-      }
-    });
-
-    this.chatService.currentGroup$.subscribe((group) => {
-      if (group) {
-        this.chatPartner = null;
-        this.groupId = group.id;
-        this.loadGroupChat(group.id);
-      }
-    });
-  }
-  // bis hier
 
   async ngOnChanges(changes: SimpleChanges) {
     this.messagesLoading = true;
@@ -211,20 +164,12 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   }
 
   private async loadPrivateChat(meUid: string, them: User) {
-    this.chatId = await this.chatService.ensureChat(meUid, them.uid);
+    this.chatId = await this.chatService.ensureChat(meUid, them.uid!);
     this.messages$ = this.chatService.getChatMessages(this.chatId);
-
     const me = await this.userService.getUser(meUid);
-    if (!me) {
-      console.error(`Could not load current user ${meUid}`);
-      this.participantsMap = { [them.uid]: them };
-    } else {
-      this.participantsMap = {
-        [meUid]: me,
-        ...(them.uid !== meUid ? { [them.uid]: them } : {}),
-      };
-    }
-
+    this.participantsMap = me
+      ? { [meUid]: me, ...(them.uid !== meUid && { [them.uid!]: them }) }
+      : { [them.uid!]: them };
     this.finishLoading();
   }
 
@@ -235,33 +180,29 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     this.group$ = this.chatService.getGroup(groupId);
     this.group$.subscribe((g) => {
       this.currentGroup = g;
-      this.currentParticipants = g.participants || [];
-      const allIds = new Set<string>([g.creator!, ...(g.participants || [])]);
+      const allIds = new Set([g.creator!, ...(g.participants || [])]);
       const missing = Array.from(allIds).filter(
         (uid) => !this.participantsMap[uid]
       );
       if (missing.length) {
         Promise.all(missing.map((uid) => this.userService.getUser(uid))).then(
-          (users) => {
-            users.forEach((u) => {
-              if (u) this.participantsMap[u.uid!] = u;
-            });
-          }
+          (users) =>
+            users.forEach((u) => u && (this.participantsMap[u.uid!] = u))
         );
       }
     });
-
     this.finishLoading();
-
     this.messagesSub = this.messages$.pipe(take(1)).subscribe((msgs) => {
-      this.threadStreams = {};
-      msgs.forEach((m) => {
-        if (m.id) {
-          this.threadStreams[m.id] = this.chatService
-            .getGroupThreadMessages(groupId, m.id)
-            .pipe(shareReplay({ bufferSize: 1, refCount: true }));
-        }
-      });
+      this.threadStreams = Object.fromEntries(
+        msgs
+          .filter((m) => m.id)
+          .map((m) => [
+            m.id!,
+            this.chatService
+              .getGroupThreadMessages(groupId, m.id!)
+              .pipe(shareReplay({ bufferSize: 1, refCount: true })),
+          ])
+      );
     });
   }
 
@@ -286,17 +227,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     });
   }
 
-  @HostListener('document:click', ['$event'])
-  onClickOutside(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    if (!Object.values(this.optionsOpen).some((v) => v)) return;
-    if (target.closest('.options-button') || target.closest('.options-popup')) {
-      return;
-    }
-
-    this.optionsOpen = {};
-  }
-
   private scrollToBottom() {
     const el = this.chatContainer.nativeElement;
     el.scrollTop = el.scrollHeight;
@@ -304,34 +234,25 @@ export class ChatComponent implements OnChanges, AfterViewInit {
 
   async send() {
     if (!this.newMessage.trim() || !this.currentUserUid) return;
-
     const text = this.newMessage.trim();
     const mentions = this.extractMentionIds(text);
-
-    // clear the textarea immediately
     this.newMessage = '';
-
     let didSend = false;
 
-    // 1) DM selected users
-    if (this.selectedRecipients.length) {
-      for (const u of this.selectedRecipients) {
-        const chatId = await this.chatService.ensureChat(
-          this.currentUserUid!,
-          u.uid!
-        );
-        await this.chatService.sendMessage(
-          chatId,
-          this.currentUserUid!,
-          text,
-          mentions
-        );
-      }
+    for (const u of this.selectedRecipients) {
+      const cid = await this.chatService.ensureChat(
+        this.currentUserUid,
+        u.uid!
+      );
+      await this.chatService.sendMessage(
+        cid,
+        this.currentUserUid,
+        text,
+        mentions
+      );
       didSend = true;
     }
-
-    // 2) Send to selected groups
-    if (this.selectedGroupRecipients.length) {
+    if (!didSend) {
       for (const g of this.selectedGroupRecipients) {
         await this.chatService.sendGroupMessage(
           g.id!,
@@ -339,50 +260,39 @@ export class ChatComponent implements OnChanges, AfterViewInit {
           text,
           mentions
         );
+        didSend = true;
       }
-      didSend = true;
     }
-
-    // 3) If we just sent to any custom recipients/groups…
-    if (didSend) {
-      // show popup if in “new message” mode
-      if (this.isNewMessage) {
-        this.showSentPopup = true;
-        setTimeout(() => (this.showSentPopup = false), 3000);
+    if (didSend && this.isNewMessage) {
+      this.showSentPopup = true;
+      setTimeout(() => (this.showSentPopup = false), 3000);
+    }
+    if (!didSend) {
+      if (this.groupId) {
+        await this.chatService.sendGroupMessage(
+          this.groupId,
+          this.currentUserUid!,
+          text,
+          mentions
+        );
+      } else if (this.chatId) {
+        await this.chatService.sendMessage(
+          this.chatId,
+          this.currentUserUid!,
+          text,
+          mentions
+        );
       }
-      setTimeout(() => this.scrollToBottom(), 50);
-      return;
     }
-
-    if (this.groupId) {
-      await this.chatService.sendGroupMessage(
-        this.groupId,
-        this.currentUserUid,
-        text,
-        mentions
-      );
-    } else if (this.chatId) {
-      await this.chatService.sendMessage(
-        this.chatId,
-        this.currentUserUid,
-        text,
-        mentions
-      );
-    }
-
     setTimeout(() => this.scrollToBottom(), 50);
   }
 
   private extractMentionIds(text: string): string[] {
     const ids = new Set<string>();
-
-    // 1) Users: look for every "@Name" in allUsers
     this.allUsers.forEach((u) => {
       const token = '@' + u.name;
       if (text.includes(token)) ids.add(u.uid!);
     });
-
-    // 2) Groups: look for every "#Name" in allGroups
     this.allGroups.forEach((g) => {
       const token = '#' + g.name;
       if (text.includes(token)) ids.add(g.id!);

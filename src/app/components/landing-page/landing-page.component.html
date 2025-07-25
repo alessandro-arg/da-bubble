@@ -11,6 +11,8 @@
   </div>
 
   <app-searchbar
+    (userSelected)="openPrivateChat($event)"
+    (groupSelected)="openGroupChat($event)"
     class="w-2/4 items-center justify-center pl-16 hidden lg:flex"
     [ngClass]="isMobile ? 'hidden' : ''"
   ></app-searchbar>

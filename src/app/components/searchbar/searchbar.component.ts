@@ -1,5 +1,5 @@
 // searchbar.component.ts
-import { Component, HostListener } from '@angular/core';
+import { Component, EventEmitter, HostListener, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
@@ -23,9 +23,11 @@ export class SearchbarComponent {
   allGroups: Group[] = [];
   searchMode: 'name' | 'mention' = 'name';
   currentSearchType: 'users' | 'groups' = 'users';
+  @Output() userSelected = new EventEmitter<User>();
+  @Output() groupSelected = new EventEmitter<string>();
 
   constructor(
-    private userService: UserService, 
+    private userService: UserService,
     private chatService: ChatService,
     private groupService: GroupService
   ) {
@@ -48,7 +50,10 @@ export class SearchbarComponent {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    if (!target.closest('.show-popup-user-list') && !target.closest('input[type="text"]')) {
+    if (
+      !target.closest('.show-popup-user-list') &&
+      !target.closest('input[type="text"]')
+    ) {
       this.showPopup = false;
     }
   }
@@ -62,25 +67,28 @@ export class SearchbarComponent {
       this.currentSearchType = 'users';
       const query = this.searchQuery.split('@').pop()?.trim() || '';
 
-      this.filteredUsers = query.length > 0
-        ? this.allUsers.filter(user =>
-          user.name.toLowerCase().includes(query.toLowerCase()))
-        : [...this.allUsers];
+      this.filteredUsers =
+        query.length > 0
+          ? this.allUsers.filter((user) =>
+              user.name.toLowerCase().includes(query.toLowerCase())
+            )
+          : [...this.allUsers];
 
       this.showPopup = true;
     } else if (this.searchQuery.length > 0) {
       // Suche nach Benutzern und Gruppen
       const query = this.searchQuery.toLowerCase();
-      
-      this.filteredUsers = this.allUsers.filter(user =>
+
+      this.filteredUsers = this.allUsers.filter((user) =>
         user.name.toLowerCase().includes(query)
       );
-      
-      this.filteredGroups = this.allGroups.filter(group =>
+
+      this.filteredGroups = this.allGroups.filter((group) =>
         group.name.toLowerCase().includes(query)
       );
-      
-      this.showPopup = this.filteredUsers.length > 0 || this.filteredGroups.length > 0;
+
+      this.showPopup =
+        this.filteredUsers.length > 0 || this.filteredGroups.length > 0;
     } else {
       this.showPopup = false;
     }
@@ -90,25 +98,22 @@ export class SearchbarComponent {
     if (this.searchMode === 'mention') {
       const currentText = this.searchQuery;
       const atPosition = currentText.lastIndexOf('@');
-
       if (atPosition >= 0) {
-        this.searchQuery = currentText.substring(0, atPosition) + '@' + user.name + ' ';
-        this.chatService.setCurrentChatPartner(user);   
+        this.searchQuery =
+          currentText.substring(0, atPosition) + '@' + user.name + ' ';
       } else {
         this.searchQuery = currentText + '@' + user.name + ' ';
       }
-    } else {
-      this.searchQuery = user.name + ' ';
-      this.chatService.setCurrentChatPartner(user); 
+      return;
     }
     this.searchQuery = '';
     this.showPopup = false;
+    this.userSelected.emit(user);
   }
 
   selectGroup(group: Group) {
-    this.searchQuery = group.name + ' ';
-    this.chatService.setCurrentGroup(group);
-    this.showPopup = false;
     this.searchQuery = '';
+    this.showPopup = false;
+    this.groupSelected.emit(group.id!);
   }
 }
