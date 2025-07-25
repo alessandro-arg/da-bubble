@@ -62,50 +62,39 @@ export class SearchbarComponent {
     const input = event.target as HTMLInputElement;
     this.searchQuery = input.value;
 
-    if (this.searchQuery.includes('@')) {
-      this.searchMode = 'mention';
-      this.currentSearchType = 'users';
-      const query = this.searchQuery.split('@').pop()?.trim() || '';
+    if (!this.searchQuery) {
+      this.showPopup = false;
+      return;
+    }
 
-      this.filteredUsers =
-        query.length > 0
-          ? this.allUsers.filter((user) =>
-              user.name.toLowerCase().includes(query.toLowerCase())
-            )
-          : [...this.allUsers];
+    const first = this.searchQuery[0];
+    const rest = this.searchQuery.slice(1).toLowerCase();
 
-      this.showPopup = true;
-    } else if (this.searchQuery.length > 0) {
-      // Suche nach Benutzern und Gruppen
-      const query = this.searchQuery.toLowerCase();
-
-      this.filteredUsers = this.allUsers.filter((user) =>
-        user.name.toLowerCase().includes(query)
-      );
-
-      this.filteredGroups = this.allGroups.filter((group) =>
-        group.name.toLowerCase().includes(query)
-      );
-
-      this.showPopup =
-        this.filteredUsers.length > 0 || this.filteredGroups.length > 0;
+    if (first === '@') {
+      // user‐only search
+      this.filteredUsers = rest
+        ? this.allUsers.filter((u) => u.name.toLowerCase().includes(rest))
+        : [...this.allUsers];
+      this.filteredGroups = [];
+      this.showPopup = this.filteredUsers.length > 0;
+    } else if (first === '#') {
+      // group‐only search
+      this.filteredGroups = rest
+        ? this.allGroups.filter((g) => g.name.toLowerCase().includes(rest))
+        : [...this.allGroups];
+      this.filteredUsers = [];
+      this.showPopup = this.filteredGroups.length > 0;
     } else {
+      // neither @ nor # → hide
+      this.filteredUsers = [];
+      this.filteredGroups = [];
       this.showPopup = false;
     }
   }
 
   selectUser(user: User) {
-    if (this.searchMode === 'mention') {
-      const currentText = this.searchQuery;
-      const atPosition = currentText.lastIndexOf('@');
-      if (atPosition >= 0) {
-        this.searchQuery =
-          currentText.substring(0, atPosition) + '@' + user.name + ' ';
-      } else {
-        this.searchQuery = currentText + '@' + user.name + ' ';
-      }
-      return;
-    }
+    // for an @mention you might want to insert into a larger text, but here we'll
+    // just fire the event and clear
     this.searchQuery = '';
     this.showPopup = false;
     this.userSelected.emit(user);
