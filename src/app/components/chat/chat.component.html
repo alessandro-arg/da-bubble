@@ -135,7 +135,7 @@
                     [currentUserUid]="currentUserUid"
                     [participantsMap]="participantsMap"
                     [chatId]="chatId"
-                    [formatMessageHtml]="formatMessageHtml.bind(this)"
+                    [formatMessageHtml]="formatMessage"
                     (bubbleClick)="onBubbleClick($event)"
                     (quickReaction)="onQuickReaction($event.msg, $event.emoji)"
                     (toggleOptions)="toggleOptions($event.msgId, $event.event)"
@@ -235,7 +235,7 @@
                           [participantsMap]="participantsMap"
                           [groupId]="groupId"
                           [threadStreams]="threadStreams"
-                          [formatMessageHtml]="formatMessageHtml.bind(this)"
+                          [formatMessageHtml]="formatMessage"
                           (bubbleClick)="onBubbleClick($event)"
                           (quickReaction)="
                             onQuickReaction($event.msg, $event.emoji)

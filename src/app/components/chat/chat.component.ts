@@ -31,6 +31,7 @@ import { GroupChatEmptyComponent } from '../group-chat-empty/group-chat-empty.co
 import { ChatMessageEditComponent } from '../chat-message-edit/chat-message-edit.component';
 import { PrivateMessageBubbleComponent } from '../private-message-bubble/private-message-bubble.component';
 import { GroupMessageBubbleComponent } from '../group-message-bubble/group-message-bubble.component';
+import { MessageUtilsService } from '../../message-utils.service';
 
 @Component({
   selector: 'app-chat',
@@ -106,7 +107,8 @@ export class ChatComponent implements OnChanges {
     private userService: UserService,
     private groupService: GroupService,
     private presence: PresenceService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    public msgUtils: MessageUtilsService
   ) {
     this.userService.getAllUsersLive().subscribe((users) => {
       this.allUsers = users;
@@ -153,9 +155,13 @@ export class ChatComponent implements OnChanges {
     return msg.id;
   }
 
-  private esc(str: string) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
+  public formatMessage = (msg: Message) =>
+    this.msgUtils.formatMessageHtml(
+      msg,
+      this.allUsersMap,
+      this.allGroupsMap,
+      this.participantsMap
+    );
 
   openGroupSettings() {
     if (this.grpHeader) {
@@ -235,7 +241,11 @@ export class ChatComponent implements OnChanges {
   async send() {
     if (!this.newMessage.trim() || !this.currentUserUid) return;
     const text = this.newMessage.trim();
-    const mentions = this.extractMentionIds(text);
+    const mentions = this.msgUtils.extractMentionIds(
+      text,
+      this.allUsers,
+      this.allGroups
+    );
     this.newMessage = '';
     let didSend = false;
 
@@ -285,52 +295,6 @@ export class ChatComponent implements OnChanges {
       }
     }
     setTimeout(() => this.scrollToBottom(), 50);
-  }
-
-  private extractMentionIds(text: string): string[] {
-    const ids = new Set<string>();
-    this.allUsers.forEach((u) => {
-      const token = '@' + u.name;
-      if (text.includes(token)) ids.add(u.uid!);
-    });
-    this.allGroups.forEach((g) => {
-      const token = '#' + g.name;
-      if (text.includes(token)) ids.add(g.id!);
-    });
-
-    return Array.from(ids);
-  }
-
-  formatMessageHtml(msg: Message): SafeHtml {
-    let raw = msg.text;
-
-    (msg.mentions || []).forEach((id) => {
-      if (this.allUsersMap[id]) {
-        const u = this.allUsersMap[id] || this.participantsMap[id];
-        const token = '@' + u.name;
-        raw = raw.replace(
-          new RegExp(this.esc(token)),
-          `<span 
-            class="mention mention-user cursor-pointer font-bold hover:text-[#444DF2] transition-colors duration-100" 
-            data-type="user" 
-            data-id="${id}"
-          >${token}</span>`
-        );
-      } else if (this.allGroupsMap[id]) {
-        const g = this.allGroupsMap[id];
-        const token = '#' + g.name;
-        raw = raw.replace(
-          new RegExp(this.esc(token)),
-          `<span 
-            class="mention mention-group cursor-pointer font-bold hover:text-[#444DF2] transition-colors duration-100" 
-            data-type="group" 
-            data-id="${id}"
-          >${token}</span>`
-        );
-      }
-    });
-
-    return this.sanitizer.bypassSecurityTrustHtml(raw);
   }
 
   async onBubbleClick(evt: MouseEvent) {
