@@ -79,90 +79,21 @@
           <ng-container *ngIf="messages$ | async as msgs">
             <!-- Placeholder when no messages yet -->
             <div *ngIf="msgs.length === 0">
-              <ng-container
-                *ngIf="
-                  chatPartner?.uid === currentUserUid;
-                  else emptyChatPartner
-                "
-              >
-                <div class="w-full flex flex-col gap-6 px-[45px]">
-                  <div
-                    class="flex gap-6 items-end cursor-pointer w-max"
-                    (click)="onMemberClicked(chatPartner)"
-                  >
-                    <img
-                      [src]="chatPartner.avatar"
-                      alt="{{ chatPartner.name }}"
-                      class="w-[100px] h-[100px] rounded-full"
-                    />
-                    <p class="h-max font-bold text-2xl hover:text-[#535AF1]">
-                      {{ chatPartner.name }} (Du)
-                    </p>
-                  </div>
-                  <p
-                    class="text-[#686868] font-normal text-xl whitespace-normal"
-                  >
-                    <strong>Dieser Raum ist nur für dich da.</strong> Mache dir
-                    Notizen, liste deine To-dos auf oder bewahre Links und
-                    Dateien griffbereit auf. Du kannst hier auch gerne Dinge mit
-                    dir selbst besprechen.
-                  </p>
-                </div>
-              </ng-container>
-
-              <ng-template #emptyChatPartner>
-                <div class="w-full flex flex-col gap-6 px-[45px]">
-                  <div
-                    class="flex gap-6 items-end cursor-pointer w-max"
-                    (click)="onMemberClicked(chatPartner)"
-                  >
-                    <img
-                      [src]="chatPartner.avatar"
-                      alt="{{ chatPartner.name }}"
-                      class="w-[100px] h-[100px] rounded-full"
-                    />
-                    <p class="h-max font-bold text-2xl hover:text-[#535AF1]">
-                      {{ chatPartner.name }}
-                    </p>
-                  </div>
-                  <p
-                    class="text-[#686868] font-normal text-xl whitespace-normal"
-                  >
-                    Diese Unterhaltung findet nur zwischen
-                    <button
-                      class="inline text-[#535AF1] font-normal text-xl hover:font-bold whitespace-normal"
-                      (click)="onMemberClicked(chatPartner)"
-                    >
-                      &#64;{{ chatPartner.name }}
-                    </button>
-                    und dir statt.
-                  </p>
-                </div>
-              </ng-template>
+              <app-private-chat-empty
+                [chatPartner]="chatPartner!"
+                [currentUserUid]="currentUserUid"
+                (memberClicked)="onMemberClicked($event)"
+              ></app-private-chat-empty>
             </div>
 
-            <ng-container *ngFor="let msg of msgs; let i = index">
+            <ng-container
+              *ngFor="let msg of msgs; let i = index; trackBy: trackById"
+            >
               <!-- ── date separator when first message or new day ─────────── -->
-              <div
-                *ngIf="
-                  msg.createdAt &&
-                  (i === 0 ||
-                    (msgs[i - 1]?.createdAt &&
-                      !sameDay(
-                        msgs[i - 1].createdAt.toDate(),
-                        msg.createdAt.toDate()
-                      )))
-                "
-                class="flex items-center my-4 px-[45px]"
-              >
-                <div class="flex-grow h-px bg-[#ADB0D9]"></div>
-                <span
-                  class="bg-white px-4 py-1 text-base rounded-full border border-[#ADB0D9]"
-                >
-                  {{ getSeparatorLabel(msg.createdAt.toDate()) }}
-                </span>
-                <div class="flex-grow h-px bg-[#ADB0D9]"></div>
-              </div>
+              <app-date-separator
+                [date]="msg.createdAt.toDate()"
+                [prevDate]="i > 0 ? msgs[i - 1].createdAt.toDate() : null"
+              ></app-date-separator>
 
               <div
                 class="relative group flex my-3 gap-[30px] px-[45px] py-4 transition-colors duration-200 hover:bg-[#ECEEFE]"
@@ -175,75 +106,14 @@
                 "
               >
                 <ng-container *ngIf="editingMsgId === msg.id; else readOnly">
-                  <div
-                    class="flex flex-col w-full max-w-[80%] bg-white border border-[#ECEFFE] rounded-[24px] px-[20px] py-[16px]"
-                    [ngClass]="{
-                      'self-end': msg.sender === currentUserUid,
-                      'self-start': msg.sender !== currentUserUid
-                    }"
-                  >
-                    <!-- the “textarea” is really just a transparent box in your bubble -->
-                    <textarea
-                      #editInput
-                      class="w-full resize-none bg-transparent mb-2 text-gray-800 placeholder-gray-500 text-base leading-relaxed outline-none"
-                      [(ngModel)]="editText"
-                      placeholder="{{ msg.text }}"
-                      rows="1"
-                      (input)="autoGrow(editInput)"
-                    ></textarea>
-
-                    <!-- bottom row: emoji button on the left, actions on the right -->
-                    <div class="flex items-center justify-between mt-2">
-                      <!-- emoji picker trigger -->
-                      <div
-                        class="picker-container relative inline-block self-start"
-                      >
-                        <!-- 1) the trigger button -->
-                        <button
-                          class="p-2 hover:bg-gray-100 rounded-full"
-                          (click)="
-                            toggleMessagePicker(msg.id);
-                            $event.stopPropagation()
-                          "
-                        >
-                          <img
-                            src="../../../assets/img/icons/add_reaction.png"
-                            alt="Emoji"
-                            class="w-6 h-6"
-                          />
-                        </button>
-
-                        <!-- 2) the popup, positioned above the button -->
-                        <div
-                          *ngIf="messagePicker[msg.id]"
-                          class="absolute bottom-full left-0 z-50"
-                        >
-                          <emoji-picker
-                            (emoji-click)="
-                              addEmojiToEdit($event.detail.unicode!);
-                              messagePicker[msg.id] = false
-                            "
-                          ></emoji-picker>
-                        </div>
-                      </div>
-
-                      <!-- cancel/save -->
-                      <div class="flex gap-2">
-                        <button
-                          class="px-4 py-2 border border-[#797EF3] text-[#797EF3] rounded-full hover:bg-[#F5F4FF] transition"
-                          (click)="cancelEdit()"
-                        >
-                          Abbrechen
-                        </button>
-                        <button
-                          class="px-4 py-2 bg-[#797EF3] text-white rounded-full hover:bg-[#5F5CD6] transition"
-                          (click)="saveEdit(msg)"
-                        >
-                          Speichern
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  <app-chat-message-edit
+                    *ngIf="editingMsgId === msg.id"
+                    [msg]="msg"
+                    [currentUserUid]="currentUserUid"
+                    [(editText)]="editText"
+                    (cancel)="cancelEdit()"
+                    (save)="saveEdit(msg)"
+                  ></app-chat-message-edit>
                 </ng-container>
 
                 <ng-template #readOnly>
@@ -345,63 +215,21 @@
               <ng-container *ngIf="messages$ | async as msgs">
                 <!-- Placeholder when no messages yet -->
                 <div *ngIf="msgs.length === 0">
-                  <div class="w-full flex flex-col gap-6 px-[45px]">
-                    <div
-                      class="flex gap-2 items-end cursor-pointer w-max"
-                      (click)="openGroupSettings()"
-                    >
-                      <img
-                        src="../../../assets/img/icons/tag.png"
-                        [alt]="group.name"
-                        class="h-[32px] w-[31px]"
-                      />
-                      <p class="h-max font-bold text-2xl hover:text-[#535AF1]">
-                        {{ group.name }}
-                      </p>
-                    </div>
-                    <p
-                      class="text-[#686868] font-normal text-xl whitespace-normal"
-                    >
-                      {{ participantsMap[group.creator].name }} hat dieser
-                      Channel am
-                      {{
-                        group.createdAt.toDate()
-                          | date : "longDate" : "" : "de-DE"
-                      }}
-                      erstellt. Das is der Anfang des Channels
-                      <span
-                        class="text-[#535AF1] cursor-pointer hover:font-semibold"
-                        (click)="openGroupSettings()"
-                        ># {{ group.name }}</span
-                      >.
-                    </p>
-                  </div>
+                  <app-group-chat-empty
+                    [group]="currentGroup!"
+                    [participantsMap]="participantsMap"
+                    (openSettings)="openGroupSettings()"
+                  ></app-group-chat-empty>
                 </div>
 
                 <ng-container
                   *ngFor="let msg of msgs; let i = index; trackBy: trackById"
                 >
                   <!-- ── date separator when first message or new day ─────────── -->
-                  <div
-                    *ngIf="
-                      msg.createdAt &&
-                      (i === 0 ||
-                        (msgs[i - 1]?.createdAt &&
-                          !sameDay(
-                            msgs[i - 1].createdAt.toDate(),
-                            msg.createdAt.toDate()
-                          )))
-                    "
-                    class="flex items-center my-4 px-[45px]"
-                  >
-                    <div class="flex-grow h-px bg-[#ADB0D9]"></div>
-                    <span
-                      class="bg-white px-4 py-1 text-base rounded-full border border-[#ADB0D9]"
-                    >
-                      {{ getSeparatorLabel(msg.createdAt.toDate()) }}
-                    </span>
-                    <div class="flex-grow h-px bg-[#ADB0D9]"></div>
-                  </div>
+                  <app-date-separator
+                    [date]="msg.createdAt.toDate()"
+                    [prevDate]="i > 0 ? msgs[i - 1].createdAt.toDate() : null"
+                  ></app-date-separator>
 
                   <div
                     class="relative group flex my-3 gap-[30px] px-[45px] py-4 transition-colors duration-200 hover:bg-[#ECEEFE]"
@@ -416,75 +244,14 @@
                     <ng-container
                       *ngIf="editingMsgId === msg.id; else readOnly"
                     >
-                      <div
-                        class="flex flex-col w-full max-w-[80%] bg-white border border-[#ECEFFE] rounded-[24px] px-[20px] py-[16px]"
-                        [ngClass]="{
-                          'self-end': msg.sender === currentUserUid,
-                          'self-start': msg.sender !== currentUserUid
-                        }"
-                      >
-                        <!-- the “textarea” is really just a transparent box in your bubble -->
-                        <textarea
-                          #editInput
-                          class="w-full resize-none bg-transparent mb-2 text-gray-800 placeholder-gray-500 text-base leading-relaxed outline-none"
-                          [(ngModel)]="editText"
-                          placeholder="{{ msg.text }}"
-                          rows="1"
-                          (input)="autoGrow(editInput)"
-                        ></textarea>
-
-                        <!-- bottom row: emoji button on the left, actions on the right -->
-                        <div class="flex items-center justify-between mt-2">
-                          <!-- emoji picker trigger -->
-                          <div
-                            class="picker-container relative inline-block self-start"
-                          >
-                            <!-- 1) the trigger button -->
-                            <button
-                              class="p-2 hover:bg-gray-100 rounded-full"
-                              (click)="
-                                toggleMessagePicker(msg.id);
-                                $event.stopPropagation()
-                              "
-                            >
-                              <img
-                                src="../../../assets/img/icons/add_reaction.png"
-                                alt="Emoji"
-                                class="w-6 h-6"
-                              />
-                            </button>
-
-                            <!-- 2) the popup, positioned above the button -->
-                            <div
-                              *ngIf="messagePicker[msg.id]"
-                              class="absolute bottom-full left-0 z-50"
-                            >
-                              <emoji-picker
-                                (emoji-click)="
-                                  addEmojiToEdit($event.detail.unicode!);
-                                  messagePicker[msg.id] = false
-                                "
-                              ></emoji-picker>
-                            </div>
-                          </div>
-
-                          <!-- cancel/save -->
-                          <div class="flex gap-2">
-                            <button
-                              class="px-4 py-2 border border-[#797EF3] text-[#797EF3] rounded-full hover:bg-[#F5F4FF] transition"
-                              (click)="cancelEdit()"
-                            >
-                              Abbrechen
-                            </button>
-                            <button
-                              class="px-4 py-2 bg-[#797EF3] text-white rounded-full hover:bg-[#5F5CD6] transition"
-                              (click)="saveEdit(msg)"
-                            >
-                              Speichern
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+                      <app-chat-message-edit
+                        *ngIf="editingMsgId === msg.id"
+                        [msg]="msg"
+                        [currentUserUid]="currentUserUid"
+                        [(editText)]="editText"
+                        (cancel)="cancelEdit()"
+                        (save)="saveEdit(msg)"
+                      ></app-chat-message-edit>
                     </ng-container>
 
                     <ng-template #readOnly>

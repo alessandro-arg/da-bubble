@@ -1,0 +1,34 @@
+<div class="w-full flex flex-col gap-6 px-[45px]">
+  <div
+    class="flex gap-6 items-end cursor-pointer w-max"
+    (click)="onMemberClick()"
+  >
+    <img
+      [src]="chatPartner.avatar"
+      [alt]="chatPartner.name"
+      class="w-[100px] h-[100px] rounded-full"
+    />
+    <p class="h-max font-bold text-2xl hover:text-[#535AF1]">
+      {{ chatPartner.name }}
+      <span *ngIf="chatPartner.uid === currentUserUid">(Du)</span>
+    </p>
+  </div>
+
+  <p class="text-[#686868] font-normal text-xl whitespace-normal">
+    <ng-container *ngIf="chatPartner.uid === currentUserUid; else twoUser">
+      <strong>Dieser Raum ist nur für dich da.</strong> Mache dir Notizen, liste
+      deine To-dos auf oder bewahre Links und Dateien griffbereit auf. Du kannst
+      hier auch gerne Dinge mit dir selbst besprechen.
+    </ng-container>
+    <ng-template #twoUser>
+      Diese Unterhaltung findet nur zwischen
+      <button
+        class="inline text-[#535AF1] font-normal text-xl hover:font-bold whitespace-normal"
+        (click)="onMemberClick()"
+      >
+        &#64;{{ chatPartner.name }}
+      </button>
+      und dir statt.
+    </ng-template>
+  </p>
+</div>

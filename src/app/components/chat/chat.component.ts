@@ -29,6 +29,10 @@ import { ProfileModalComponent } from '../profile-modal/profile-modal.component'
 import { NewMessageHeaderComponent } from '../new-message-header/new-message-header.component';
 import { GroupHeaderComponent } from '../group-header/group-header.component';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
+import { PrivateChatEmptyComponent } from '../private-chat-empty/private-chat-empty.component';
+import { DateSeparatorComponent } from '../date-separator/date-separator.component';
+import { GroupChatEmptyComponent } from '../group-chat-empty/group-chat-empty.component';
+import { ChatMessageEditComponent } from '../chat-message-edit/chat-message-edit.component';
 
 @Component({
   selector: 'app-chat',
@@ -42,6 +46,10 @@ import { ChatInputComponent } from '../chat-input/chat-input.component';
     NewMessageHeaderComponent,
     ChatInputComponent,
     GroupHeaderComponent,
+    PrivateChatEmptyComponent,
+    DateSeparatorComponent,
+    GroupChatEmptyComponent,
+    ChatMessageEditComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './chat.component.html',
@@ -76,12 +84,8 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   currentParticipants: string[] = [];
   filteredUsers: User[] = [];
 
-  @ViewChild('grpHeader') grpHeader!: GroupHeaderComponent;
-
   statusMap: Record<string, boolean> = {};
   private presenceSubs: Subscription[] = [];
-
-  messagePicker: Record<string, boolean> = {};
   participantsMap: Record<string, User> = {};
 
   currentGroup: Group | null = null;
@@ -93,18 +97,13 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   threadStreams: Record<string, Observable<Message[]>> = {};
   private messagesSub?: Subscription;
 
-  isEmojiHovered = false;
-  isAttachHovered = false;
-
   editingMsgId: string | null = null;
   editText = '';
   optionsOpen: Record<string, boolean> = {};
 
+  @ViewChild('grpHeader') grpHeader!: GroupHeaderComponent;
   @ViewChild('chatContainer', { read: ElementRef })
   private chatContainer!: ElementRef<HTMLElement>;
-
-  @ViewChild('editInput', { read: ElementRef })
-  editInput?: ElementRef<HTMLTextAreaElement>;
 
   selectedRecipients: User[] = [];
   selectedGroupRecipients: Group[] = [];
@@ -468,39 +467,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     this.showProfileModal = false;
   }
 
-  sameDay(d1: Date, d2: Date): boolean {
-    return (
-      d1.getFullYear() === d2.getFullYear() &&
-      d1.getMonth() === d2.getMonth() &&
-      d1.getDate() === d2.getDate()
-    );
-  }
-
-  getSeparatorLabel(d: Date): string {
-    const today = new Date();
-    const diffMs = today.getTime() - d.getTime();
-    const diffDays = diffMs / (1000 * 60 * 60 * 24);
-
-    if (this.sameDay(d, today)) {
-      return 'Heute';
-    } else if (diffDays < 7) {
-      return d.toLocaleDateString('de-DE', { weekday: 'long' });
-    } else {
-      return d.toLocaleDateString('de-DE');
-    }
-  }
-
-  /**
-   * Toggle the emoji‐picker for a single message.
-   */
-  toggleMessagePicker(msgId: string) {
-    const wasOpen = !!this.messagePicker[msgId];
-    this.messagePicker = {};
-    if (!wasOpen) {
-      this.messagePicker[msgId] = true;
-    }
-  }
-
   async onQuickReaction(msg: Message, emoji: string) {
     if (!msg.id || !this.currentUserUid) return;
     const isGroup = !!this.groupId;
@@ -530,7 +496,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
   startEdit(msg: Message) {
     this.editingMsgId = msg.id!;
     this.editText = msg.text;
-    setTimeout(() => this.editInput?.nativeElement.focus(), 0);
   }
 
   cancelEdit() {
@@ -551,11 +516,6 @@ export class ChatComponent implements OnChanges, AfterViewInit {
       .catch((err) => console.error('Failed to update message', err));
   }
 
-  autoGrow(textarea: HTMLTextAreaElement) {
-    textarea.style.height = 'auto';
-    textarea.style.height = textarea.scrollHeight + 'px';
-  }
-
   toggleOptions(msgId: string, event: MouseEvent) {
     event.stopPropagation();
     this.optionsOpen[msgId] = !this.optionsOpen[msgId];
@@ -565,9 +525,5 @@ export class ChatComponent implements OnChanges, AfterViewInit {
     event.stopPropagation();
     this.optionsOpen[msg.id!] = false;
     this.startEdit(msg);
-  }
-
-  addEmojiToEdit(emoji: string) {
-    this.editText += emoji;
   }
 }
