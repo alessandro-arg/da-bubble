@@ -1,7 +1,6 @@
 import { Component, HostListener, ElementRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../auth/auth.service';
 import { Router } from '@angular/router';
 import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
@@ -13,7 +12,7 @@ import { ChatComponent } from '../chat/chat.component';
 import { ThreadComponent } from '../thread/thread.component';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { PresenceService } from '../../presence.service';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { MobileService } from '../../mobile.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -55,14 +54,13 @@ export class LandingPageComponent implements OnInit {
   newMessageMode = false;
 
   constructor(
-    private authService: AuthService,
     private auth: Auth,
     private userService: UserService,
     private router: Router,
     private route: ActivatedRoute,
     private eRef: ElementRef,
     private presence: PresenceService,
-    private bp: BreakpointObserver
+    private mobileService: MobileService
   ) {
     this.route.paramMap.subscribe(async (params) => {
       const uid = params.get('uid');
@@ -73,9 +71,9 @@ export class LandingPageComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.bp
-      .observe([Breakpoints.Handset])
-      .subscribe((result) => (this.isMobile = result.matches));
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
 
     onAuthStateChanged(
       this.auth,
@@ -205,5 +203,11 @@ export class LandingPageComponent implements OnInit {
     ) {
       this.closeModals();
     }
+  }
+
+  goBackMobile() {
+    this.selectedUser = null;
+    this.selectedGroupId = null;
+    this.newMessageMode = false;
   }
 }

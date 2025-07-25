@@ -16,7 +16,10 @@
       <!-- private header -->
       <div
         *ngIf="chatPartner; else groupHeader"
-        class="w-full flex justify-between px-[45px] pt-[28px] pb-[16px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
+        class="w-full flex justify-between rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
+        [ngClass]="
+          !isMobile ? 'px-[45px] pt-[28px] pb-[16px]' : 'py-[10px] px-[16px]'
+        "
       >
         <div
           class="flex items-center gap-4 px-2 py-1 rounded-[35px] cursor-pointer hover:bg-[#ECEEFE]"
@@ -35,7 +38,7 @@
               "
             ></div>
           </div>
-          <p class="text-2xl font-bold">{{ chatPartner!.name }}</p>
+          <p class="text-xl lg:text-2xl font-bold">{{ chatPartner!.name }}</p>
         </div>
       </div>
 

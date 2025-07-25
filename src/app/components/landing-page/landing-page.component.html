@@ -1,13 +1,38 @@
 <div
   class="max-w-[1800px] mx-auto flex items-center px-6 py-4 justify-between lg:justify-normal"
 >
-  <div class="w-max lg:w-1/4">
+  <div
+    class="w-max lg:w-1/4"
+    [ngClass]="{
+      hidden: isMobile && (selectedUser || selectedGroupId || threadVisible)
+    }"
+  >
     <img
       src="../assets/img/logo.png"
       alt="Logo"
       class="h-16 w-max cursor-pointer"
-      [ngClass]="isMobile ? 'h-[45px] w-[161px]' : ''"
+      [ngClass]="
+        isMobile && (!selectedUser || !selectedGroupId || !threadVisible)
+          ? 'h-[45px] w-[161px]'
+          : ''
+      "
     />
+  </div>
+
+  <div
+    *ngIf="isMobile && (selectedUser || selectedGroupId || threadVisible)"
+    class="flex items-center gap-1 cursor-pointer"
+    (click)="goBackMobile()"
+  >
+    <img src="../assets/img/icons/arrow_back.png" alt="" />
+    <div class="flex items-center gap-2">
+      <img
+        src="../assets/img/workspace-logo.png"
+        alt=""
+        class="h-[45px] w-[45px]"
+      />
+      <p class="font-bold text-2xl">Devspace</p>
+    </div>
   </div>
 
   <app-searchbar

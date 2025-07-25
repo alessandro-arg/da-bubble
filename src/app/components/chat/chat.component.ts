@@ -8,10 +8,11 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   Output,
   EventEmitter,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { shareReplay, take } from 'rxjs/operators';
 import { ChatService } from '../../chat.service';
 import { GroupService } from '../../group.service';
@@ -32,6 +33,7 @@ import { ChatMessageEditComponent } from '../chat-message-edit/chat-message-edit
 import { PrivateMessageBubbleComponent } from '../private-message-bubble/private-message-bubble.component';
 import { GroupMessageBubbleComponent } from '../group-message-bubble/group-message-bubble.component';
 import { MessageUtilsService } from '../../message-utils.service';
+import { MobileService } from '../../mobile.service';
 
 @Component({
   selector: 'app-chat',
@@ -54,7 +56,7 @@ import { MessageUtilsService } from '../../message-utils.service';
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
 })
-export class ChatComponent implements OnChanges {
+export class ChatComponent implements OnChanges, OnInit {
   @Input() chatPartner!: User | null;
   @Input() currentUserUid!: string | null;
   @Input() groupId!: string | null;
@@ -101,14 +103,15 @@ export class ChatComponent implements OnChanges {
   selectedGroupRecipients: Group[] = [];
 
   showSentPopup = false;
+  isMobile = false;
 
   constructor(
     public chatService: ChatService,
     private userService: UserService,
     private groupService: GroupService,
     private presence: PresenceService,
-    private sanitizer: DomSanitizer,
-    public msgUtils: MessageUtilsService
+    public msgUtils: MessageUtilsService,
+    private mobileService: MobileService
   ) {
     this.userService.getAllUsersLive().subscribe((users) => {
       this.allUsers = users;
@@ -128,6 +131,12 @@ export class ChatComponent implements OnChanges {
     this.groupService.getAllGroupsLive().subscribe((groups) => {
       this.allGroups = groups;
       this.allGroupsMap = Object.fromEntries(groups.map((g) => [g.id!, g]));
+    });
+  }
+
+  ngOnInit(): void {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
     });
   }
 
