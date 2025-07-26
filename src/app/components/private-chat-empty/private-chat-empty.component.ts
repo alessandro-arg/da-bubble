@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { User } from '../../models/user.model';
+import { MobileService } from '../../mobile.service';
 
 @Component({
   selector: 'app-private-chat-empty',
@@ -13,6 +14,16 @@ export class PrivateChatEmptyComponent {
   @Input() chatPartner!: User;
   @Input() currentUserUid!: string | null;
   @Output() memberClicked = new EventEmitter<User>();
+
+  isMobile = false;
+
+  constructor(private mobileService: MobileService) {}
+
+  ngOnInit(): void {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+  }
 
   onMemberClick() {
     this.memberClicked.emit(this.chatPartner);

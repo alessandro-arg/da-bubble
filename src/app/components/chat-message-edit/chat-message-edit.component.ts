@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Message } from '../../models/chat.model';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { MobileService } from '../../mobile.service';
 
 @Component({
   selector: 'app-chat-message-edit',
@@ -31,6 +32,15 @@ export class ChatMessageEditComponent implements AfterViewInit {
   @ViewChild('editInput') editInput!: ElementRef<HTMLTextAreaElement>;
 
   showPicker = false;
+  isMobile = false;
+
+  constructor(private mobileService: MobileService) {}
+
+  ngOnInit(): void {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+  }
 
   async ngAfterViewInit() {
     if (typeof window !== 'undefined') {

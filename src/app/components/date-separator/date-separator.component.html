@@ -1,5 +1,8 @@
 <ng-container *ngIf="shouldShow">
-  <div class="flex items-center my-4 px-[45px]">
+  <div
+    class="flex items-center"
+    [ngClass]="isMobile ? 'px-[15px]' : 'px-[45px] my-4'"
+  >
     <div class="flex-grow h-px bg-[#ADB0D9]"></div>
     <span
       class="bg-white px-4 py-1 text-base rounded-full border border-[#ADB0D9]"

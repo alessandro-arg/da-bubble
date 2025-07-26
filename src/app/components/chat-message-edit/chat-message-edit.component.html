@@ -7,7 +7,7 @@
 >
   <textarea
     #editInput
-    class="w-full resize-none bg-transparent mb-2 text-gray-800 placeholder-gray-500 text-base leading-relaxed outline-none"
+    class="w-full resize-none bg-transparent mb-2 placeholder-[#686868] text-base leading-relaxed outline-none"
     [(ngModel)]="editText"
     placeholder="{{ msg.text }}"
     rows="1"
@@ -17,8 +17,9 @@
   <div class="flex items-center justify-between mt-2">
     <div class="picker-container relative inline-block self-start">
       <button
-        class="p-2 hover:bg-gray-100 rounded-full"
+        class="p-2 hover:bg-[#ECEEFE] rounded-full"
         (click)="togglePicker(); $event.stopPropagation()"
+        [ngClass]="{ hidden: isMobile }"
       >
         <img
           src="../../../assets/img/icons/add_reaction.png"
@@ -33,13 +34,13 @@
 
     <div class="flex gap-2">
       <button
-        class="px-4 py-2 border border-[#797EF3] text-[#797EF3] rounded-full hover:bg-[#F5F4FF] transition"
+        class="px-4 py-2 border border-[#444DF2] text-[#444DF2] rounded-full hover:bg-[#535AF1] hover:text-white transition"
         (click)="cancel.emit()"
       >
         Abbrechen
       </button>
       <button
-        class="px-4 py-2 bg-[#797EF3] text-white rounded-full hover:bg-[#5F5CD6] transition"
+        class="px-4 py-2 bg-[#444DF2] text-white rounded-full hover:bg-[#797EF3] transition"
         (click)="save.emit()"
       >
         Speichern

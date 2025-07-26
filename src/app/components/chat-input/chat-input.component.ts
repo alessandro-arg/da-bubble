@@ -16,6 +16,7 @@ import { FormsModule } from '@angular/forms';
 
 import { User } from '../../models/user.model';
 import { Group } from '../../models/group.model';
+import { MobileService } from '../../mobile.service';
 @Component({
   selector: 'app-chat-input',
   standalone: true,
@@ -38,7 +39,6 @@ export class ChatInputComponent implements AfterViewInit {
   @Input() statusMap: Record<string, boolean> = {};
   @Input() currentGroup: Group | null = null;
   @Input() showSentPopup = false;
-
   @Output() sendPressed = new EventEmitter<void>();
 
   showMentionList = false;
@@ -50,6 +50,7 @@ export class ChatInputComponent implements AfterViewInit {
   mentionStartIndex = 0;
   groupMentionStartIndex = 0;
 
+  isMobile = false;
   showEmojiPicker = false;
   isEmojiHovered = false;
   isAttachHovered = false;
@@ -66,6 +67,14 @@ export class ChatInputComponent implements AfterViewInit {
   mentionItems!: QueryList<ElementRef<HTMLLIElement>>;
   @ViewChildren('groupMentionItem', { read: ElementRef })
   groupMentionItems!: QueryList<ElementRef<HTMLLIElement>>;
+
+  constructor(private mobileService: MobileService) {}
+
+  ngOnInit(): void {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+  }
 
   async ngAfterViewInit() {
     if (typeof window !== 'undefined') {

@@ -1,10 +1,15 @@
 <div
   *ngIf="show"
-  class="fixed inset-0 z-50 flex items-center flex-col gap-9 justify-center bg-black bg-opacity-40"
+  class="fixed inset-0 z-50 flex items-center flex-col gap-9 justify-center bg-black bg-opacity-40 px-4"
   (click)="onClose()"
 >
   <div
-    class="flex flex-col gap-9 w-fit bg-white shadow-xl rounded-[30px] border px-[40px] py-[45px] cursor-default"
+    class="flex flex-col gap-9 bg-white shadow-xl rounded-[30px] border cursor-default"
+    [ngClass]="
+      !isMobile
+        ? ' w-fit px-[40px] py-[45px]'
+        : 'w-full max-w-[390px] px-[20px] py-[40px] mx-4'
+    "
     (click)="$event.stopPropagation()"
   >
     <!-- Header -->
@@ -33,7 +38,13 @@
     </div>
 
     <!-- Avatar -->
-    <div class="flex justify-center w-[420px]">
+    <div
+      class="flex justify-center"
+      [ngClass]="{
+        'w-[420px]': !isMobile,
+        'w-full max-w-[390px]': isMobile
+      }"
+    >
       <img
         *ngIf="profileUser"
         [src]="profileUser.avatar"

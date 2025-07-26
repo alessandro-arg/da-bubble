@@ -6,11 +6,13 @@ import {
   OnChanges,
   SimpleChanges,
   OnDestroy,
+  OnInit,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { PresenceService, PresenceRecord } from '../../presence.service';
 import { User } from '../../models/user.model';
 import { CommonModule } from '@angular/common';
+import { MobileService } from '../../mobile.service';
 
 @Component({
   selector: 'app-profile-modal',
@@ -19,7 +21,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './profile-modal.component.html',
   styleUrl: './profile-modal.component.scss',
 })
-export class ProfileModalComponent implements OnChanges, OnDestroy {
+export class ProfileModalComponent implements OnChanges, OnDestroy, OnInit {
   @Input() profileUser: User | null = null;
   @Input() show = false;
   @Output() close = new EventEmitter<void>();
@@ -28,7 +30,12 @@ export class ProfileModalComponent implements OnChanges, OnDestroy {
   profileUserOnline = false;
   private presenceSub?: Subscription;
 
-  constructor(private presence: PresenceService) {}
+  isMobile = false;
+
+  constructor(
+    private presence: PresenceService,
+    private mobileService: MobileService
+  ) {}
 
   ngOnChanges(changes: SimpleChanges) {
     const showChanged = changes['show'];
@@ -41,6 +48,12 @@ export class ProfileModalComponent implements OnChanges, OnDestroy {
     if (showChanged && !this.show) {
       this.unsubscribePresence();
     }
+  }
+
+  ngOnInit(): void {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
   }
 
   private subscribePresence() {

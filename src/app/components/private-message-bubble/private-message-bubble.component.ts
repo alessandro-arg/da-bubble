@@ -11,6 +11,7 @@ import { Message } from '../../models/chat.model';
 import { User } from '../../models/user.model';
 import { ReactionBarComponent } from '../reaction-bar/reaction-bar.component';
 import { HoverMenuComponent } from '../hover-menu/hover-menu.component';
+import { MobileService } from '../../mobile.service';
 
 @Component({
   selector: 'app-private-message-bubble',
@@ -24,8 +25,6 @@ export class PrivateMessageBubbleComponent {
   @Input() currentUserUid!: string | null;
   @Input() participantsMap!: Record<string, User>;
   @Input() chatId!: string | null;
-
-  /** formatting function passed in from the parent */
   @Input() formatMessageHtml!: (msg: Message) => any;
 
   @Output() bubbleClick = new EventEmitter<MouseEvent>();
@@ -37,4 +36,14 @@ export class PrivateMessageBubbleComponent {
   @Output() openEdit = new EventEmitter<{ msg: Message; event: MouseEvent }>();
 
   @ViewChild('bar') bar!: ElementRef;
+
+  isMobile = false;
+
+  constructor(private mobileService: MobileService) {}
+
+  ngOnInit(): void {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+  }
 }

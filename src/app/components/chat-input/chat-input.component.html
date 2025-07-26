@@ -1,6 +1,9 @@
 <div
   *ngIf="chatPartner || groupId || isNewMessage"
-  class="relative px-[35px] pb-[35px] pt-[15px] bg-transparent"
+  class="relative bg-transparent"
+  [ngClass]="
+    isMobile ? 'px-[15px] pb-[25px] pt-[5px]' : 'px-[35px] pb-[35px] pt-[15px]'
+  "
 >
   <div
     class="relative flex flex-col p-5 border border-[#ADB0D9] rounded-[20px] gap-[20px] hover:border-[#797EF3]"

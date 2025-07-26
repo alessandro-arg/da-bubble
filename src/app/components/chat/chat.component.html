@@ -92,7 +92,6 @@
             <ng-container
               *ngFor="let msg of msgs; let i = index; trackBy: trackById"
             >
-              <!-- ── date separator when first message or new day ─────────── -->
               <app-date-separator
                 *ngIf="msg.createdAt"
                 [date]="msg.createdAt.toDate()"
@@ -104,10 +103,12 @@
               ></app-date-separator>
 
               <div
-                class="relative group flex my-3 gap-[30px] px-[45px] py-4 transition-colors duration-200 hover:bg-[#ECEEFE]"
+                class="relative w-full group flex my-3 transition-colors duration-200 hover:bg-[#ECEEFE]"
                 [ngClass]="{
                   'justify-end': msg.sender === currentUserUid,
-                  'items-start': msg.sender !== currentUserUid
+                  'items-start': msg.sender !== currentUserUid,
+                  'gap-[10px] px-[16px] py-2': isMobile,
+                  'gap-[30px] px-[45px] py-4': !isMobile
                 }"
                 [style.backgroundColor]="
                   editingMsgId === msg.id ? '#ECEEFE' : null
@@ -130,7 +131,10 @@
                     *ngIf="msg.sender !== currentUserUid"
                     [src]="participantsMap[msg.sender].avatar"
                     alt="{{ participantsMap[msg.sender].name }}"
-                    class="w-[70px] h-[70px] rounded-full"
+                    class="rounded-full"
+                    [ngClass]="
+                      isMobile ? 'w-[50px] h-[50px]' : 'w-[70px] h-[70px]'
+                    "
                   />
 
                   <app-private-message-bubble
@@ -149,7 +153,10 @@
                     *ngIf="msg.sender === currentUserUid"
                     [src]="participantsMap[msg.sender].avatar"
                     alt="{{ participantsMap[msg.sender].name }}"
-                    class="w-[70px] h-[70px] rounded-full"
+                    class="rounded-full"
+                    [ngClass]="
+                      isMobile ? 'w-[50px] h-[50px]' : 'w-[70px] h-[70px]'
+                    "
                   />
                 </ng-template>
               </div>

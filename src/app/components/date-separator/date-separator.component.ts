@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MobileService } from '../../mobile.service';
 
 @Component({
   selector: 'app-date-separator',
@@ -11,6 +12,16 @@ import { CommonModule } from '@angular/common';
 export class DateSeparatorComponent {
   @Input() date!: Date;
   @Input() prevDate?: Date | null;
+
+  isMobile = false;
+
+  constructor(private mobileService: MobileService) {}
+
+  ngOnInit(): void {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+  }
 
   get shouldShow(): boolean {
     return !this.prevDate || !this.sameDay(this.prevDate, this.date);

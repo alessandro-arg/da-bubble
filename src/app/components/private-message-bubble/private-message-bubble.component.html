@@ -11,16 +11,23 @@
       'flex-row-reverse': msg.sender === currentUserUid
     }"
   >
-    <span class="font-bold text-lg cursor-pointer hover:text-[#535AF1]">
+    <span
+      class="font-bold cursor-pointer hover:text-[#535AF1]"
+      [ngClass]="isMobile ? 'text-base' : 'text-lg'"
+    >
       {{ participantsMap[msg.sender].name }}
     </span>
-    <span *ngIf="msg.createdAt" class="text-[#686868] font-normal text-sm">
+    <span
+      *ngIf="msg.createdAt"
+      class="text-[#686868] font-normal"
+      [ngClass]="isMobile ? 'text-xs' : 'text-sm'"
+    >
       {{ msg.createdAt.toDate() | date : "HH:mm" }} Uhr
     </span>
   </div>
 
   <div
-    class="p-[15px] text-base cursor-default transition-colors duration-200 max-w-[80%]"
+    class="p-[15px] text-sm lg:text-base cursor-default transition-colors duration-200 max-w-[80%]"
     [ngClass]="
       msg.sender === currentUserUid
         ? 'bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px]'
@@ -36,7 +43,7 @@
     [currentUserUid]="currentUserUid"
     [participantsMap]="participantsMap"
     [chatId]="chatId"
-    [maxVisible]="7"
+    [maxVisible]="isMobile ? 3 : 7"
   ></app-reaction-bar>
 
   <app-hover-menu
