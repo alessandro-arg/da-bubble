@@ -4,7 +4,7 @@
   (click)="onClose()"
 >
   <div
-    class="flex flex-col gap-9 w-fit bg-white shadow-xl rounded-[30px] border px-[40px] py-[45px] cursor-default"
+    class="overlay flex flex-col gap-9 w-fit bg-white shadow-xl rounded-[30px] border px-[40px] py-[45px] cursor-default"
     (click)="$event.stopPropagation()"
   >
     <!-- Header -->
@@ -33,7 +33,7 @@
     </div>
 
     <!-- Avatar -->
-    <div class="flex justify-center w-[420px]">
+    <div class="avatar-overlay flex justify-center w-[420px]">
       <img
         *ngIf="profileUser"
         [src]="profileUser.avatar"
