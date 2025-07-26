@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { Group } from '../../models/group.model';
 import { Subscription } from 'rxjs';
 import { PresenceService, PresenceRecord } from '../../presence.service';
+import { MobileService } from '../../mobile.service';
 
 @Component({
   selector: 'app-group-members-modal',
@@ -34,10 +35,18 @@ export class GroupMembersModalComponent implements OnInit, OnDestroy {
   chatPartner: any = null;
 
   isButtonHovered = false;
+  isMobile = false;
 
-  constructor(private presence: PresenceService) {}
+  constructor(
+    private presence: PresenceService,
+    private mobileService: MobileService
+  ) {}
 
   ngOnInit() {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+
     for (const uid of this.group.participants || []) {
       const sub = this.presence
         .getUserStatus(uid)

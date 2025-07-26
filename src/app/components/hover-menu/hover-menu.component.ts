@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Message } from '../../models/chat.model';
+import { MobileService } from '../../mobile.service';
 
 @Component({
   selector: 'app-hover-menu',
@@ -22,6 +23,15 @@ export class HoverMenuComponent {
   @Output() openThread = new EventEmitter<Message>();
 
   optionsOpen = false;
+  isMobile = false;
+
+  constructor(private mobileService: MobileService) {}
+
+  ngOnInit(): void {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+  }
 
   onToggleOptions(evt: MouseEvent) {
     evt.stopPropagation();

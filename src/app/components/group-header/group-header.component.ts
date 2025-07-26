@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { GroupSettingsModalComponent } from '../group-settings-modal/group-settings-modal.component';
 import { GroupMembersModalComponent } from '../group-members-modal/group-members-modal.component';
 import { AddMembersModalComponent } from '../add-members-modal/add-members-modal.component';
+import { MobileService } from '../../mobile.service';
 
 @Component({
   selector: 'app-group-header',
@@ -41,8 +42,18 @@ export class GroupHeaderComponent {
 
   isGroupTitleHovered = false;
   isAddMembersHovered = false;
+  isMobile = false;
 
-  constructor(private groupService: GroupService) {}
+  constructor(
+    private groupService: GroupService,
+    private mobileService: MobileService
+  ) {}
+
+  ngOnInit(): void {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+  }
 
   toggleGroupSettings() {
     this.showGroupSettingsModal = !this.showGroupSettingsModal;

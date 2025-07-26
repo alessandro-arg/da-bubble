@@ -5,6 +5,7 @@ import { GroupService } from '../../group.service';
 import { User } from '../../models/user.model';
 import { PresenceService, PresenceRecord } from '../../presence.service';
 import { Subscription } from 'rxjs';
+import { MobileService } from '../../mobile.service';
 
 @Component({
   selector: 'app-add-members-modal',
@@ -29,12 +30,19 @@ export class AddMembersModalComponent implements OnInit {
   statusMap: Record<string, boolean> = {};
   private subs: Subscription[] = [];
 
+  isMobile = false;
+
   constructor(
     private groupService: GroupService,
-    private presence: PresenceService
+    private presence: PresenceService,
+    private mobileService: MobileService
   ) {}
 
   ngOnInit() {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+
     this.groupService.getAllUsers().then((users) => {
       this.allUsers = users;
 

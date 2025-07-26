@@ -16,9 +16,11 @@
       <!-- private header -->
       <div
         *ngIf="chatPartner; else groupHeader"
-        class="w-full flex justify-between rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
+        class="w-full flex justify-between shadow-[0px_2px_10px_0px_#00000014] items-center"
         [ngClass]="
-          !isMobile ? 'px-[45px] pt-[28px] pb-[16px]' : 'py-[10px] px-[16px]'
+          !isMobile
+            ? 'px-[45px] pt-[28px] pb-[16px] rounded-t-[32px]'
+            : 'py-[10px] px-[16px]'
         "
       >
         <div
@@ -61,7 +63,7 @@
 
   <!-- Chat Body -->
   <div
-    class="flex-1 overflow-y-auto flex flex-col px-0 pb-[35px] pt-5"
+    class="flex-1 overflow-y-auto flex flex-col px-0 pb-[35px] pt-5 overflow-x-hidden"
     #chatContainer
   >
     <ng-container *ngIf="chatPartner || groupId; else pickAChat">
@@ -69,9 +71,7 @@
         *ngIf="chatPartner; else groupChat"
         class="w-full flex flex-col gap-6 min-h-full"
       >
-        <!-- Push the messages block to the bottom when there's not enough content to scroll -->
         <div class="mt-auto"></div>
-
         <ng-container *ngIf="messagesLoading; else loaded">
           <div class="flex-1 flex items-center justify-center text-gray-400">
             Nachrichten werden geladen…

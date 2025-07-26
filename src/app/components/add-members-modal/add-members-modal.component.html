@@ -1,7 +1,10 @@
 <div class="flex flex-col gap-5 w-full cursor-default">
   <!-- header -->
   <div class="flex flex-col g-1">
-    <div class="flex justify-between items-center w-[434px]">
+    <div
+      class="flex justify-between items-center"
+      [ngClass]="isMobile ? '' : ' w-[434px]'"
+    >
       <h2 class="text-xl font-bold">Leute hinzufügen</h2>
       <button
         (click)="onClose(); $event.stopPropagation()"

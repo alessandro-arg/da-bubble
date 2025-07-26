@@ -8,7 +8,12 @@
 </ng-container>
 
 <div
-  class="w-full flex justify-between gap-[10px] px-[45px] pt-[28px] pb-[16px] rounded-t-[32px] shadow-[0px_2px_10px_0px_#00000014] items-center"
+  class="w-full flex justify-between gap-[10px] shadow-[0px_2px_10px_0px_#00000014] items-center"
+  [ngClass]="
+    !isMobile
+      ? 'px-[45px] pt-[28px] pb-[16px] rounded-t-[32px]'
+      : 'py-[10px] px-[16px]'
+  "
 >
   <!-- group title & settings dropdown -->
   <div class="relative inline-block">
@@ -57,7 +62,7 @@
   <!-- member avatars & count -->
   <div class="flex gap-2 px-[10px] py-[3px] items-center">
     <!-- members preview -->
-    <div class="relative inline-block">
+    <div class="relative inline-block" [ngClass]="{ hidden: isMobile }">
       <div
         class="flex items-center gap-[10px] py-1 px-2 cursor-pointer rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] transition-colors duration-200"
         (click)="toggleMembers()"
@@ -107,7 +112,7 @@
         class="cursor-pointer"
         (mouseenter)="isAddMembersHovered = true"
         (mouseleave)="isAddMembersHovered = false"
-        (click)="toggleAddMembers()"
+        (click)="isMobile ? toggleMembers() : toggleAddMembers()"
       />
 
       <!-- add-members modal -->
@@ -122,6 +127,23 @@
           [currentParticipants]="group.participants"
           (close)="closeAddMembers()"
         ></app-add-members-modal>
+      </div>
+
+      <!-- members modal -->
+      <div
+        *ngIf="showMembersModal && isMobile"
+        class="absolute top-full right-0 mt-2 p-10 bg-white rounded-b-[30px] rounded-tl-[30px] shadow-[0px_6px_10px_0px_#00000033] flex flex-col gap-5 z-50"
+        [ngClass]="{ 'w-max': isMobile }"
+        (click)="$event.stopPropagation()"
+      >
+        <app-group-members-modal
+          [group]="group"
+          [participantsMap]="participantsMap"
+          [currentUserUid]="currentUserUid"
+          (close)="closeMembers()"
+          (addMembers)="onAddMembersFromMembers()"
+          (memberClicked)="onMemberClicked($event)"
+        ></app-group-members-modal>
       </div>
     </div>
   </div>

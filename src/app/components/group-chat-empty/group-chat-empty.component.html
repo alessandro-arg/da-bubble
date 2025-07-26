@@ -1,4 +1,7 @@
-<div class="w-full flex flex-col gap-6 px-[45px]">
+<div
+  class="w-full flex flex-col gap-6"
+  [ngClass]="isMobile ? 'px-4' : 'px-[45px]'"
+>
   <div
     class="flex gap-2 items-end cursor-pointer w-max"
     (click)="openSettings.emit()"
@@ -8,11 +11,17 @@
       [alt]="group.name"
       class="h-[32px] w-[31px]"
     />
-    <p class="h-max font-bold text-2xl hover:text-[#535AF1]">
+    <p
+      class="h-max font-bold hover:text-[#535AF1]"
+      [ngClass]="isMobile ? 'text-xl' : 'text-2xl'"
+    >
       {{ group.name }}
     </p>
   </div>
-  <p class="text-[#686868] font-normal text-xl whitespace-normal">
+  <p
+    class="text-[#686868] font-normal whitespace-normal"
+    [ngClass]="isMobile ? 'text-lg' : 'text-xl'"
+  >
     {{ participantsMap[group.creator].name }} hat diesen Channel am
     {{ group.createdAt.toDate() | date : "longDate" : "" : "de-DE" }}
     erstellt. Das ist der Anfang des Channels
