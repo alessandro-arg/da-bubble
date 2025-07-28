@@ -62,6 +62,7 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
   newMessageMode = false;
 
   @ViewChild('userListDiv') userListDiv!: ElementRef<HTMLDivElement>;
+  @ViewChild('chatListDiv') chatListDiv!: ElementRef<HTMLDivElement>;
 
   constructor(
     private auth: Auth,
@@ -95,6 +96,7 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.userListDiv.nativeElement.style.display = 'flex';
+    this.chatListDiv.nativeElement.style.display = 'flex';
   }
 
   @HostListener('window:resize', ['$event'])
@@ -137,12 +139,20 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
     this.threadGroupId = ev.groupId;
     this.threadMessageId = ev.messageId;
     this.threadVisible = true;
+
+    if (this.screenWidth < 1024) {
+      this.chatListDiv.nativeElement.style.display = 'none';
+    }
   }
 
   onCloseThread() {
     this.threadGroupId = null;
     this.threadMessageId = null;
     this.threadVisible = false;
+
+    if (this.screenWidth < 1024) {
+      this.chatListDiv.nativeElement.style.display = 'flex';
+    }
   }
 
   onChannelClosed() {
@@ -238,5 +248,6 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
     this.selectedUser = null;
     this.selectedGroupId = null;
     this.newMessageMode = false;
+    this.threadVisible = false;
   }
 }

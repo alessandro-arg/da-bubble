@@ -270,6 +270,8 @@
 
     <ng-container *ngIf="screenWidth > 1024 || selectedUser || selectedGroupId">
       <div
+        id="chatListContainer"
+        #chatListDiv
         class="bg-white h-full w-full shadow-sm lg:rounded-[32px] transition-all duration-300 ease-in-out"
         [ngClass]="{
           'lg:w-2/4': !isCollapsed && threadVisible,

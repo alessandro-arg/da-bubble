@@ -10,7 +10,7 @@
 <div
   class="w-full flex justify-between gap-[10px] shadow-[0px_2px_10px_0px_#00000014] items-center"
   [ngClass]="
-    !isMobile
+    screenWidth > 1024
       ? 'px-[45px] pt-[28px] pb-[16px] rounded-t-[32px]'
       : 'py-[10px] px-[16px]'
   "

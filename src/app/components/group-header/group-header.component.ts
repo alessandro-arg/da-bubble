@@ -1,4 +1,10 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  HostListener,
+} from '@angular/core';
 import { User } from '../../models/user.model';
 import { Group } from '../../models/group.model';
 import { GroupService } from '../../group.service';
@@ -43,6 +49,7 @@ export class GroupHeaderComponent {
   isGroupTitleHovered = false;
   isAddMembersHovered = false;
   isMobile = false;
+  screenWidth = window.innerWidth;
 
   constructor(
     private groupService: GroupService,
@@ -53,6 +60,13 @@ export class GroupHeaderComponent {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
     });
+
+    this.screenWidth = window.innerWidth;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.screenWidth = event.target.innerWidth;
   }
 
   toggleGroupSettings() {
