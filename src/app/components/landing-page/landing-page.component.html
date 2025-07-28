@@ -96,7 +96,7 @@
 >
   <!-- Dropdown Modal -->
   <div
-    *ngIf="showDropdown"
+    *ngIf="showDropdown && !isMobile"
     class="absolute flex flex-col gap-4 items-center right-8 w-fit bg-white shadow-lg rounded-b-[30px] rounded-tl-[30px] border p-8 z-50"
     (click)="$event.stopPropagation()"
   >
@@ -110,6 +110,65 @@
       (click)="logout(); $event.stopPropagation()"
       class="flex justify-center w-[222px] items-center text-xl font-semibold px-[70px] py-[10px] hover:bg-[#ECEEFE] hover:text-[#535AF1] rounded-[100px]"
     >
+      Log out
+    </button>
+  </div>
+
+  <div
+    *ngIf="showDropdown && isMobile"
+    class="fixed inset-x-0 bottom-0 bg-white shadow-[0px_-3px_10px_0px_#00000033] z-50 rounded-t-[30px] border-t border-gray-200 p-4"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- • grab‑handle -->
+    <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4"></div>
+
+    <button
+      (click)="openProfileModal(); $event.stopPropagation()"
+      class="w-full flex items-center justify-center gap-2 py-4 text-lg font-semibold rounded-full hover:bg-gray-100 transition"
+    >
+      <!-- you can swap in your own SVG/icon here -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="w-6 h-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M5.121 17.804A13.937 13.937 0 0112 
+                 15c2.5 0 4.847.735 6.879 2.005M15 10a3 
+                 3 0 11-6 0 3 3 0 016 0zM19.071 4.929a10 
+                 10 0 11-14.142 0"
+        />
+      </svg>
+      Profil
+    </button>
+
+    <button
+      (click)="logout(); $event.stopPropagation()"
+      class="mt-2 w-full flex items-center justify-center gap-2 py-4 text-lg font-semibold rounded-full text-red-600 hover:bg-red-50 transition"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="w-6 h-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M17 16l4-4m0 0l-4-4m4 
+                 4H7m6 4v1a2 2 0 01-2 
+                 2H7a2 2 0 01-2-2V7a2 
+                 2 0 012-2h4a2 2 0 
+                 012 2v1"
+        />
+      </svg>
       Log out
     </button>
   </div>

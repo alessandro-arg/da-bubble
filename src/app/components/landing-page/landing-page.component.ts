@@ -4,9 +4,10 @@ import {
   ElementRef,
   OnInit,
   ViewChild,
-  AfterViewInit,
+  Inject,
+  PLATFORM_ID,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../user.service';
@@ -36,8 +37,8 @@ import { MobileService } from '../../mobile.service';
   templateUrl: './landing-page.component.html',
   styleUrl: './landing-page.component.scss',
 })
-export class LandingPageComponent implements OnInit, AfterViewInit {
-  screenWidth = window.innerWidth;
+export class LandingPageComponent implements OnInit {
+  screenWidth = 0;
   isMobile = false;
   showDropdown = false;
   showProfileModal = false;
@@ -61,10 +62,13 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
 
   newMessageMode = false;
 
+  private isBrowser: boolean;
+
   @ViewChild('userListDiv') userListDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('chatListDiv') chatListDiv!: ElementRef<HTMLDivElement>;
 
   constructor(
+    @Inject(PLATFORM_ID) platformId: Object,
     private auth: Auth,
     private userService: UserService,
     private router: Router,
@@ -73,6 +77,8 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
     private presence: PresenceService,
     private mobileService: MobileService
   ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+
     this.route.paramMap.subscribe(async (params) => {
       const uid = params.get('uid');
       if (uid) {
@@ -91,17 +97,16 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
       (user) => (this.currentUserUid = user?.uid ?? null)
     );
 
-    this.screenWidth = window.innerWidth;
-  }
-
-  ngAfterViewInit() {
-    this.userListDiv.nativeElement.style.display = 'flex';
-    this.chatListDiv.nativeElement.style.display = 'flex';
+    if (this.isBrowser) {
+      this.screenWidth = window.innerWidth;
+    }
   }
 
   @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
-    this.screenWidth = event.target.innerWidth;
+  onResize(event: UIEvent) {
+    if (this.isBrowser) {
+      this.screenWidth = (event.target as Window).innerWidth;
+    }
   }
 
   openPrivateChat(user: User) {
@@ -112,7 +117,7 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
     this.threadVisible = false;
     this.newMessageMode = false;
 
-    if (this.screenWidth < 1024) {
+    if (this.isBrowser && this.screenWidth < 1024) {
       this.userListDiv.nativeElement.style.display = 'none';
     }
   }
@@ -130,7 +135,7 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
     this.threadVisible = false;
     this.newMessageMode = false;
 
-    if (this.screenWidth < 1024) {
+    if (this.isBrowser && this.screenWidth < 1024) {
       this.userListDiv.nativeElement.style.display = 'none';
     }
   }
@@ -140,7 +145,7 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
     this.threadMessageId = ev.messageId;
     this.threadVisible = true;
 
-    if (this.screenWidth < 1024) {
+    if (this.isBrowser && this.screenWidth < 1024) {
       this.chatListDiv.nativeElement.style.display = 'none';
     }
   }
@@ -150,7 +155,7 @@ export class LandingPageComponent implements OnInit, AfterViewInit {
     this.threadMessageId = null;
     this.threadVisible = false;
 
-    if (this.screenWidth < 1024) {
+    if (this.isBrowser && this.screenWidth < 1024) {
       this.chatListDiv.nativeElement.style.display = 'flex';
     }
   }

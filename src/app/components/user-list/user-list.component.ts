@@ -23,11 +23,12 @@ import {
 import { Subscription } from 'rxjs';
 import { CreateGroupModalComponent } from './create-group-modal/create-group-modal.component';
 import { PresenceService } from '../../presence.service';
+import { SearchbarComponent } from '../searchbar/searchbar.component';
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, CreateGroupModalComponent],
+  imports: [CommonModule, CreateGroupModalComponent, SearchbarComponent],
   templateUrl: './user-list.component.html',
   styleUrl: './user-list.component.scss',
 })
