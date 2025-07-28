@@ -11,6 +11,7 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   HostListener,
   AfterViewInit,
+  OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChatService } from '../../chat.service';
@@ -21,6 +22,9 @@ import { User } from '../../models/user.model';
 import { ReactionBarComponent } from '../../components/reaction-bar/reaction-bar.component';
 import { HoverMenuComponent } from '../../components/hover-menu/hover-menu.component';
 import { doc, Firestore, getDoc } from '@angular/fire/firestore';
+import { MobileService } from '../../mobile.service';
+import { ChatInputComponent } from '../chat-input/chat-input.component';
+import { GroupService } from '../../group.service';
 
 @Component({
   selector: 'app-thread',
@@ -30,12 +34,13 @@ import { doc, Firestore, getDoc } from '@angular/fire/firestore';
     FormsModule,
     ReactionBarComponent,
     HoverMenuComponent,
+    ChatInputComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './thread.component.html',
   styleUrl: './thread.component.scss',
 })
-export class ThreadComponent implements OnChanges, AfterViewInit {
+export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
   @Input() groupId!: string | null;
   @Input() messageId!: string | null;
   @Input() currentUserUid!: string | null;
@@ -45,6 +50,12 @@ export class ThreadComponent implements OnChanges, AfterViewInit {
   threadMessages$?: Observable<Message[]>;
   group$?: Observable<Group>;
   threadText = '';
+
+  isNewMessage = true;
+  allUsers: User[] = [];
+  allGroups: Group[] = [];
+  currentGroup: Group | null = null;
+  statusMap: Record<string, boolean> = {};
 
   participantsMap: Record<string, User> = {};
   messagePicker: Record<string, boolean> = {};
@@ -65,7 +76,32 @@ export class ThreadComponent implements OnChanges, AfterViewInit {
   @ViewChild('editInput', { read: ElementRef })
   editInput?: ElementRef<HTMLTextAreaElement>;
 
-  constructor(private firestore: Firestore, public chatService: ChatService) {}
+  isMobile = false;
+  screenWidth = window.innerWidth;
+
+  constructor(
+    private firestore: Firestore,
+    public chatService: ChatService,
+    private groupService: GroupService,
+    private mobileService: MobileService
+  ) {}
+
+  ngOnInit(): void {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+
+    this.screenWidth = window.innerWidth;
+
+    this.groupService.getAllGroupsLive().subscribe((groups) => {
+      this.allGroups = groups;
+    });
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.screenWidth = event.target.innerWidth;
+  }
 
   async ngAfterViewInit() {
     if (typeof window !== 'undefined') {
@@ -80,6 +116,9 @@ export class ThreadComponent implements OnChanges, AfterViewInit {
   ngOnChanges(changes: SimpleChanges) {
     if (this.groupId) {
       this.group$ = this.chatService.getGroup(this.groupId);
+      this.group$.subscribe((group) => {
+        this.currentGroup = group;
+      });
       this.loadAllThreadParticipants(this.groupId);
     }
 

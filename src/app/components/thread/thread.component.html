@@ -1,7 +1,12 @@
 <!-- Thread header -->
 <div class="w-full h-full flex flex-col">
   <div
-    class="flex justify-between px-[40px] py-[32px] items-center shadow-[0px_2px_10px_0px_#00000014] rounded-t-[32px]"
+    class="w-full flex justify-between items-center shadow-[0px_2px_10px_0px_#00000014]"
+    [ngClass]="
+      screenWidth > 1024
+        ? 'px-[45px] pt-[28px] pb-[16px] rounded-t-[32px]'
+        : 'py-[10px] px-[16px]'
+    "
   >
     <div class="flex gap-1 items-center">
       <p class="text-xl font-bold mr-1">Thread</p>
@@ -9,7 +14,7 @@
         class="text-sm font-normal text-[#797EF3]"
         *ngIf="group$ | async as group"
       >
-        # {{ group.name }}
+        <strong>#</strong> {{ group.name }}
       </p>
     </div>
     <button
@@ -34,7 +39,13 @@
   </div>
 
   <!-- Thread message -->
-  <div class="flex items-start my-2 gap-[15px] px-[40px] pt-[10px]">
+  <div
+    class="flex items-start my-2 py-4"
+    [ngClass]="{
+      'gap-[10px] px-[16px] ': isMobile,
+      'gap-[15px] px-[40px] ': !isMobile
+    }"
+  >
     <ng-container *ngIf="originalMessage$ | async as msg">
       <ng-container *ngIf="participantsMap[msg.sender] as user">
         <img
@@ -61,7 +72,7 @@
 
   <!-- Separator -->
   <ng-container *ngIf="threadMessages$ | async as replies">
-    <div *ngIf="replies.length > 1" class="px-[40px] py-4">
+    <div *ngIf="replies.length > 1" class="px-[40px]">
       <div class="flex items-center">
         <span class="text-base text-[#ADB0D9] whitespace-nowrap">
           {{ replies.length }} Antworten
@@ -87,70 +98,26 @@
     <ng-container *ngFor="let msg of threadMessages$ | async">
       <ng-container *ngIf="participantsMap[msg.sender] as user">
         <div
-          class="relative group flex my-4 gap-[30px] px-[45px] py-4 transition-colors duration-200 hover:bg-[#ECEEFE]"
+          class="relative w-full group flex mt-5 py-3 pt-2 transition-colors duration-200 hover:bg-[#ECEEFE]"
           [ngClass]="{
             'justify-end': msg.sender === currentUserUid,
-            'items-start': msg.sender !== currentUserUid
+            'items-start': msg.sender !== currentUserUid,
+            'gap-[10px] px-[16px]': isMobile,
+            'gap-[30px] px-[45px]': !isMobile
           }"
+          [style.backgroundColor]="editingMsgId === msg.id ? '#ECEEFE' : null"
         >
           <!-- EDIT MODE -->
           <ng-container *ngIf="editingMsgId === msg.id; else threadReadOnly">
-            <div
-              class="flex flex-col w-full max-w-[80%] bg-white border border-[#ECEFFE] rounded-[24px] px-[20px] py-[16px]"
-              [ngClass]="{
-                'self-end': msg.sender === currentUserUid,
-                'self-start': msg.sender !== currentUserUid
-              }"
-            >
-              <textarea
-                #editInput
-                class="w-full resize-none bg-transparent mb-2 text-gray-800 placeholder-gray-500 text-base leading-relaxed outline-none"
-                [(ngModel)]="editText"
-                placeholder="{{ msg.text }}"
-                rows="1"
-                (input)="autoGrow(editInput)"
-              ></textarea>
-              <div class="flex items-center justify-between mt-2">
-                <div class="picker-container relative inline-block">
-                  <button
-                    class="p-2 hover:bg-gray-100 rounded-full"
-                    (click)="
-                      toggleMessagePicker(msg.id); $event.stopPropagation()
-                    "
-                  >
-                    <img
-                      src="../../../assets/img/icons/add_reaction.png"
-                      class="w-6 h-6"
-                    />
-                  </button>
-                  <div
-                    *ngIf="messagePicker[msg.id]"
-                    class="absolute bottom-full z-50"
-                  >
-                    <emoji-picker
-                      (emoji-click)="
-                        addEmojiToEdit($event.detail.unicode!);
-                        messagePicker[msg.id] = false
-                      "
-                    ></emoji-picker>
-                  </div>
-                </div>
-                <div class="flex gap-2">
-                  <button
-                    class="px-4 py-2 border border-[#797EF3] text-[#797EF3] rounded-full hover:bg-[#F5F4FF]"
-                    (click)="cancelEdit()"
-                  >
-                    Abbrechen
-                  </button>
-                  <button
-                    class="px-4 py-2 bg-[#797EF3] text-white rounded-full hover:bg-[#5F5CD6]"
-                    (click)="saveEdit(msg)"
-                  >
-                    Speichern
-                  </button>
-                </div>
-              </div>
-            </div>
+            <app-chat-message-edit
+              *ngIf="editingMsgId === msg.id"
+              [msg]="msg"
+              [currentUserUid]="currentUserUid"
+              [(editText)]="editText"
+              (cancel)="cancelEdit()"
+              (save)="saveEdit(msg)"
+              class="w-full"
+            ></app-chat-message-edit>
           </ng-container>
 
           <!-- READ-ONLY MODE -->
@@ -164,7 +131,7 @@
             />
 
             <div
-              class="picker-container flex flex-col max-w-[80%] gap-1"
+              class="picker-container flex flex-col gap-1 cursor-default"
               [ngClass]="{
                 'items-end': msg.sender === currentUserUid,
                 'items-start': msg.sender !== currentUserUid
@@ -177,17 +144,23 @@
                   'flex-row-reverse': msg.sender === currentUserUid
                 }"
               >
-                <span class="font-bold text-base">
+                <span
+                  class="font-bold cursor-pointer hover:text-[#535AF1]"
+                  [ngClass]="isMobile ? 'text-base' : 'text-lg'"
+                >
                   {{ user.name }}
                 </span>
-                <span class="text-[#686868] font-normal text-xs">
+                <span
+                  class="text-[#686868] font-normal"
+                  [ngClass]="isMobile ? 'text-xs' : 'text-sm'"
+                >
                   {{ msg.createdAt?.toDate() | date : "HH:mm" }} Uhr
                 </span>
               </div>
 
               <!-- message bubble -->
               <div
-                class="p-[15px] text-base transition-colors duration-200"
+                class="p-[15px] text-sm lg:text-base cursor-default transition-colors duration-200"
                 [ngClass]="
                   msg.sender === currentUserUid
                     ? 'bg-[#797EF3] text-white rounded-b-[30px] rounded-tl-[30px]'
@@ -236,80 +209,16 @@
   </div>
 
   <!-- Input Field -->
-  <div class="px-[35px] pb-[35px] pt-[15px] bg-transparent">
-    <div
-      class="flex flex-col p-5 border border-[#ADB0D9] rounded-[20px] gap-[20px]"
-    >
-      <!-- Textarea at top -->
-      <textarea
-        [(ngModel)]="threadText"
-        (keydown)="onTextareaKeydown($event)"
-        name="threadText"
-        placeholder="Antworten..."
-        class="w-full resize-none border-none focus:outline-none text-lg placeholder-[#686868] bg-transparent pr-[30px]"
-      ></textarea>
-
-      <!-- Icon row at bottom -->
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-1">
-          <div class="relative">
-            <div class="relative emoji-input-container">
-              <button
-                #emojiBtn
-                class="p-2 rounded-full transition-colors"
-                [ngClass]="{ 'bg-[#F0EDFF]': isEmojiHovered }"
-                (mouseenter)="isEmojiHovered = true"
-                (mouseleave)="isEmojiHovered = false"
-                (click)="toggleEmojiPicker()"
-              >
-                <img
-                  [src]="
-                    isEmojiHovered
-                      ? '../../../assets/img/icons/sentiment_satisfied_purple.png'
-                      : '../../../assets/img/icons/sentiment_satisfied.png'
-                  "
-                  class="w-6 h-6"
-                  alt="emoji"
-                />
-              </button>
-              <div
-                *ngIf="showEmojiPicker"
-                #picker
-                class="absolute z-50 bottom-10 left-0"
-              >
-                <emoji-picker (emoji-click)="addEmoji($event)"></emoji-picker>
-              </div>
-            </div>
-          </div>
-          <button
-            class="p-2 rounded-full transition-colors"
-            [ngClass]="{ 'bg-[#F0EDFF]': isAttachHovered }"
-            (mouseenter)="isAttachHovered = true"
-            (mouseleave)="isAttachHovered = false"
-          >
-            <img
-              [src]="
-                isAttachHovered
-                  ? '../../../assets/img/icons/alternate_email_purple.png'
-                  : '../../../assets/img/icons/alternate_email.png'
-              "
-              class="w-6 h-6"
-              alt="attachment"
-            />
-          </button>
-        </div>
-        <button
-          (click)="sendThread()"
-          [disabled]="!threadText.trim()"
-          class="p-2 disabled:opacity-0 hover:opacity-70"
-        >
-          <img
-            src="../../../assets/img/icons/send.png"
-            class="w-6 h-6"
-            alt="send"
-          />
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-chat-input
+    [(newMessage)]="threadText"
+    [currentGroup]="group$ | async"
+    [currentUserUid]="currentUserUid"
+    [groupId]="groupId"
+    [isNewMessage]="isNewMessage"
+    [allUsers]="allUsers"
+    [allGroups]="allGroups"
+    [statusMap]="statusMap"
+    [participantsMap]="participantsMap"
+    (sendPressed)="sendThread()"
+  ></app-chat-input>
 </div>
