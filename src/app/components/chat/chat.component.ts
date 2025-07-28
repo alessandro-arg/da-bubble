@@ -9,6 +9,7 @@ import {
   Output,
   EventEmitter,
   OnInit,
+  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -104,6 +105,7 @@ export class ChatComponent implements OnChanges, OnInit {
 
   showSentPopup = false;
   isMobile = false;
+  screenWidth = window.innerWidth;
 
   constructor(
     public chatService: ChatService,
@@ -138,6 +140,13 @@ export class ChatComponent implements OnChanges, OnInit {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
     });
+
+    this.screenWidth = window.innerWidth;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.screenWidth = event.target.innerWidth;
   }
 
   async ngOnChanges(changes: SimpleChanges) {

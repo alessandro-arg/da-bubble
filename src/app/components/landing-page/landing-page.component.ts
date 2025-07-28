@@ -1,4 +1,11 @@
-import { Component, HostListener, ElementRef, OnInit } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -29,7 +36,8 @@ import { MobileService } from '../../mobile.service';
   templateUrl: './landing-page.component.html',
   styleUrl: './landing-page.component.scss',
 })
-export class LandingPageComponent implements OnInit {
+export class LandingPageComponent implements OnInit, AfterViewInit {
+  screenWidth = window.innerWidth;
   isMobile = false;
   showDropdown = false;
   showProfileModal = false;
@@ -52,6 +60,8 @@ export class LandingPageComponent implements OnInit {
   threadVisible = false;
 
   newMessageMode = false;
+
+  @ViewChild('userListDiv') userListDiv!: ElementRef<HTMLDivElement>;
 
   constructor(
     private auth: Auth,
@@ -79,6 +89,17 @@ export class LandingPageComponent implements OnInit {
       this.auth,
       (user) => (this.currentUserUid = user?.uid ?? null)
     );
+
+    this.screenWidth = window.innerWidth;
+  }
+
+  ngAfterViewInit() {
+    this.userListDiv.nativeElement.style.display = 'flex';
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.screenWidth = event.target.innerWidth;
   }
 
   openPrivateChat(user: User) {
@@ -88,6 +109,10 @@ export class LandingPageComponent implements OnInit {
     this.threadMessageId = null;
     this.threadVisible = false;
     this.newMessageMode = false;
+
+    if (this.screenWidth < 1024) {
+      this.userListDiv.nativeElement.style.display = 'none';
+    }
   }
 
   openProfileModalFromUser(user: User) {
@@ -102,6 +127,10 @@ export class LandingPageComponent implements OnInit {
     this.threadMessageId = null;
     this.threadVisible = false;
     this.newMessageMode = false;
+
+    if (this.screenWidth < 1024) {
+      this.userListDiv.nativeElement.style.display = 'none';
+    }
   }
 
   onThreadSelected(ev: { groupId: string; messageId: string }) {

@@ -4,7 +4,8 @@
   <div
     class="w-max lg:w-1/4"
     [ngClass]="{
-      hidden: isMobile && (selectedUser || selectedGroupId || threadVisible)
+      hidden:
+        screenWidth < 1024 && (selectedUser || selectedGroupId || threadVisible)
     }"
   >
     <img
@@ -12,7 +13,8 @@
       alt="Logo"
       class="h-16 w-max cursor-pointer"
       [ngClass]="
-        isMobile && (!selectedUser || !selectedGroupId || !threadVisible)
+        screenWidth < 1024 &&
+        (!selectedUser || !selectedGroupId || !threadVisible)
           ? 'h-[45px] w-[161px]'
           : ''
       "
@@ -20,7 +22,9 @@
   </div>
 
   <div
-    *ngIf="isMobile && (selectedUser || selectedGroupId || threadVisible)"
+    *ngIf="
+      screenWidth < 1024 && (selectedUser || selectedGroupId || threadVisible)
+    "
     class="flex items-center gap-1 cursor-pointer"
     (click)="goBackMobile()"
   >
@@ -39,7 +43,7 @@
     (userSelected)="openPrivateChat($event)"
     (groupSelected)="openGroupChat($event)"
     class="w-2/4 items-center justify-center pl-16 hidden lg:flex"
-    [ngClass]="isMobile ? 'hidden' : ''"
+    [ngClass]="screenWidth < 1024 ? 'hidden' : ''"
   ></app-searchbar>
 
   <div
@@ -49,18 +53,21 @@
     (mouseleave)="currentUserHovered = false"
     (click)="toggleDropdown(); $event.stopPropagation()"
   >
-    <h2 class="font-bold text-3xl" [ngClass]="isMobile ? 'hidden' : ''">
+    <h2
+      class="font-bold text-3xl"
+      [ngClass]="screenWidth < 1024 ? 'hidden' : ''"
+    >
       {{ currentUser.name }}
     </h2>
     <div
       class="relative"
-      [ngClass]="isMobile ? 'w-[50px] h-[50px]' : 'w-16 h-16'"
+      [ngClass]="screenWidth < 1024 ? 'w-[50px] h-[50px]' : 'w-16 h-16'"
     >
       <img
         [src]="currentUser.avatar || './assets/img/profile.svg'"
         alt="Profilbild"
         class="rounded-full object-cover"
-        [ngClass]="isMobile ? 'w-[50px] h-[50px]' : 'w-16 h-16'"
+        [ngClass]="screenWidth < 1024 ? 'w-[50px] h-[50px]' : 'w-16 h-16'"
       />
       <div
         class="absolute bottom-0 right-0 w-4 h-4 bg-[#92C83E] rounded-full border-2 border-[#edeefe]"
@@ -72,7 +79,7 @@
           ? '../assets/img/icons/arrow_down_purple.png'
           : '../assets/img/icons/arrow_down.png'
       "
-      [ngClass]="isMobile ? 'hidden' : ''"
+      [ngClass]="screenWidth < 1024 ? 'hidden' : ''"
     />
   </div>
 </div>
@@ -229,10 +236,14 @@
     </div>
   </div>
 
-  <div class="flex h-full w-full flex-col lg:flex-row overflow-hidden">
-    <ng-container *ngIf="!isMobile || (!selectedUser && !selectedGroupId)">
+  <div class="flex h-full w-full flex-row overflow-hidden">
+    <ng-container
+      *ngIf="screenWidth > 1024 || (!selectedUser && !selectedGroupId)"
+    >
       <div
-        class="lg:mr-4 relative h-full shadow-sm lg:rounded-[32px] transition-all duration-300 ease-in-out bg-white"
+        id="userListContainer"
+        #userListDiv
+        class="lg:mr-4 relative w-full h-full shadow-sm lg:rounded-[32px] transition-all duration-300 ease-in-out bg-white"
         [ngClass]="{
           'lg:w-1/4': !isCollapsed,
           'lg:w-0 lg:overflow-hidden': isCollapsed
@@ -257,7 +268,7 @@
       </div>
     </ng-container>
 
-    <ng-container *ngIf="!isMobile || selectedUser || selectedGroupId">
+    <ng-container *ngIf="screenWidth > 1024 || selectedUser || selectedGroupId">
       <div
         class="bg-white h-full w-full shadow-sm lg:rounded-[32px] transition-all duration-300 ease-in-out"
         [ngClass]="{
@@ -282,9 +293,9 @@
       </div>
     </ng-container>
 
-    <ng-container *ngIf="!isMobile || threadVisible">
+    <ng-container *ngIf="screenWidth > 1024 || threadVisible">
       <div
-        class="bg-white h-full e-full shadow-sm lg:rounded-[32px] overflow-hidden transition-all duration-300 ease-in-out lg:ml-4"
+        class="bg-white h-full w-full shadow-sm lg:rounded-[32px] overflow-hidden transition-all duration-300 ease-in-out lg:ml-4"
         [ngClass]="{
           'lg:w-1/4': threadVisible,
           'lg:w-0': !threadVisible
