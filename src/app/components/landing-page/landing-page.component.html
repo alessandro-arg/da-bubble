@@ -5,7 +5,8 @@
     class="w-max lg:w-1/4"
     [ngClass]="{
       hidden:
-        screenWidth < 1024 && (selectedUser || selectedGroupId || threadVisible)
+        screenWidth < 1024 &&
+        (selectedUser || selectedGroupId || threadVisible || newMessageMode)
     }"
   >
     <img
@@ -23,7 +24,8 @@
 
   <div
     *ngIf="
-      screenWidth < 1024 && (selectedUser || selectedGroupId || threadVisible)
+      screenWidth < 1024 &&
+      (selectedUser || selectedGroupId || threadVisible || newMessageMode)
     "
     class="flex items-center gap-1 cursor-pointer"
     (click)="goBackMobile()"
@@ -297,7 +299,10 @@
 
   <div class="flex h-full w-full flex-row overflow-hidden">
     <ng-container
-      *ngIf="screenWidth > 1024 || (!selectedUser && !selectedGroupId)"
+      *ngIf="
+        screenWidth > 1024 ||
+        (!selectedUser && !selectedGroupId && !newMessageMode)
+      "
     >
       <div
         id="userListContainer"
@@ -327,7 +332,11 @@
       </div>
     </ng-container>
 
-    <ng-container *ngIf="screenWidth > 1024 || selectedUser || selectedGroupId">
+    <ng-container
+      *ngIf="
+        screenWidth > 1024 || selectedUser || selectedGroupId || newMessageMode
+      "
+    >
       <div
         id="chatListContainer"
         #chatListDiv

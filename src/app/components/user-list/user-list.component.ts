@@ -5,8 +5,11 @@ import {
   OnInit,
   OnDestroy,
   Input,
+  Inject,
+  PLATFORM_ID,
+  HostListener,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
 import { Group } from '../../models/group.model';
@@ -24,6 +27,7 @@ import { Subscription } from 'rxjs';
 import { CreateGroupModalComponent } from './create-group-modal/create-group-modal.component';
 import { PresenceService } from '../../presence.service';
 import { SearchbarComponent } from '../searchbar/searchbar.component';
+import { MobileService } from '../../mobile.service';
 
 @Component({
   selector: 'app-user-list',
@@ -62,14 +66,30 @@ export class UserListComponent implements OnInit, OnDestroy {
   showAddGroupModal = false;
   editSquareHovered = false;
 
+  screenWidth = 0;
+  isMobile = false;
+  private isBrowser: boolean;
+
   constructor(
+    @Inject(PLATFORM_ID) platformId: Object,
     private userService: UserService,
     private auth: Auth,
     private firestore: Firestore,
-    private presence: PresenceService
-  ) {}
+    private presence: PresenceService,
+    private mobileService: MobileService
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit() {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+
+    if (this.isBrowser) {
+      this.screenWidth = window.innerWidth;
+    }
+
     this.authUnsub = onAuthStateChanged(this.auth, (user) => {
       this.currentUserUid = user?.uid ?? null;
       this.listenToUsers();
@@ -81,6 +101,13 @@ export class UserListComponent implements OnInit, OnDestroy {
     this.authUnsub?.();
     this.usersSub?.unsubscribe();
     this.groupsSub?.unsubscribe();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: UIEvent) {
+    if (this.isBrowser) {
+      this.screenWidth = (event.target as Window).innerWidth;
+    }
   }
 
   listenToUsers() {
@@ -155,6 +182,14 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   toggleChannelsDropdown() {
     this.channelsDropdownOpen = !this.channelsDropdownOpen;
+  }
+
+  openPrivateChat(user: User) {
+    this.userSelected.emit(user);
+  }
+
+  openGroupChat(groupId: string) {
+    this.groupSelected.emit(groupId);
   }
 
   get direktArrowSrc() {

@@ -27,9 +27,13 @@
   </div>
 
   <div
-    class="flex-none flex lg:hidden items-center w-full justify-between rounded-3xl"
+    class="flex-none w-full flex lg:hidden items-center justify-between rounded-3xl"
   >
-    <app-searchbar></app-searchbar>
+    <app-searchbar
+      (userSelected)="openPrivateChat($event)"
+      (groupSelected)="openGroupChat($event)"
+      class="w-full items-center flex"
+    ></app-searchbar>
   </div>
 
   <div class="flex-1 overflow-y-auto flex flex-col">
@@ -200,5 +204,17 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div
+    *ngIf="screenWidth < 1024"
+    class="fixed bottom-10 right-8 z-40 cursor-pointer"
+    (click)="onEditClick(); $event.stopPropagation()"
+  >
+    <img
+      src="../../../assets/img/icons/mobile_edit_square.png"
+      alt="Edit"
+      class="w-16 h-16"
+    />
   </div>
 </div>

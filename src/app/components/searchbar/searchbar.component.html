@@ -1,10 +1,10 @@
 <div
-  class="relative flex items-center w-full max-w-xl mx-6 rounded-full bg-white px-[40px] py-[16px]"
+  class="relative flex items-center w-full max-w-xl mx-6 rounded-full bg-white px-[40px] py-[16px] border border-[#ADB0D9 lg:border-none"
 >
   <input
     type="text"
-    placeholder="Devspace durchsuchen"
-    class="flex-grow bg-transparent focus:outline-none text-gray-700 placeholder-gray-400 text-xl"
+    [placeholder]="isMobile ? 'Gehe zu...' : 'Devspace durchsuchen'"
+    class="flex-grow w-full bg-transparent focus:outline-none text-gray-700 placeholder-gray-400 text-xl"
     (input)="onInputChange($event)"
     [value]="searchQuery"
   />
@@ -12,7 +12,7 @@
 
   <!-- Popup -->
   <div
-    *ngIf="showPopup"
+    *ngIf="showPopup && !isMobile"
     class="show-popup-user-list absolute top-full mt-[-10px] ml-10 left-0 w-fit bg-white shadow-lg z-10 p-4 max-h-60 overflow-y-auto rounded-2xl rounded-tl-none border border-[#8f94d6]"
   >
     <!-- Gruppen Ergebnisse -->
@@ -49,7 +49,59 @@
       </div>
     </div>
 
-    <div *ngIf="filteredUsers.length === 0 && filteredGroups.length === 0" class="p-2 text-gray-500">
+    <div
+      *ngIf="filteredUsers.length === 0 && filteredGroups.length === 0"
+      class="p-2 text-gray-500"
+    >
+      Keine Ergebnisse
+    </div>
+  </div>
+
+  <!-- only show this block on mobile -->
+  <div
+    *ngIf="showPopup && isMobile"
+    class="fixed inset-0 flex flex-col mt-[200px] bg-white shadow-lg z-50 overflow-y-auto"
+  >
+    <!-- reuse the exact same inner content -->
+    <!-- Gruppen Ergebnisse -->
+    <div *ngIf="filteredGroups.length > 0" class="px-4">
+      <div class="text-sm font-semibold text-gray-500 mb-2">Gruppen</div>
+      <div
+        *ngFor="let group of filteredGroups"
+        class="flex items-center p-2 hover:bg-[#edeefe] rounded-full cursor-pointer gap-3"
+        (click)="selectGroup(group)"
+      >
+        <img
+          src="assets/img/icons/tag.png"
+          alt="Gruppen Icon"
+          class="w-8 h-8 rounded-full object-cover"
+        />
+        <div class="font-medium">{{ group.name }}</div>
+      </div>
+    </div>
+
+    <!-- Benutzer Ergebnisse -->
+    <div *ngIf="filteredUsers.length > 0" class="px-4 mt-4">
+      <div class="text-sm font-semibold text-gray-500 mb-2">Benutzer</div>
+      <div
+        *ngFor="let user of filteredUsers"
+        class="flex items-center p-2 hover:bg-[#edeefe] rounded-full cursor-pointer gap-3"
+        (click)="selectUser(user)"
+      >
+        <img
+          [src]="user.avatar || 'assets/img/profile.svg'"
+          alt="Avatar"
+          class="w-8 h-8 rounded-full object-cover"
+        />
+        <div class="font-medium">{{ user.name }}</div>
+      </div>
+    </div>
+
+    <!-- No results -->
+    <div
+      *ngIf="filteredUsers.length === 0 && filteredGroups.length === 0"
+      class="p-4 text-gray-500"
+    >
       Keine Ergebnisse
     </div>
   </div>

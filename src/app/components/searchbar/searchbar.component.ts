@@ -1,11 +1,18 @@
 // searchbar.component.ts
-import { Component, EventEmitter, HostListener, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../user.service';
 import { User } from '../../models/user.model';
 import { ChatService } from '../../chat.service';
 import { GroupService } from '../../group.service';
 import { Group } from '../../models/group.model';
+import { MobileService } from '../../mobile.service';
 
 @Component({
   selector: 'app-searchbar',
@@ -14,7 +21,10 @@ import { Group } from '../../models/group.model';
   templateUrl: './searchbar.component.html',
   styleUrls: ['./searchbar.component.scss'],
 })
-export class SearchbarComponent {
+export class SearchbarComponent implements OnInit {
+  @Output() userSelected = new EventEmitter<User>();
+  @Output() groupSelected = new EventEmitter<string>();
+
   showPopup = false;
   searchQuery = '';
   filteredUsers: User[] = [];
@@ -23,16 +33,23 @@ export class SearchbarComponent {
   allGroups: Group[] = [];
   searchMode: 'name' | 'mention' = 'name';
   currentSearchType: 'users' | 'groups' = 'users';
-  @Output() userSelected = new EventEmitter<User>();
-  @Output() groupSelected = new EventEmitter<string>();
+
+  isMobile = false;
 
   constructor(
     private userService: UserService,
     private chatService: ChatService,
-    private groupService: GroupService
+    private groupService: GroupService,
+    private mobileService: MobileService
   ) {
     this.loadAllUsers();
     this.loadAllGroups();
+  }
+
+  ngOnInit() {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
   }
 
   private async loadAllUsers() {

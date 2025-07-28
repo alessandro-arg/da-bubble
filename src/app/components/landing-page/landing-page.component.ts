@@ -61,7 +61,6 @@ export class LandingPageComponent implements OnInit {
   threadVisible = false;
 
   newMessageMode = false;
-
   private isBrowser: boolean;
 
   @ViewChild('userListDiv') userListDiv!: ElementRef<HTMLDivElement>;
