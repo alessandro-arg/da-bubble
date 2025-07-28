@@ -85,8 +85,8 @@
 
       <!-- members modal -->
       <div
-        *ngIf="showMembersModal"
-        class="absolute top-full right-0 mt-2 p-10 bg-white rounded-b-[30px] rounded-tl-[30px] shadow-[0px_6px_10px_0px_#00000033] flex flex-col gap-5 z-50"
+        *ngIf="showMembersModal && !isMobile"
+        class="absolute top-full right-0 mt-2 py-5 px-4 lg:px-10 lg:py-10 bg-white rounded-b-[30px] rounded-tl-[30px] shadow-[0px_6px_10px_0px_#00000033] flex flex-col gap-5 z-50"
         (click)="$event.stopPropagation()"
       >
         <app-group-members-modal
@@ -132,11 +132,15 @@
       <!-- members modal -->
       <div
         *ngIf="showMembersModal && isMobile"
-        class="absolute top-full right-0 mt-2 p-10 bg-white rounded-b-[30px] rounded-tl-[30px] shadow-[0px_6px_10px_0px_#00000033] flex flex-col gap-5 z-50"
-        [ngClass]="{ 'w-max': isMobile }"
+        class="absolute top-full right-0 mt-2 bg-white rounded-b-[30px] rounded-tl-[30px] shadow-[0px_6px_10px_0px_#00000033] flex flex-col gap-5 z-50"
+        [ngClass]="{
+          'w-[320px] mx-auto py-5 px-4': isMobile,
+          ' p-10': !isMobile
+        }"
         (click)="$event.stopPropagation()"
       >
         <app-group-members-modal
+          class="w-full"
           [group]="group"
           [participantsMap]="participantsMap"
           [currentUserUid]="currentUserUid"

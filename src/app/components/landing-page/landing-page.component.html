@@ -89,12 +89,13 @@
 <!-- Backdrop -->
 <div
   *ngIf="showProfileModal || showDropdown"
-  class="fixed inset-0 bg-black bg-opacity-40 z-40 transition-opacity duration-300"
+  class="fixed inset-0 bg-black bg-opacity-40 z-50 transition-opacity duration-300"
   (click)="closeModals()"
 ></div>
 
 <div
   class="relative w-full h-[calc(100%-82px)] p-0 max-w-[1800px] mx-auto flex lg:h-[calc(100vh-96px)] lg:px-6 lg:pb-6 gap-4"
+  [ngClass]="{ 'justify-center': isMobile }"
 >
   <!-- Dropdown Modal -->
   <div
@@ -181,7 +182,12 @@
   <!-- Profile Modal -->
   <div
     *ngIf="showProfileModal"
-    class="absolute flex flex-col gap-9 z-50 right-6 w-fit bg-white shadow-xl rounded-b-[30px] rounded-tl-[30px] border px-[40px] py-[45px] cursor-default"
+    class="absolute flex flex-col gap-9 z-50 bg-white shadow-xl rounded-b-[30px] border py-[45px] cursor-default"
+    [ngClass]="
+      isMobile
+        ? 'w-[95%] px-5 rounded-t-[30px]'
+        : 'w-fit right-6 px-[40px] rounded-tl-[30px]'
+    "
     (click)="$event.stopPropagation()"
   >
     <!-- Modal Header -->
@@ -212,7 +218,10 @@
     </div>
 
     <!-- Avatar -->
-    <div class="flex justify-center w-[420px]">
+    <div
+      class="flex justify-center"
+      [ngClass]="{ 'w-full': isMobile, 'w-[420px]': !isMobile }"
+    >
       <img
         [src]="currentUser?.avatar || './assets/img/profile.svg'"
         class="w-[200px] h-[200px] rounded-full object-cover"
@@ -227,12 +236,19 @@
     >
       <div class="flex justify-between items-center w-full">
         <span class="font-bold text-3xl">{{ currentUser?.name }}</span>
-        <button
-          class="text-[#535AF1] font-semibold text-lg hover:font-bold"
-          (click)="enableEdit()"
-        >
-          Bearbeiten
-        </button>
+        <div *ngIf="!isMobile">
+          <button
+            class="text-[#535AF1] font-semibold text-lg hover:font-bold"
+            (click)="enableEdit()"
+          >
+            Bearbeiten
+          </button>
+        </div>
+        <div *ngIf="isMobile" class="items-center flex justify-center">
+          <button (click)="enableEdit()">
+            <img src="../../../assets/img/icons/mobile_edit_user.png" alt="" />
+          </button>
+        </div>
       </div>
       <div class="flex items-center gap-4 text-[#686868] w-full">
         <div class="w-4 h-4 rounded-full bg-[#92C83E]"></div>

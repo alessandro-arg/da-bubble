@@ -3,7 +3,7 @@
   <div class="flex flex-col g-1">
     <div
       class="flex justify-between items-center"
-      [ngClass]="isMobile ? '' : ' w-[434px]'"
+      [ngClass]="isMobile ? 'w-[95%] mx-auto' : ' w-[434px]'"
     >
       <h2 class="text-xl font-bold">Leute hinzufügen</h2>
       <button
@@ -27,7 +27,7 @@
       </button>
     </div>
     <!-- group name tag -->
-    <div class="flex items-center gap-4">
+    <div *ngIf="!isMobile" class="flex items-center gap-4">
       <img src="../../../assets/img/icons/tag_hover.png" class="w-5 h-5" />
       <span class="text-lg text-[#797EF3]">{{ groupName }}</span>
     </div>
@@ -45,7 +45,7 @@
 
     <ul
       *ngIf="filteredUsers.length"
-      class="absolute py-5 px-5 flex flex-col gap-4 z-10 bg-white border border-[#ADB0D9] rounded-b-[20px] rounded-tr-[20px] shadow-[0px_2px_10px_0px_#00000014] w-[335px] max-h-48 overflow-auto -mt-3 left-4"
+      class="absolute py-5 px-2 lg:px-5 flex flex-col gap-4 z-10 bg-white border border-[#ADB0D9] rounded-b-[20px] rounded-tr-[20px] shadow-[0px_2px_10px_0px_#00000014] w-[250px] lg:w-[335px] max-h-48 overflow-auto -mt-3 left-4"
     >
       <li
         *ngFor="let u of filteredUsers"
@@ -81,12 +81,12 @@
 
     <ul
       *ngIf="!filteredUsers.length && searchTerm"
-      class="absolute py-5 px-5 flex flex-col gap-4 z-10 bg-white border border-[#ADB0D9] rounded-b-[20px] rounded-tr-[20px] shadow-[0px_2px_10px_0px_#00000014] w-[335px] max-h-48 overflow-auto -mt-3 left-4"
+      class="absolute py-5 px-5 flex flex-col gap-4 z-10 bg-white border border-[#ADB0D9] rounded-b-[20px] rounded-tr-[20px] shadow-[0px_2px_10px_0px_#00000014] w-[250px] lg:w-[335px] max-h-48 overflow-auto -mt-3 left-4"
     >
       <li class="px-4 py-2 text-sm text-gray-500">Keine Benutzer gefunden</li>
     </ul>
 
-    <div class="flex flex-wrap gap-2 mt-2 max-w-[434px]">
+    <div class="flex flex-wrap gap-2 mt-2 max-w-[250px] lg:max-w-[434px]">
       <div
         *ngFor="let u of selectedUsers"
         class="flex items-center gap-4 bg-[#ECEEFE] px-3 py-1 rounded-[35px] text-base"
