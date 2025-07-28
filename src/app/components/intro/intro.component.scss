@@ -82,29 +82,29 @@ h1 {
 
 @-webkit-keyframes fadeInLeftBig {
   0% {
-      opacity: 0;
-      -webkit-transform: translate3d(-2000px, 0, 0);
-      transform: translate3d(-2000px, 0, 0);
+    opacity: 0;
+    -webkit-transform: translate3d(-2000px, 0, 0);
+    transform: translate3d(-2000px, 0, 0);
   }
 
   100% {
-      opacity: 1;
-      -webkit-transform: none;
-      transform: none;
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
   }
 }
 
 @keyframes fadeInLeftBig {
   0% {
-      opacity: 0;
-      -webkit-transform: translate3d(-150px, 0, 0);
-      transform: translate3d(-150px, 0, 0);
+    opacity: 0;
+    -webkit-transform: translate3d(-150px, 0, 0);
+    transform: translate3d(-150px, 0, 0);
   }
 
   100% {
-      opacity: 1;
-      -webkit-transform: none;
-      transform: none;
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
   }
 }
 
@@ -124,5 +124,5 @@ h1 {
     font-size: 1.5rem;
     text-align: center;
   }
-  
+
 }
