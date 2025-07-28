@@ -1,11 +1,26 @@
 <div
-  class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+  class="fixed inset-0 bg-black bg-opacity-50 flex justify-center z-50"
+  [ngClass]="{ 'items-end': isMobile, 'items-center': !isMobile }"
   (click)="close.emit()"
 >
   <div
-    class="bg-white rounded-[30px] w-full max-w-[872px] p-10 relative flex flex-col justify-between gap-[30px] shadow-xl"
+    class="bg-white w-full lg:h-auto max-w-[872px] relative flex flex-col lg:justify-between shadow-[0px_-3px_10px_0px_#00000033]"
+    [ngClass]="{
+      'lg:rounded-[30px] p-10 flex h-full flex-col gap-[25px] lg:gap-[30px]':
+        !isMobile,
+      'p-10 flex h-full flex-col gap-[25px] lg:gap-[30px]':
+        isMobile && step === 1,
+      'rounded-t-[25px] py-10 px-5 h-auto gap-[30px] fixed bottom-0':
+        isMobile && step === 2
+    }"
     (click)="stopPropagation($event)"
   >
+    <div
+      *ngIf="isMobile && step === 2"
+      class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4"
+      (click)="close.emit()"
+    ></div>
+
     <ng-container *ngIf="step === 1">
       <!-- X button -->
       <div class="flex justify-between items-center">
@@ -86,7 +101,7 @@
     </ng-container>
 
     <ng-container *ngIf="step === 2">
-      <div class="flex justify-between items-center">
+      <div class="flex justify-between items-center mb-[25px]">
         <!-- Header -->
         <h2 class="text-2xl font-bold">Leute hinzufügen</h2>
         <button
@@ -111,7 +126,7 @@
         </button>
       </div>
 
-      <div class="flex flex-col gap-5">
+      <div class="flex flex-col gap-5 mb-[25px]">
         <label class="flex items-center gap-3">
           <input
             type="radio"
@@ -149,7 +164,7 @@
 
           <ul
             *ngIf="filteredUsers.length"
-            class="absolute py-5 px-5 flex flex-col gap-4 z-10 bg-white border border-[#ADB0D9] rounded-b-[20px] rounded-tr-[20px] shadow-[0px_2px_10px_0px_#00000014] w-[335px] max-h-48 overflow-auto -mt-3 left-4"
+            class="absolute py-5 px-5 flex flex-col gap-4 z-10 bg-white border border-[#ADB0D9] rounded-t-[20px] rounded-br-[20px] lg:rounded-b-[20px] lg:rounded-tr-[20px] shadow-[0px_2px_10px_0px_#00000014] w-[335px] max-h-48 overflow-auto -mb-2 lg:-mt-3 lg:left-4 bottom-full"
           >
             <li
               *ngFor="let u of filteredUsers"
@@ -180,10 +195,10 @@
           </ul>
         </div>
 
-        <div class="flex flex-wrap gap-2 mt-2">
+        <div *ngIf="!addAll" class="flex flex-wrap gap-2 mt-2">
           <div
             *ngFor="let u of selectedUsers"
-            class="flex items-center gap-4 bg-[#ECEEFE] px-5 py-1 rounded-[35px] text-base"
+            class="flex items-center gap-4 bg-[#ECEEFE] p-1 lg:px-5 lg:py-1 rounded-[35px] text-sm lg:text-base"
           >
             <img
               [src]="u.avatar"

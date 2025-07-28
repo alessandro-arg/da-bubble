@@ -6,6 +6,7 @@ import { User } from '../../../models/user.model';
 import { Auth } from '@angular/fire/auth';
 import { Subscription } from 'rxjs';
 import { PresenceRecord, PresenceService } from '../../../presence.service';
+import { MobileService } from '../../../mobile.service';
 
 @Component({
   selector: 'app-create-group-modal',
@@ -32,13 +33,20 @@ export class CreateGroupModalComponent implements OnInit {
   statusMap: Record<string, boolean> = {};
   private subs: Subscription[] = [];
 
+  isMobile = false;
+
   constructor(
     private groupService: GroupService,
     private auth: Auth,
-    private presence: PresenceService
+    private presence: PresenceService,
+    private mobileService: MobileService
   ) {}
 
   async ngOnInit() {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+
     const me = this.auth.currentUser;
     this.currentUserUid = me ? me.uid : '';
     const users = await this.groupService.getAllUsers();
