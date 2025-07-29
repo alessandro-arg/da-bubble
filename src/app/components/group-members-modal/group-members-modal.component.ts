@@ -28,6 +28,8 @@ export class GroupMembersModalComponent implements OnInit, OnDestroy {
   @Output() addMembers = new EventEmitter<void>();
   @Output() memberClicked = new EventEmitter<any>();
 
+  @Input() embeddedInSettings = false;
+
   statusMap: Record<string, boolean> = {};
   private subs: Subscription[] = [];
 

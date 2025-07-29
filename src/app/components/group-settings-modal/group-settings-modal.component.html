@@ -1,10 +1,18 @@
 <div class="flex flex-col gap-5 w-full cursor-default">
   <!-- header -->
-  <div class="flex justify-between items-center w-[792px]">
+  <div
+    class="flex justify-between items-center lg:w-[700px]"
+    [ngClass]="{
+      'w-full pt-10 pb-[10px] px-4 shadow-[0px_2px_10px_0px_#00000014]':
+        isMobile,
+      'w-[450px]': !isMobile
+    }"
+  >
     <div class="flex items-center gap-4">
       <img src="../../../assets/img/icons/tag.png" class="w-6 h-6" />
       <h2 class="text-2xl font-bold">{{ group.name }}</h2>
     </div>
+
     <button
       class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition"
       (click)="onClose()"
@@ -27,137 +35,211 @@
   </div>
 
   <!-- Channel-Name card -->
-  <ng-container *ngIf="!editingGroupName; else editName">
-    <div
-      class="flex flex-col gap-5 w-full border border-[#ADB0D9] rounded-[20px] p-5 relative"
-    >
-      <div class="flex justify-between items-center">
-        <span class="text-lg font-bold">Channel-Name</span>
-        <button
-          *ngIf="!editingGroupName && isCreator"
-          class="text-[#535AF1] text-lg font-semibold hover:text-[#797EF3]"
-          (click)="startEditGroupName()"
-        >
-          Bearbeiten
-        </button>
-      </div>
-      <div class="flex items-center gap-2">
-        <img src="../../../assets/img/icons/tag.png" class="w-5 h-5" />
-        <span class="text-lg font-base">{{ group.name }}</span>
-      </div>
-    </div>
-  </ng-container>
-
-  <ng-template #editName>
-    <div class="flex flex-col w-full rounded-[20px] p-5 relative gap-5">
-      <div class="flex justify-between items-center">
-        <span class="text-lg font-bold">Channel-Name</span>
-        <div class="flex items-center gap-5">
-          <button
-            class="text-lg text-[#686868]"
-            (click)="cancelEditGroupName()"
-          >
-            Abbrechen
-          </button>
-          <button
-            class="text-lg font-semibold text-[#535AF1] hover:text-[#797EF3]"
-            (click)="saveGroupName()"
-          >
-            Speichern
-          </button>
-        </div>
-      </div>
-      <div class="mt-2 flex items-center gap-2">
-        <div class="flex flex-col gap-5 h-[60px] relativ w-full">
-          <img
-            src="assets/img/icons/tag.png"
-            alt="Tag"
-            class="absolute left-10 bottom-[38px] flex items-center select-none pointer-events-none"
-          />
-          <input
-            #groupNameInput
-            [(ngModel)]="newGroupName"
-            type="text"
-            class="w-full h-full pl-[60px] pr-5 border border-[#ADB0D9] rounded-full text-lg cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#535AF1] hover:border-[#797EF3] focus:border-transparent transition duration-200"
-          />
-        </div>
-      </div>
-    </div>
-  </ng-template>
-
-  <!-- Beschreibung card -->
   <div
-    class="border-[#ADB0D9] relative p-5 rounded-[20px] flex flex-col gap-[30px]"
-    [ngClass]="editingGroupDescription ? 'border-none p-[21px]' : 'border'"
+    class="flex flex-col gap-5 w-full cursor-default"
+    [ngClass]="{ 'px-4 pb-5': isMobile }"
   >
-    <ng-container *ngIf="!editingGroupDescription; else editDesc">
-      <div class="rounded-xl relative flex flex-col gap-5 max-w-[750px]">
+    <ng-container *ngIf="!editingGroupName; else editName">
+      <div
+        class="flex flex-col gap-5 w-full border border-[#ADB0D9] rounded-[20px] p-5 relative"
+      >
         <div class="flex justify-between items-center">
-          <span class="text-lg font-bold">Beschreibung</span>
+          <span class="text-lg font-bold">Channel-Name</span>
           <button
-            *ngIf="!editingGroupDescription && isCreator"
+            *ngIf="!editingGroupName && isCreator && !isMobile"
             class="text-[#535AF1] text-lg font-semibold hover:text-[#797EF3]"
-            (click)="startEditGroupDescription()"
+            (click)="startEditGroupName()"
           >
             Bearbeiten
           </button>
+          <button
+            *ngIf="!editingGroupName && isCreator && isMobile"
+            (click)="startEditGroupName()"
+          >
+            <img src="../../../assets/img/icons/mobile_edit_group.png" alt="" />
+          </button>
         </div>
-        <div class="text-lg">
-          {{ group.description || "Keine Beschreibung" }}
+        <div class="flex items-center gap-2">
+          <img src="../../../assets/img/icons/tag.png" class="w-5 h-5" />
+          <span class="text-lg font-base">{{ group.name }}</span>
         </div>
       </div>
     </ng-container>
-    <ng-template #editDesc>
-      <div class="rounded-xl relative flex flex-col gap-2">
+
+    <ng-template #editName>
+      <div class="flex flex-col w-full rounded-[20px] p-5 relative gap-5">
         <div class="flex justify-between items-center">
-          <div>
-            <span class="text-lg font-bold">Beschreibung</span>
-          </div>
-          <div class="flex items-center gap-5">
+          <span class="text-lg font-bold">Channel-Name</span>
+          <div *ngIf="!isMobile" class="flex items-center gap-5">
             <button
               class="text-lg text-[#686868]"
-              (click)="cancelEditGroupDescription()"
+              (click)="cancelEditGroupName()"
             >
               Abbrechen
             </button>
             <button
               class="text-lg font-semibold text-[#535AF1] hover:text-[#797EF3]"
-              (click)="saveGroupDescription()"
+              (click)="saveGroupName()"
             >
               Speichern
             </button>
           </div>
+          <div
+            *ngIf="isMobile"
+            class="flex items-center gap-5"
+            (click)="saveGroupName()"
+          >
+            <img
+              src="../../../assets/img/icons/mobile_confirm_edit.png"
+              alt=""
+            />
+          </div>
         </div>
-
-        <input
-          #groupDescriptionInput
-          [(ngModel)]="newGroupDescription"
-          class="w-full border border-gray-300 rounded-xl px-4 py-2 resize-none"
-          type="text"
-          class="w-full pl-5 pr-5 border border-[#ADB0D9] rounded-full text-lg cursor-pointer placeholder-[#686868] focus:outline-none focus:ring-1 focus:ring-[#535AF1] hover:border-[#797EF3] focus:border-transparent transition duration-200 h-[60px]"
-        />
+        <div class="mt-2 flex items-center gap-2">
+          <div class="flex flex-col gap-5 h-[60px] relativ w-full">
+            <img
+              src="assets/img/icons/tag.png"
+              alt="Tag"
+              class="absolute left-10 bottom-[38px] flex items-center select-none pointer-events-none"
+            />
+            <input
+              #groupNameInput
+              [(ngModel)]="newGroupName"
+              type="text"
+              class="w-full h-full pl-[60px] pr-5 border border-[#ADB0D9] rounded-full text-lg cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#535AF1] hover:border-[#797EF3] focus:border-transparent transition duration-200"
+            />
+          </div>
+        </div>
       </div>
     </ng-template>
 
-    <!-- Separator -->
-    <div class="h-px w-full bg-[#ADB0D9] mx-2"></div>
+    <!-- Beschreibung card -->
+    <div
+      class="border-[#ADB0D9] relative p-5 rounded-[20px] flex flex-col gap-[30px]"
+      [ngClass]="editingGroupDescription ? 'border-none p-[21px]' : 'border'"
+    >
+      <ng-container *ngIf="!editingGroupDescription; else editDesc">
+        <div class="rounded-xl relative flex flex-col gap-5 max-w-[750px]">
+          <div class="flex justify-between items-center">
+            <span class="text-lg font-bold">Beschreibung</span>
+            <button
+              *ngIf="!editingGroupDescription && isCreator && !isMobile"
+              class="text-[#535AF1] text-lg font-semibold hover:text-[#797EF3]"
+              (click)="startEditGroupDescription()"
+            >
+              Bearbeiten
+            </button>
+            <button
+              *ngIf="!editingGroupDescription && isCreator && isMobile"
+              (click)="startEditGroupDescription()"
+            >
+              <img
+                src="../../../assets/img/icons/mobile_edit_group.png"
+                alt=""
+              />
+            </button>
+          </div>
+          <div class="text-lg">
+            {{ group.description || "Keine Beschreibung" }}
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #editDesc>
+        <div class="rounded-xl relative flex flex-col gap-2">
+          <div class="flex justify-between items-center">
+            <div>
+              <span class="text-lg font-bold">Beschreibung</span>
+            </div>
+            <div *ngIf="!isMobile" class="flex items-center gap-5">
+              <button
+                class="text-lg text-[#686868]"
+                (click)="cancelEditGroupDescription()"
+              >
+                Abbrechen
+              </button>
+              <button
+                class="text-lg font-semibold text-[#535AF1] hover:text-[#797EF3]"
+                (click)="saveGroupDescription()"
+              >
+                Speichern
+              </button>
+            </div>
+            <div
+              *ngIf="isMobile"
+              class="flex items-center gap-5"
+              (click)="saveGroupDescription()"
+            >
+              <img
+                src="../../../assets/img/icons/mobile_confirm_edit.png"
+                alt=""
+              />
+            </div>
+          </div>
 
-    <!-- Created by + Leave -->
-    <div class="flex justify-between items-center">
-      <div class="flex flex-col gap-5">
-        <span class="text-lg font-bold">Erstellt von</span>
-        <p class="text-2xl text-[#535AF1]">
-          {{ participantsMap[group.creator!].name }}
-        </p>
+          <input
+            #groupDescriptionInput
+            [(ngModel)]="newGroupDescription"
+            class="w-full border border-gray-300 rounded-xl px-4 py-2 resize-none"
+            type="text"
+            class="w-full pl-5 pr-5 border border-[#ADB0D9] rounded-full text-lg cursor-pointer placeholder-[#686868] focus:outline-none focus:ring-1 focus:ring-[#535AF1] hover:border-[#797EF3] focus:border-transparent transition duration-200 h-[60px]"
+          />
+        </div>
+      </ng-template>
+
+      <!-- Separator -->
+      <div class="h-px w-full bg-[#ADB0D9] mx-2"></div>
+
+      <!-- Created by + Leave -->
+      <div class="flex justify-between items-center">
+        <div class="flex flex-col gap-4 lg:gap-5">
+          <span class="text-lg font-bold">Erstellt von</span>
+          <p class="text-xl lg:text-2xl text-[#535AF1]">
+            {{ participantsMap[group.creator!].name }}
+          </p>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="flex justify-end">
-    <button
-      class="px-[25px] py-3 bg-[#444DF2] hover:bg-[#797EF3] text-white font-bold text-lg rounded-[25px] disabled:bg-[#686868] transition-colors duration-200"
-      (click)="leaveChannel()"
+
+    <div
+      *ngIf="isMobile"
+      class="py-5 px-4 flex gap-5 border border-[#ADB0D9] rounded-[20px]"
     >
-      Channel verlassen
-    </button>
+      <app-group-members-modal
+        [group]="group"
+        [participantsMap]="participantsMap"
+        [currentUserUid]="currentUserUid"
+        [embeddedInSettings]="true"
+        (close)="closeMembers()"
+        (addMembers)="onAddMembersFromMembers()"
+        (memberClicked)="onMemberClicked($event)"
+      ></app-group-members-modal>
+    </div>
+
+    <div
+      *ngIf="showAddMembersModal && isMobile"
+      class="fixed inset-0 bg-black bg-opacity-30 z-40"
+      (click)="closeAddMembers(); closeMembers()"
+    >
+      <div
+        class="bg-white w-full lg:h-auto max-w-[872px] flex flex-col lg:justify-between shadow-[0px_-3px_10px_0px_#00000033] rounded-t-[25px] py-10 px-5 h-auto gap-[30px] fixed bottom-0"
+        (click)="$event.stopPropagation()"
+      >
+        <app-add-members-modal
+          [groupId]="group.id"
+          [groupName]="group.name"
+          [currentParticipants]="group.participants"
+          (close)="closeAddMembers()"
+        ></app-add-members-modal>
+      </div>
+    </div>
+
+    <div class="flex justify-end">
+      <button
+        class="px-[25px] py-3 bg-[#444DF2] hover:bg-[#797EF3] text-white font-bold text-lg rounded-[25px] disabled:bg-[#686868] transition-colors duration-200"
+        (click)="leaveChannel()"
+      >
+        Channel verlassen
+      </button>
+    </div>
   </div>
 </div>

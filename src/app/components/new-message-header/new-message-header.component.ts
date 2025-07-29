@@ -8,11 +8,13 @@ import {
   ElementRef,
   QueryList,
   AfterViewInit,
+  OnInit,
 } from '@angular/core';
 import { User } from '../../models/user.model';
 import { Group } from '../../models/group.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MobileService } from '../../mobile.service';
 
 @Component({
   selector: 'app-new-message-header',
@@ -21,7 +23,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './new-message-header.component.html',
   styleUrl: './new-message-header.component.scss',
 })
-export class NewMessageHeaderComponent {
+export class NewMessageHeaderComponent implements OnInit {
   @Input() allUsers: User[] = [];
   @Input() allGroups: Group[] = [];
   @Input() statusMap: Record<string, boolean> = {};
@@ -47,6 +49,16 @@ export class NewMessageHeaderComponent {
   inputMentionItems!: QueryList<ElementRef>;
   @ViewChildren('inputGroupItem', { read: ElementRef })
   inputGroupItems!: QueryList<ElementRef>;
+
+  isMobile = false;
+
+  constructor(private mobileService: MobileService) {}
+
+  ngOnInit() {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+  }
 
   onRecipientInput() {
     const raw = this.recipientInputRef.nativeElement.value;

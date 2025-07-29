@@ -44,7 +44,7 @@
 
     <!-- group-settings modal -->
     <div
-      *ngIf="showGroupSettingsModal"
+      *ngIf="showGroupSettingsModal && !isMobile"
       class="absolute p-10 left-0 mt-2 w-max bg-white rounded-b-[30px] rounded-tr-[30px] shadow-[0px_6px_10px_0px_#00000033] z-50"
       (click)="$event.stopPropagation()"
     >
@@ -57,6 +57,22 @@
         (closedChannel)="onGroupSettingsChannelClosed()"
       ></app-group-settings-modal>
     </div>
+  </div>
+
+  <div
+    *ngIf="showGroupSettingsModal && isMobile"
+    class="fixed inset-0 bg-white w-full h-full overflow-auto z-50 shadow-[0px_6px_10px_0px_#00000033]"
+    (click)="$event.stopPropagation()"
+  >
+    <app-group-settings-modal
+      [group]="group"
+      [participantsMap]="participantsMap"
+      [isCreator]="isCreator"
+      [currentUserUid]="currentUserUid"
+      (close)="closeGroupSettings()"
+      (closedChannel)="onGroupSettingsChannelClosed()"
+      (memberClicked)="onMemberClicked($event)"
+    ></app-group-settings-modal>
   </div>
 
   <!-- member avatars & count -->

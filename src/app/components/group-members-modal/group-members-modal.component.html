@@ -6,6 +6,7 @@
   >
     <h2 class="text-xl font-bold">Mitglieder</h2>
     <button
+      *ngIf="!isMobile || !embeddedInSettings"
       (click)="onClose(); $event.stopPropagation()"
       class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#ECEEFE] hover:text-[#535AF1] group transition-colors duration-200"
     >
