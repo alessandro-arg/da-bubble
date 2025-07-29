@@ -25,6 +25,7 @@ import { doc, Firestore, getDoc } from '@angular/fire/firestore';
 import { MobileService } from '../../mobile.service';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
 import { GroupService } from '../../group.service';
+import { ChatMessageEditComponent } from '../chat-message-edit/chat-message-edit.component';
 
 @Component({
   selector: 'app-thread',
@@ -35,6 +36,7 @@ import { GroupService } from '../../group.service';
     ReactionBarComponent,
     HoverMenuComponent,
     ChatInputComponent,
+    ChatMessageEditComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './thread.component.html',
@@ -51,7 +53,6 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
   group$?: Observable<Group>;
   threadText = '';
 
-  isNewMessage = true;
   allUsers: User[] = [];
   allGroups: Group[] = [];
   currentGroup: Group | null = null;
@@ -68,12 +69,9 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
   isEmojiHovered = false;
   isAttachHovered = false;
 
-  @ViewChild('emojiBtn', { read: ElementRef }) emojiBtn!: ElementRef;
-  @ViewChild('picker', { read: ElementRef }) picker!: ElementRef;
   @ViewChild('threadContainer', { read: ElementRef })
   threadContainer!: ElementRef<HTMLElement>;
 
-  @ViewChild('editInput', { read: ElementRef })
   editInput?: ElementRef<HTMLTextAreaElement>;
 
   isMobile = false;
@@ -293,11 +291,6 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
       .catch((err) => console.error('Failed to update thread message', err));
   }
 
-  autoGrow(textarea: HTMLTextAreaElement) {
-    textarea.style.height = 'auto';
-    textarea.style.height = textarea.scrollHeight + 'px';
-  }
-
   toggleOptions(msgId: string, event: MouseEvent) {
     event.stopPropagation();
     this.optionsOpen[msgId] = !this.optionsOpen[msgId];
@@ -307,9 +300,5 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
     event.stopPropagation();
     this.optionsOpen[msg.id!] = false;
     this.startEdit(msg);
-  }
-
-  addEmojiToEdit(emoji: string) {
-    this.editText += emoji;
   }
 }

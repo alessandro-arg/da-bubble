@@ -72,7 +72,7 @@
 
   <!-- Separator -->
   <ng-container *ngIf="threadMessages$ | async as replies">
-    <div *ngIf="replies.length > 1" class="px-[40px]">
+    <div *ngIf="replies.length > 1" class="px-4 lg:px-[40px]">
       <div class="flex items-center">
         <span class="text-base text-[#ADB0D9] whitespace-nowrap">
           {{ replies.length }} Antworten
@@ -80,7 +80,7 @@
         <div class="flex-grow h-px bg-[#ADB0D9] ml-5"></div>
       </div>
     </div>
-    <div *ngIf="replies.length === 1" class="px-[40px] py-4">
+    <div *ngIf="replies.length === 1" class="px-4 lg:px-[40px]">
       <div class="flex items-center">
         <span class="text-base text-[#ADB0D9] whitespace-nowrap">
           {{ replies.length }} Antwort
@@ -110,7 +110,6 @@
           <!-- EDIT MODE -->
           <ng-container *ngIf="editingMsgId === msg.id; else threadReadOnly">
             <app-chat-message-edit
-              *ngIf="editingMsgId === msg.id"
               [msg]="msg"
               [currentUserUid]="currentUserUid"
               [(editText)]="editText"
@@ -194,15 +193,15 @@
                 (openEdit)="openEditFromOptions(msg, $event)"
               ></app-hover-menu>
             </div>
-          </ng-template>
 
-          <!-- avatar on right for own messages -->
-          <img
-            *ngIf="msg.sender === currentUserUid"
-            [src]="user.avatar"
-            [alt]="user.name"
-            class="w-[50px] h-[50px] rounded-full"
-          />
+            <!-- avatar on right for own messages -->
+            <img
+              *ngIf="msg.sender === currentUserUid"
+              [src]="user.avatar"
+              [alt]="user.name"
+              class="w-[50px] h-[50px] rounded-full"
+            />
+          </ng-template>
         </div>
       </ng-container>
     </ng-container>
@@ -214,7 +213,6 @@
     [currentGroup]="group$ | async"
     [currentUserUid]="currentUserUid"
     [groupId]="groupId"
-    [isNewMessage]="isNewMessage"
     [allUsers]="allUsers"
     [allGroups]="allGroups"
     [statusMap]="statusMap"
