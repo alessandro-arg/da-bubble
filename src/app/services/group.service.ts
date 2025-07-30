@@ -13,8 +13,8 @@ import {
   CollectionReference,
 } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
-import { User } from './models/user.model';
-import { Group } from './models/group.model';
+import { User } from './../models/user.model';
+import { Group } from './../models/group.model';
 import { Observable } from 'rxjs';
 
 @Injectable({

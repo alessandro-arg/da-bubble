@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Message } from './models/chat.model';
-import { User } from './models/user.model';
-import { Group } from './models/group.model';
+import { Message } from './../models/chat.model';
+import { User } from './../models/user.model';
+import { Group } from './../models/group.model';
 
 @Injectable({
   providedIn: 'root',

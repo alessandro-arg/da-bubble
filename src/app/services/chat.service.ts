@@ -15,10 +15,10 @@ import {
 } from '@angular/fire/firestore';
 import { Injectable } from '@angular/core';
 import { of, Observable } from 'rxjs';
-import { Message, Reaction } from './models/chat.model';
+import { Message, Reaction } from './../models/chat.model';
 import { UserService } from './user.service';
-import { User } from './models/user.model';
-import { Group } from './models/group.model';
+import { User } from './../models/user.model';
+import { Group } from './../models/group.model';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })

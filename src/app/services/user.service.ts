@@ -10,7 +10,7 @@ import {
   CollectionReference,
   collectionData,
 } from '@angular/fire/firestore';
-import { User } from '../app/models/user.model';
+import { User } from '../models/user.model';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -30,7 +30,7 @@ export class UserService {
       createdAt: user.createdAt || new Date(),
       displayName: user.name || '',
       photoURL: user.avatar || 'assets/img/profile.svg',
-      lastSeen: new Date()
+      lastSeen: new Date(),
     });
   }
 
