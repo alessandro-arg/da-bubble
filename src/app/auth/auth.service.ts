@@ -29,11 +29,6 @@ export class AuthService {
   currentUser$ = this.currentUserSubject.asObservable();
   redirectUrl: string | null = null;
 
-  /**
-   * Initializes the AuthService and subscribes to Firebase auth state changes.
-   * @param auth Firebase Auth instance.
-   * @param router Angular Router for navigation.
-   */
   constructor(private auth: Auth, private router: Router) {
     authState(this.auth).subscribe((user) => {
       this.currentUserSubject.next(user);
