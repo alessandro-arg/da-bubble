@@ -14,7 +14,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ChatService } from '../../chat.service';
+import { ChatService } from '../../services/chat.service';
 import { Observable } from 'rxjs';
 import { Message, Reaction } from '../../models/chat.model';
 import { Group } from '../../models/group.model';
@@ -22,9 +22,9 @@ import { User } from '../../models/user.model';
 import { ReactionBarComponent } from '../../components/reaction-bar/reaction-bar.component';
 import { HoverMenuComponent } from '../../components/hover-menu/hover-menu.component';
 import { doc, Firestore, getDoc } from '@angular/fire/firestore';
-import { MobileService } from '../../mobile.service';
+import { MobileService } from '../../services/mobile.service';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
-import { GroupService } from '../../group.service';
+import { GroupService } from '../../services/group.service';
 import { ChatMessageEditComponent } from '../chat-message-edit/chat-message-edit.component';
 
 @Component({

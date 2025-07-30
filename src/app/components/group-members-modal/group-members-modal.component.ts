@@ -9,8 +9,11 @@ import {
 import { CommonModule } from '@angular/common';
 import { Group } from '../../models/group.model';
 import { Subscription } from 'rxjs';
-import { PresenceService, PresenceRecord } from '../../presence.service';
-import { MobileService } from '../../mobile.service';
+import {
+  PresenceService,
+  PresenceRecord,
+} from '../../services/presence.service';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-group-members-modal',

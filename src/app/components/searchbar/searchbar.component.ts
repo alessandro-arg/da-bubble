@@ -7,12 +7,12 @@ import {
   Output,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../../user.service';
+import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
-import { ChatService } from '../../chat.service';
-import { GroupService } from '../../group.service';
+import { ChatService } from '../../services/chat.service';
+import { GroupService } from '../../services/group.service';
 import { Group } from '../../models/group.model';
-import { MobileService } from '../../mobile.service';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-searchbar',

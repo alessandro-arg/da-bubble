@@ -10,7 +10,7 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService } from '../../user.service';
+import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
 import { ActivatedRoute } from '@angular/router';
 import { SearchbarComponent } from '../../components/searchbar/searchbar.component';
@@ -19,8 +19,8 @@ import { WorkspaceToggleButtonComponent } from '../../components/workspace-toggl
 import { ChatComponent } from '../chat/chat.component';
 import { ThreadComponent } from '../thread/thread.component';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
-import { PresenceService } from '../../presence.service';
-import { MobileService } from '../../mobile.service';
+import { PresenceService } from '../../services/presence.service';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-landing-page',

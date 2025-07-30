@@ -8,9 +8,9 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GroupService } from '../../group.service';
+import { GroupService } from '../../services/group.service';
 import { Group } from '../../models/group.model';
-import { MobileService } from '../../mobile.service';
+import { MobileService } from '../../services/mobile.service';
 import { GroupMembersModalComponent } from '../group-members-modal/group-members-modal.component';
 import { User } from '../../models/user.model';
 import { AddMembersModalComponent } from '../add-members-modal/add-members-modal.component';

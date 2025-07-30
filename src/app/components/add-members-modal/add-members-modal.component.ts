@@ -1,11 +1,14 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GroupService } from '../../group.service';
+import { GroupService } from '../../services/group.service';
 import { User } from '../../models/user.model';
-import { PresenceService, PresenceRecord } from '../../presence.service';
+import {
+  PresenceService,
+  PresenceRecord,
+} from '../../services/presence.service';
 import { Subscription } from 'rxjs';
-import { MobileService } from '../../mobile.service';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-add-members-modal',

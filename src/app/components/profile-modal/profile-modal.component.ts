@@ -9,10 +9,13 @@ import {
   OnInit,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { PresenceService, PresenceRecord } from '../../presence.service';
+import {
+  PresenceService,
+  PresenceRecord,
+} from '../../services/presence.service';
 import { User } from '../../models/user.model';
 import { CommonModule } from '@angular/common';
-import { MobileService } from '../../mobile.service';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-profile-modal',

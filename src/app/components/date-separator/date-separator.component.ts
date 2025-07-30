@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MobileService } from '../../mobile.service';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-date-separator',

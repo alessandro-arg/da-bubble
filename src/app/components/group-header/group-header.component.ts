@@ -7,13 +7,13 @@ import {
 } from '@angular/core';
 import { User } from '../../models/user.model';
 import { Group } from '../../models/group.model';
-import { GroupService } from '../../group.service';
+import { GroupService } from '../../services/group.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GroupSettingsModalComponent } from '../group-settings-modal/group-settings-modal.component';
 import { GroupMembersModalComponent } from '../group-members-modal/group-members-modal.component';
 import { AddMembersModalComponent } from '../add-members-modal/add-members-modal.component';
-import { MobileService } from '../../mobile.service';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-group-header',

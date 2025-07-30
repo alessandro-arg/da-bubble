@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
 
 import { User } from '../../models/user.model';
 import { Group } from '../../models/group.model';
-import { MobileService } from '../../mobile.service';
+import { MobileService } from '../../services/mobile.service';
 @Component({
   selector: 'app-chat-input',
   standalone: true,

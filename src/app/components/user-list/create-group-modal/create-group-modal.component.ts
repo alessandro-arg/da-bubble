@@ -1,12 +1,15 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GroupService } from '../../../group.service';
+import { GroupService } from '../../../services/group.service';
 import { User } from '../../../models/user.model';
 import { Auth } from '@angular/fire/auth';
 import { Subscription } from 'rxjs';
-import { PresenceRecord, PresenceService } from '../../../presence.service';
-import { MobileService } from '../../../mobile.service';
+import {
+  PresenceRecord,
+  PresenceService,
+} from '../../../services/presence.service';
+import { MobileService } from '../../../services/mobile.service';
 
 @Component({
   selector: 'app-create-group-modal',

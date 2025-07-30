@@ -10,8 +10,8 @@ import {
 } from '@angular/forms';
 import { AuthService } from '../../../auth/auth.service';
 import { firstValueFrom } from 'rxjs';
-import { UserService } from '../../../user.service';
-import { RegistrationService } from '../../../registration.service';
+import { UserService } from '../../../services/user.service';
+import { RegistrationService } from '../../../services/registration.service';
 
 @Component({
   selector: 'app-register',
@@ -50,7 +50,7 @@ export class RegisterComponent {
         name: savedData.name,
         email: savedData.email,
         password: savedData.password,
-        privacyPolicy: savedData.privacyPolicy
+        privacyPolicy: savedData.privacyPolicy,
       });
     }
   }
@@ -68,7 +68,12 @@ export class RegisterComponent {
   async onSubmit() {
     if (this.registerForm.invalid) return;
     const { name, email, password, privacyPolicy } = this.registerForm.value;
-    this.registrationService.setRegistrationData({ name, email, password, privacyPolicy });
+    this.registrationService.setRegistrationData({
+      name,
+      email,
+      password,
+      privacyPolicy,
+    });
     this.router.navigate(['/choose-your-avatar']);
   }
 }

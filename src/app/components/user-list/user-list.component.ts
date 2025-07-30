@@ -10,7 +10,7 @@ import {
   HostListener,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { UserService } from '../../user.service';
+import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
 import { Group } from '../../models/group.model';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
@@ -25,9 +25,9 @@ import {
 } from '@angular/fire/firestore';
 import { Subscription } from 'rxjs';
 import { CreateGroupModalComponent } from './create-group-modal/create-group-modal.component';
-import { PresenceService } from '../../presence.service';
+import { PresenceService } from '../../services/presence.service';
 import { SearchbarComponent } from '../searchbar/searchbar.component';
-import { MobileService } from '../../mobile.service';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-user-list',

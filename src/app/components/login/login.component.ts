@@ -3,10 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
-import { UserService } from '../../user.service';
+import { UserService } from '../../services/user.service';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
-
 
 @Component({
   selector: 'app-login',
@@ -29,12 +28,12 @@ export class LoginComponent {
     private authService: AuthService,
     private userService: UserService,
     private router: Router
-  ) { }
+  ) {}
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
-  
+
   async onSubmit(form: NgForm) {
     if (form.invalid) return;
 
@@ -42,14 +41,17 @@ export class LoginComponent {
     this.errorMessage = null;
 
     try {
-      const userCredential = await this.authService.login(
-        this.credentials.email,
-        this.credentials.password
-      ).toPromise();
+      const userCredential = await this.authService
+        .login(this.credentials.email, this.credentials.password)
+        .toPromise();
 
       if (userCredential?.user) {
-        const userData = await this.userService.getUser(userCredential.user.uid);
-        const redirectUrl = this.authService.redirectUrl || `/landingpage/${userCredential.user.uid}`;
+        const userData = await this.userService.getUser(
+          userCredential.user.uid
+        );
+        const redirectUrl =
+          this.authService.redirectUrl ||
+          `/landingpage/${userCredential.user.uid}`;
         this.router.navigateByUrl(redirectUrl);
       }
     } catch (error: any) {
@@ -79,7 +81,8 @@ export class LoginComponent {
         }
 
         // Prüfe ob es eine redirectUrl gibt
-        const redirectUrl = this.authService.redirectUrl || `/landingpage/${result.user.uid}`;
+        const redirectUrl =
+          this.authService.redirectUrl || `/landingpage/${result.user.uid}`;
         this.router.navigateByUrl(redirectUrl);
       }
     } catch (error: any) {
@@ -93,15 +96,15 @@ export class LoginComponent {
     }
   }
 
-
-
   async guestLogin() {
     this.loading = true;
     this.errorMessage = null;
 
     try {
       // 1. Anmeldung als Gast
-      const userCredential = await firstValueFrom(this.authService.guestLogin());
+      const userCredential = await firstValueFrom(
+        this.authService.guestLogin()
+      );
 
       // 2. Zufälligen Gastnamen generieren
       const guestName = this.authService.generateRandomGuestName();
@@ -118,13 +121,15 @@ export class LoginComponent {
         isGuest: true,
         createdAt: new Date(),
         displayName: guestName,
-        photoURL: randomAvatar
+        photoURL: randomAvatar,
       };
 
       await this.userService.createUser(userData);
 
       // 5. Weiterleitung mit Gast-spezifischer Route
-      const redirectUrl = this.authService.redirectUrl || `/landingpage/${userCredential.user.uid}`;
+      const redirectUrl =
+        this.authService.redirectUrl ||
+        `/landingpage/${userCredential.user.uid}`;
       this.router.navigateByUrl(redirectUrl);
     } catch (error: any) {
       console.error('Guest login error:', error);
@@ -141,9 +146,8 @@ export class LoginComponent {
       'assets/img/charaters(2).svg',
       'assets/img/charaters(3).svg',
       'assets/img/charaters(4).svg',
-      'assets/img/charaters(5).svg'
+      'assets/img/charaters(5).svg',
     ];
     return avatars[Math.floor(Math.random() * avatars.length)];
   }
-
 }

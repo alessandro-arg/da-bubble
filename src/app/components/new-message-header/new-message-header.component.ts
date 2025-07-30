@@ -14,7 +14,7 @@ import { User } from '../../models/user.model';
 import { Group } from '../../models/group.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MobileService } from '../../mobile.service';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-new-message-header',

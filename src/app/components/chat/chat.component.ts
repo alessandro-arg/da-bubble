@@ -15,14 +15,17 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { shareReplay, take } from 'rxjs/operators';
-import { ChatService } from '../../chat.service';
-import { GroupService } from '../../group.service';
-import { UserService } from '../../user.service';
+import { ChatService } from '../../services/chat.service';
+import { GroupService } from '../../services/group.service';
+import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
 import { Observable, Subscription } from 'rxjs';
 import { Group } from '../../models/group.model';
 import { Message } from '../../models/chat.model';
-import { PresenceRecord, PresenceService } from '../../presence.service';
+import {
+  PresenceRecord,
+  PresenceService,
+} from '../../services/presence.service';
 import { ProfileModalComponent } from '../profile-modal/profile-modal.component';
 import { NewMessageHeaderComponent } from '../new-message-header/new-message-header.component';
 import { GroupHeaderComponent } from '../group-header/group-header.component';
@@ -33,8 +36,8 @@ import { GroupChatEmptyComponent } from '../group-chat-empty/group-chat-empty.co
 import { ChatMessageEditComponent } from '../chat-message-edit/chat-message-edit.component';
 import { PrivateMessageBubbleComponent } from '../private-message-bubble/private-message-bubble.component';
 import { GroupMessageBubbleComponent } from '../group-message-bubble/group-message-bubble.component';
-import { MessageUtilsService } from '../../message-utils.service';
-import { MobileService } from '../../mobile.service';
+import { MessageUtilsService } from '../../services/message-utils.service';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-chat',

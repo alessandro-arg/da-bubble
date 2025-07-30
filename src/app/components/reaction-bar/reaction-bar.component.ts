@@ -6,7 +6,7 @@ import {
   HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChatService } from '../../chat.service';
+import { ChatService } from '../../services/chat.service';
 import { Message, Reaction } from '../../models/chat.model';
 import { User } from '../../models/user.model';
 import { FormsModule } from '@angular/forms';

@@ -11,7 +11,7 @@ import { Message } from '../../models/chat.model';
 import { User } from '../../models/user.model';
 import { ReactionBarComponent } from '../reaction-bar/reaction-bar.component';
 import { HoverMenuComponent } from '../hover-menu/hover-menu.component';
-import { MobileService } from '../../mobile.service';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-private-message-bubble',
