@@ -1,3 +1,9 @@
+/**
+ * ChatService manages chat and group messaging functionality using Firebase Firestore.
+ * It supports private chats, group messages, threads, reactions, message editing,
+ * and tracks the current chat partner or group for UI components.
+ */
+
 import {
   Firestore,
   doc,
@@ -24,18 +30,29 @@ import { BehaviorSubject } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   readonly emptyStream: Observable<Message[]> = of([]);
-  // diese Methode wird verwendet, um den aktuellen Chat-Partner zu setzen wenn er sich ändert bem der searchbar component  (hamidoudiallo)
   private currentChatPartner = new BehaviorSubject<User | null>(null);
   currentChatPartner$ = this.currentChatPartner.asObservable();
   private currentGroup = new BehaviorSubject<Group | null>(null);
   currentGroup$ = this.currentGroup.asObservable();
-  // bis hier
+
   constructor(private firestore: Firestore, private userService: UserService) {}
 
+  /**
+   * Creates a unique chat ID based on two user UIDs, ensuring consistent chat references.
+   * @param uid1 First user's UID
+   * @param uid2 Second user's UID
+   * @returns Sorted concatenated string for consistent chat ID
+   */
   private getChatId(uid1: string, uid2: string): string {
     return [uid1, uid2].sort().join('_');
   }
 
+  /**
+   * Ensures that a chat document exists for the given user UIDs.
+   * @param uid1 Current user UID
+   * @param uid2 Other user UID
+   * @returns The generated chat ID
+   */
   async ensureChat(uid1: string, uid2: string): Promise<string> {
     const chatId = this.getChatId(uid1, uid2);
     const chatRef = doc(this.firestore, `chats/${chatId}`);
@@ -50,12 +67,24 @@ export class ChatService {
     return chatId;
   }
 
+  /**
+   * Retrieves messages for a specific chat in chronological order.
+   * @param chatId Chat document ID
+   * @returns Observable stream of Message[]
+   */
   getChatMessages(chatId: string): Observable<Message[]> {
     const msgsRef = collection(this.firestore, `chats/${chatId}/messages`);
     const q = query(msgsRef, orderBy('createdAt', 'asc'));
     return collectionData(q, { idField: 'id' }) as Observable<Message[]>;
   }
 
+  /**
+   * Sends a private message to a specific chat.
+   * @param chatId The chat document ID
+   * @param senderUid Sender's UID
+   * @param text Message content
+   * @param mentions Array of mentioned user UIDs (optional)
+   */
   async sendMessage(
     chatId: string,
     senderUid: string,
@@ -73,6 +102,13 @@ export class ChatService {
     await updateDoc(chatRef, { updatedAt: serverTimestamp() });
   }
 
+  /**
+   * Sends a message to a group chat.
+   * @param groupId Group ID
+   * @param senderUid Sender's UID
+   * @param text Message text
+   * @param mentions Optional array of mentioned UIDs
+   */
   async sendGroupMessage(
     groupId: string,
     senderUid: string,
@@ -90,17 +126,32 @@ export class ChatService {
     await updateDoc(groupRef, { updatedAt: serverTimestamp() });
   }
 
+  /**
+   * Streams group messages in chronological order.
+   * @param groupId Group ID
+   * @returns Observable stream of group messages
+   */
   getGroupMessages(groupId: string): Observable<Message[]> {
     const msgsRef = collection(this.firestore, `groups/${groupId}/messages`);
     const q = query(msgsRef, orderBy('createdAt', 'asc'));
     return collectionData(q, { idField: 'id' }) as Observable<Message[]>;
   }
 
+  /**
+   * Fetches metadata of a group by ID.
+   * @param groupId Group ID
+   * @returns Observable of Group data
+   */
   getGroup(groupId: string): Observable<Group> {
     const groupRef = doc(this.firestore, `groups/${groupId}`);
     return docData(groupRef, { idField: 'id' }) as Observable<Group>;
   }
 
+  /**
+   * Retrieves participant user objects from a group.
+   * @param groupId Group ID
+   * @returns Array of User objects
+   */
   async getGroupParticipants(groupId: string): Promise<User[]> {
     const groupRef = doc(this.firestore, `groups/${groupId}`);
     const snap = await getDoc(groupRef);
@@ -115,8 +166,11 @@ export class ChatService {
   }
 
   /**
-   * Append a reaction to a chat or group message.
-   * @param isGroup  true for /groups, false for /chats
+   * Adds a reaction to a message (chat or group).
+   * @param id Chat or Group ID
+   * @param messageId Message document ID
+   * @param reaction Reaction object
+   * @param isGroup Whether the message belongs to a group
    */
   addReaction(
     id: string,
@@ -135,7 +189,12 @@ export class ChatService {
   }
 
   /**
-   * Remove all reactions matching (userId, emoji) from a message.
+   * Removes a specific user reaction (by emoji and user ID) from a message.
+   * @param id Chat or Group ID
+   * @param messageId Message document ID
+   * @param emoji Emoji to remove
+   * @param userId UID of the reacting user
+   * @param isGroup Whether the message belongs to a group
    */
   async removeReaction(
     id: string,
@@ -159,7 +218,9 @@ export class ChatService {
     return updateDoc(msgRef, { reactions: updated });
   }
 
-  /** Append a reaction to a thread‐reply */
+  /**
+   * Adds a reaction to a thread message inside a group chat.
+   */
   addThreadReaction(
     groupId: string,
     parentMessageId: string,
@@ -175,7 +236,9 @@ export class ChatService {
     });
   }
 
-  /** Remove a reaction from a thread‐reply */
+  /**
+   * Removes a reaction from a thread message in a group.
+   */
   async removeThreadReaction(
     groupId: string,
     parentMessageId: string,
@@ -198,11 +261,7 @@ export class ChatService {
   }
 
   /**
-   * Edit the text of a chat or group message.
-   * @param id chatId or groupId
-   * @param messageId the message.document ID
-   * @param newText the updated text
-   * @param isGroup true if this is a group message
+   * Updates the text of a message (chat or group).
    */
   async updateMessage(
     id: string,
@@ -218,12 +277,17 @@ export class ChatService {
     });
   }
 
+  /**
+   * Fetches a single group message by its ID.
+   */
   getGroupMessage(groupId: string, messageId: string): Observable<Message> {
     const ref = doc(this.firestore, `groups/${groupId}/messages/${messageId}`);
     return docData(ref, { idField: 'id' }) as Observable<Message>;
   }
 
-  /** Stream replies in the group-thread sub-collection */
+  /**
+   * Streams all thread replies of a specific group message.
+   */
   getGroupThreadMessages(
     groupId: string,
     messageId: string
@@ -236,7 +300,9 @@ export class ChatService {
     return collectionData(q, { idField: 'id' }) as Observable<Message[]>;
   }
 
-  /** Post a new reply into a group's thread */
+  /**
+   * Posts a reply into a thread under a group message.
+   */
   async sendGroupThreadMessage(
     groupId: string,
     messageId: string,
@@ -259,6 +325,9 @@ export class ChatService {
     await updateDoc(parentRef, { updatedAt: serverTimestamp() });
   }
 
+  /**
+   * Updates a thread message in a group.
+   */
   async updateGroupThreadMessage(
     groupId: string,
     parentMessageId: string,
@@ -274,11 +343,19 @@ export class ChatService {
       editedAt: serverTimestamp(),
     });
   }
-  // diese Methode wird verwendet, um den aktuellen Chat-Partner zu setzen wenn er sich ändert bem der searchbar component  (hamidou)
+
+  /**
+   * Sets the currently selected chat partner (used in direct chat UI).
+   * @param user The user object to set as the current partner.
+   */
   setCurrentChatPartner(user: User) {
     this.currentChatPartner.next(user);
   }
 
+  /**
+   * Sets the currently selected group (used in group chat UI).
+   * @param group The group object to set as the current group.
+   */
   setCurrentGroup(group: Group) {
     this.currentGroup.next(group);
   }

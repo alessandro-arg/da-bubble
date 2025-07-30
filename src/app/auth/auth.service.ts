@@ -1,3 +1,9 @@
+/**
+ * AuthService handles user authentication using Firebase Auth.
+ * It supports email/password login and registration, Google login, guest login,
+ * password reset functionality, and exposes the current authenticated user as an observable.
+ */
+
 import { Injectable } from '@angular/core';
 import {
   Auth,
@@ -23,11 +29,23 @@ export class AuthService {
   currentUser$ = this.currentUserSubject.asObservable();
   redirectUrl: string | null = null;
 
+  /**
+   * Initializes the AuthService and subscribes to Firebase auth state changes.
+   * @param auth Firebase Auth instance.
+   * @param router Angular Router for navigation.
+   */
   constructor(private auth: Auth, private router: Router) {
     authState(this.auth).subscribe((user) => {
       this.currentUserSubject.next(user);
     });
   }
+
+  /**
+   * Logs in a user with email and password.
+   * @param email User's email.
+   * @param password User's password.
+   * @returns Observable emitting UserCredential or throwing a formatted error.
+   */
 
   login(email: string, password: string): Observable<UserCredential> {
     return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
@@ -57,10 +75,20 @@ export class AuthService {
     );
   }
 
+  /**
+   * Registers a new user with email and password.
+   * @param email New user's email.
+   * @param password New user's password.
+   * @returns Observable emitting UserCredential.
+   */
   register(email: string, password: string) {
     return from(createUserWithEmailAndPassword(this.auth, email, password));
   }
 
+  /**
+   * Logs out the current user and navigates to the login page.
+   * @returns Observable that completes when logout is done.
+   */
   logout(): Observable<void> {
     return from(signOut(this.auth)).pipe(
       map(() => {
@@ -70,23 +98,26 @@ export class AuthService {
     );
   }
 
+  /**
+   * Checks whether a user is currently logged in.
+   * @returns Observable emitting true if user is logged in, false otherwise.
+   */
   isLoggedIn(): Observable<boolean> {
     return this.currentUser$.pipe(map((user) => !!user));
   }
 
+  /**
+   * Logs in the user using Google Sign-In via popup.
+   * @returns Observable emitting the user credentials or throwing error.
+   */
   loginWithGoogle(): Observable<any> {
     const provider = new GoogleAuthProvider();
     provider.addScope('profile');
     provider.addScope('email');
 
-    //provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-    //provider.addScope('https://www.googleapis.com/auth/user.birthday.read');
-    //provider.addScope('https://www.googleapis.com/auth/user.addresses.read');
-
     return from(signInWithPopup(this.auth, provider)).pipe(
       catchError((error: any) => {
         console.error('Google login error:', error);
-        // Spezifische Fehlerbehandlung
         if (error.code === 'auth/account-exists-with-different-credential') {
           throw new Error(
             'Ein Konto mit dieser E-Mail existiert bereits mit einer anderen Anmeldemethode.'
@@ -100,6 +131,10 @@ export class AuthService {
     );
   }
 
+  /**
+   * Logs in using predefined guest credentials from environment config.
+   * @returns Observable emitting UserCredential or throwing a formatted error.
+   */
   guestLogin(): Observable<UserCredential> {
     const guestEmail = environment.guestEmail;
     const guestPassword = environment.guestPassword;
@@ -126,6 +161,10 @@ export class AuthService {
     );
   }
 
+  /**
+   * Generates a random guest display name using adjective-noun combination.
+   * @returns A friendly guest name string.
+   */
   generateRandomGuestName(): string {
     const adjectives = [
       'Freundlicher',
@@ -140,6 +179,11 @@ export class AuthService {
     return `${randomAdj} ${randomNoun}`;
   }
 
+  /**
+   * Sends a password reset email to the specified user email.
+   * @param email The user's email to send reset link to.
+   * @returns Observable that completes when email is sent, or throws an error.
+   */
   sendPasswordResetEmail(email: string): Observable<void> {
     const actionCodeSettings = {
       url: 'http://localhost:4200/reset-password',
@@ -171,6 +215,12 @@ export class AuthService {
     );
   }
 
+  /**
+   * Confirms a password reset using a reset code and new password.
+   * @param code The reset code from the password reset email.
+   * @param newPassword The new password to set.
+   * @returns Observable that completes when password is successfully reset or throws error.
+   */
   confirmPasswordReset(code: string, newPassword: string): Observable<void> {
     return from(confirmPasswordReset(this.auth, code, newPassword)).pipe(
       catchError((error: FirebaseError) => {
