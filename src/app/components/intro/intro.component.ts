@@ -1,7 +1,6 @@
-import { Component, AfterViewInit, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-
 import { Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -13,14 +12,10 @@ import { isPlatformBrowser } from '@angular/common';
   styleUrls: ['./intro.component.scss']
 })
 export class IntroComponent implements AfterViewInit {
-  @ViewChild('animatedTitle', { static: true }) animatedTitle!: ElementRef;
-
   constructor(
     private router: Router,
-    private ngZone: NgZone,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-  }
+  ) {}
 
   ngAfterViewInit(): void {
     this.startIntroSequence();
@@ -31,8 +26,18 @@ export class IntroComponent implements AfterViewInit {
       if (isPlatformBrowser(this.platformId)) {
         const introAlreadyShown = sessionStorage.getItem('introShown');
         if (!introAlreadyShown) {
-          //sessionStorage.setItem('introShown', 'true');
-          this.playAnimation();
+          // Start sliding animation after text appears
+          setTimeout(() => {
+            const introContent = document.querySelector('.intro-content');
+            if (introContent) {
+              introContent.classList.add('slide-animation');
+            }
+            
+            // Navigate after sliding completes
+            setTimeout(() => {
+              this.navigateToLogin();
+            }, 1000);
+          }, 1000);
         } else {
           this.navigateToLogin();
         }
@@ -42,58 +47,12 @@ export class IntroComponent implements AfterViewInit {
     }, 100);
   }
 
-  private playAnimation(): void {
-    const letters = [' DABubble '];
-    const element = this.animatedTitle.nativeElement;
-    element.innerHTML = '';
-
-    const charDelay = 100;
-    const initialOffset = -100; // Startposition weiter links
-    const spacing = 30;
-
-
-    letters.forEach((letter, i) => {
-      const span = document.createElement('span');
-      span.textContent = letter;
-      span.style.opacity = '0';
-      span.style.display = 'inline-block';
-      span.style.transform = `translateX(${initialOffset}px)`;
-      span.style.transition = `opacity 300ms ease-out, transform 500ms ease-out`;
-      span.style.position = 'relative';
-      span.style.zIndex = '0';
-
-      setTimeout(() => {
-        span.style.opacity = '1';
-        span.style.transform = 'translateX(0)';
-      }, i * charDelay);
-
-      element.appendChild(span);
-    });
-
-    setTimeout(() => {
-      const introContent = document.querySelector('.intro-content');
-      if (introContent) {
-        introContent.classList.add('final-animation');
-      }
-
-      setTimeout(() => {
-        this.navigateToLogin();
-      }, 1000);
-    }, letters.length * charDelay + 1000);
-  }
-
   private navigateToLogin(): void {
-    this.ngZone.run(() => {
-      this.router.navigate(['/login'])
-        .then(() => {
-          //console.log('Navigation to login successful');
-        })
-        .catch(err => console.error('Navigation error:', err));
-    });
+    this.router.navigate(['/login'])
+      .catch(err => console.error('Navigation error:', err));
 
     if (isPlatformBrowser(this.platformId)) {
       localStorage.clear();
-     // console.log('Local storage cleared');
     }
   }
 }

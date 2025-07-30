@@ -1,128 +1,121 @@
-.intro-overlay {
-  position: relative;
-  max-width: 1920px;
-  width: 100%;
-  height: 100vh;
-  background: linear-gradient(to bottom, #747af4 0%, #353ee6 100%);
-  z-index: 1000;
+/* Animation keyframes */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
+@keyframes moveToTopLeft {
+  0% {
+    bottom: 2.25rem;
+    right: 10%;
+  }
+  100% {
+    bottom: auto;
+    top: 2.25rem;
+    left: 4.25rem;
+    right: auto;
+    transform: scale(0.7);
+  }
+}
+
+@keyframes slideToTopLeft {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(calc(-90vw + 100%), calc(-100vh + 100%));
+  }
+}
+
+@keyframes logoScaleDown {
+  to {
+    transform: scale(0.7);
+  }
+}
+
+@keyframes textFadeOut {
+  to {
+    opacity: 0.7;
+  }
+}
+
+/* Container styles */
+.intro-overlay {
+  position: relative;
+  overflow: hidden;
+  //background: linear-gradient(to bottom, #747af4 0%, #353ee6 100%);
+  transition: background-color 1s ease-out;
+  
+  &:not(.intro-background-color) {
+    background-color: transparent;
+  }
+}
+
+/* Content styles */
 .intro-content {
   position: absolute;
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 20px;
-  bottom: 10vh;
+  gap: 1.25rem;
+  bottom: 2.25rem;
   right: 10%;
-}
+  margin-top: 6rem;
+  margin-left: 9rem;
 
-.logo {
-  width: 120px;
-  height: auto;
-  padding-right: 20px;
-  background: linear-gradient(to bottom, #4851ea 0%, #3c45e8 100%);
-  z-index: 1;
-}
+  /* Initial text animation */
+  .title span {
+    animation: slideIn 0.5s ease-out forwards;
+    animation-delay: 0.1s;
+  }
 
-.title {
-  color: white;
-  font-size: 2.5rem;
-  font-weight: bold;
-  letter-spacing: 2px;
-  white-space: nowrap;
+  /* Final animation state */
+  &.final-animation {
+    animation: moveToTopLeft 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+    
+    .title span {
+      animation: none;
+    }
+  }
 
-  span {
-    display: inline-block;
-    margin-right: -5px;
+  /* Slide animation state */
+  &.slide-animation {
+    animation: slideToTopLeft 1.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    
+    .logo {
+      animation: logoScaleDown 1.5s ease-in-out forwards;
+      margin-left: 5rem;
+      margin-top: 75px;
+    }
+    
+    .title span {
+      animation: textFadeOut 1s ease-out forwards;
+      margin-top: 75px;
+    }
   }
 }
 
-.intro-content.final-animation {
-  animation: moveToCorner 1s ease-out forwards;
-}
-
-@keyframes moveToCorner {
-  0% {
-    bottom: 10vh;
-    right: 10vw;
-    transform: scale(1);
-  }
-
-  100% {
-    bottom: 75vh;
-    right: 80%;
-    transform: scale(0.5);
-  }
-}
-
-
-.intro {
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  bottom: 10vh;
-  right: 10%;
-}
-
-
-h1 {
-  -webkit-animation-name: fadeInLeftBig;
-  animation-name: fadeInLeftBig;
-  -webkit-animation-duration: 1s;
-  animation-duration: 1s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
-  color: red;
-  font-size: 24px;
-  margin-top: 16px;
-}
-
-@-webkit-keyframes fadeInLeftBig {
-  0% {
-    opacity: 0;
-    -webkit-transform: translate3d(-2000px, 0, 0);
-    transform: translate3d(-2000px, 0, 0);
-  }
-
-  100% {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-@keyframes fadeInLeftBig {
-  0% {
-    opacity: 0;
-    -webkit-transform: translate3d(-150px, 0, 0);
-    transform: translate3d(-150px, 0, 0);
-  }
-
-  100% {
-    opacity: 1;
-    -webkit-transform: none;
-    transform: none;
-  }
-}
-
-
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 430px) { 
   .intro-content {
-    bottom: 5vh;
-    right: 5%;
-  }
+    align-items: center;
+    bottom: 1.5rem;
+    right: 36%;
+    margin-top: 3rem;
+    margin-left: 0;
 
-  .logo {
-    width: 80px;
-    padding-right: 10px;
-  }
+    .logo {
+      width: 80px; /* Adjust logo size for smaller screens */
+      margin-left: 40%;
+    }
 
-  .title {
-    font-size: 1.5rem;
-    text-align: center;
+    .title {
+      text-align: center;
+      font-size: 1.5rem; /* Adjust title size for smaller screens */
+    }
   }
-
 }
