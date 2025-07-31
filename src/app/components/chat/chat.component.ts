@@ -1,3 +1,13 @@
+/**
+ * ChatComponent is the main UI component for displaying and interacting with both
+ * private and group chats. It handles:
+ * - Loading and displaying messages
+ * - Tracking user presence and typing
+ * - Mention formatting
+ * - Reactions, threads, editing, and group navigation
+ * - Mobile support and responsive behavior
+ */
+
 import {
   Component,
   OnChanges,
@@ -139,6 +149,9 @@ export class ChatComponent implements OnChanges, OnInit {
     });
   }
 
+  /**
+   * Initializes mobile view detection.
+   */
   ngOnInit(): void {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
@@ -147,11 +160,17 @@ export class ChatComponent implements OnChanges, OnInit {
     this.screenWidth = window.innerWidth;
   }
 
+  /**
+   * Updates screen width on window resize.
+   */
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.screenWidth = event.target.innerWidth;
   }
 
+  /**
+   * Responds to input changes (e.g., group or user selection).
+   */
   async ngOnChanges(changes: SimpleChanges) {
     this.messagesLoading = true;
 
@@ -172,10 +191,16 @@ export class ChatComponent implements OnChanges, OnInit {
     }
   }
 
+  /**
+   * TrackBy function for ngFor performance in message rendering.
+   */
   trackById(_idx: number, msg: Message) {
     return msg.id;
   }
 
+  /**
+   * Formats a message using mention highlighting.
+   */
   public formatMessage = (msg: Message) =>
     this.msgUtils.formatMessageHtml(
       msg,
@@ -184,12 +209,18 @@ export class ChatComponent implements OnChanges, OnInit {
       this.participantsMap
     );
 
+  /**
+   * Opens the group settings modal from the header component.
+   */
   openGroupSettings() {
     if (this.grpHeader) {
       this.grpHeader.toggleGroupSettings();
     }
   }
 
+  /**
+   * Loads messages and metadata for a private chat.
+   */
   private async loadPrivateChat(meUid: string, them: User) {
     this.chatId = await this.chatService.ensureChat(meUid, them.uid!);
     this.messages$ = this.chatService.getChatMessages(this.chatId);
@@ -200,24 +231,15 @@ export class ChatComponent implements OnChanges, OnInit {
     this.finishLoading();
   }
 
+  /**
+   * Loads messages and thread streams for a group chat.
+   */
   private async loadGroupChat(groupId: string) {
     this.messagesSub?.unsubscribe();
     this.chatId = groupId;
     this.messages$ = this.chatService.getGroupMessages(groupId);
     this.group$ = this.chatService.getGroup(groupId);
-    this.group$.subscribe((g) => {
-      this.currentGroup = g;
-      const allIds = new Set([g.creator!, ...(g.participants || [])]);
-      const missing = Array.from(allIds).filter(
-        (uid) => !this.participantsMap[uid]
-      );
-      if (missing.length) {
-        Promise.all(missing.map((uid) => this.userService.getUser(uid))).then(
-          (users) =>
-            users.forEach((u) => u && (this.participantsMap[u.uid!] = u))
-        );
-      }
-    });
+    this.subscribeToGroup();
     this.finishLoading();
     this.messagesSub = this.messages$.pipe(take(1)).subscribe((msgs) => {
       this.threadStreams = Object.fromEntries(
@@ -233,12 +255,53 @@ export class ChatComponent implements OnChanges, OnInit {
     });
   }
 
+  /**
+   * Subscribes to the current group observable (`group$`) and updates the component's
+   * state with the retrieved group object. After receiving the group data, it checks
+   * for any missing participants in the local map and triggers fetching them.
+   */
+  private subscribeToGroup() {
+    this.group$.subscribe((g) => {
+      this.currentGroup = g;
+      this.fetchMissingParticipants(g);
+    });
+  }
+
+  /**
+   * Checks for participants (including the group's creator) that are not yet loaded
+   * into `participantsMap` and fetches their user data from the user service.
+   * Once fetched, the missing participants are added to the local map.
+   *
+   * @param group - The group object containing the creator and participant UIDs.
+   */
+  private fetchMissingParticipants(group: Group) {
+    const allIds = new Set([group.creator!, ...(group.participants || [])]);
+    const missing = Array.from(allIds).filter(
+      (uid) => !this.participantsMap[uid]
+    );
+
+    if (missing.length) {
+      Promise.all(missing.map((uid) => this.userService.getUser(uid))).then(
+        (users) =>
+          users.forEach((u) => {
+            if (u) this.participantsMap[u.uid!] = u;
+          })
+      );
+    }
+  }
+
+  /**
+   * Whether the current user is the creator of the group.
+   */
   get isCreator(): boolean {
     return (
       !!this.currentGroup && this.currentUserUid === this.currentGroup.creator
     );
   }
 
+  /**
+   * Finalizes message loading and scrolls to bottom.
+   */
   private finishLoading() {
     this.messages$.pipe(take(1)).subscribe(() => {
       this.messagesLoading = false;
@@ -246,6 +309,9 @@ export class ChatComponent implements OnChanges, OnInit {
     });
   }
 
+  /**
+   * Emits event to open a thread for the given group message.
+   */
   openThread(msg: Message) {
     if (!this.groupId || !msg.id) return;
     this.threadSelected.emit({
@@ -254,13 +320,23 @@ export class ChatComponent implements OnChanges, OnInit {
     });
   }
 
+  /**
+   * Scrolls the chat view to the bottom.
+   */
   private scrollToBottom() {
     const el = this.chatContainer.nativeElement;
     el.scrollTop = el.scrollHeight;
   }
 
+  /**
+   * Handles sending a message to selected users, selected groups, or the currently active chat/group.
+   * It determines the message recipients, extracts mentions from the message,
+   * and dispatches the message to the appropriate chat(s).
+   * Shows a confirmation popup if the message was sent as a new message.
+   */
   async send() {
     if (!this.newMessage.trim() || !this.currentUserUid) return;
+
     const text = this.newMessage.trim();
     const mentions = this.msgUtils.extractMentionIds(
       text,
@@ -268,56 +344,114 @@ export class ChatComponent implements OnChanges, OnInit {
       this.allGroups
     );
     this.newMessage = '';
-    let didSend = false;
 
+    let didSend = await this.sendToSelectedRecipients(text, mentions);
+
+    if (!didSend) {
+      didSend = await this.sendToSelectedGroupRecipients(text, mentions);
+    }
+
+    if (!didSend) {
+      await this.sendToActiveChatOrGroup(text, mentions);
+    }
+
+    if (didSend && this.isNewMessage) {
+      this.showSentConfirmation();
+    }
+
+    setTimeout(() => this.scrollToBottom(), 50);
+  }
+
+  /**
+   * Sends a direct message to each user in the `selectedRecipients` list.
+   * Ensures a chat exists between the current user and each recipient before sending the message.
+   *
+   * @param text - The message content to send.
+   * @param mentions - List of user or group IDs mentioned in the message.
+   * @returns A promise that resolves to `true` if at least one message was sent; otherwise `false`.
+   */
+  private async sendToSelectedRecipients(
+    text: string,
+    mentions: string[]
+  ): Promise<boolean> {
+    let didSend = false;
     for (const u of this.selectedRecipients) {
       const cid = await this.chatService.ensureChat(
-        this.currentUserUid,
+        this.currentUserUid!,
         u.uid!
       );
       await this.chatService.sendMessage(
         cid,
-        this.currentUserUid,
+        this.currentUserUid!,
         text,
         mentions
       );
       didSend = true;
     }
-    if (!didSend) {
-      for (const g of this.selectedGroupRecipients) {
-        await this.chatService.sendGroupMessage(
-          g.id!,
-          this.currentUserUid!,
-          text,
-          mentions
-        );
-        didSend = true;
-      }
-    }
-    if (didSend && this.isNewMessage) {
-      this.showSentPopup = true;
-      setTimeout(() => (this.showSentPopup = false), 3000);
-    }
-    if (!didSend) {
-      if (this.groupId) {
-        await this.chatService.sendGroupMessage(
-          this.groupId,
-          this.currentUserUid!,
-          text,
-          mentions
-        );
-      } else if (this.chatId) {
-        await this.chatService.sendMessage(
-          this.chatId,
-          this.currentUserUid!,
-          text,
-          mentions
-        );
-      }
-    }
-    setTimeout(() => this.scrollToBottom(), 50);
+    return didSend;
   }
 
+  /**
+   * Sends a message to each group in the `selectedGroupRecipients` list.
+   *
+   * @param text - The message content to send.
+   * @param mentions - List of user or group IDs mentioned in the message.
+   * @returns A promise that resolves to `true` if at least one group message was sent; otherwise `false`.
+   */
+  private async sendToSelectedGroupRecipients(
+    text: string,
+    mentions: string[]
+  ): Promise<boolean> {
+    let didSend = false;
+    for (const g of this.selectedGroupRecipients) {
+      await this.chatService.sendGroupMessage(
+        g.id!,
+        this.currentUserUid!,
+        text,
+        mentions
+      );
+      didSend = true;
+    }
+    return didSend;
+  }
+
+  /**
+   * Sends a message to the currently active chat or group if no specific recipients were selected.
+   * Falls back to `groupId` or `chatId` based on context.
+   *
+   * @param text - The message content to send.
+   * @param mentions - List of user or group IDs mentioned in the message.
+   */
+  private async sendToActiveChatOrGroup(text: string, mentions: string[]) {
+    if (this.groupId) {
+      await this.chatService.sendGroupMessage(
+        this.groupId,
+        this.currentUserUid!,
+        text,
+        mentions
+      );
+    } else if (this.chatId) {
+      await this.chatService.sendMessage(
+        this.chatId,
+        this.currentUserUid!,
+        text,
+        mentions
+      );
+    }
+  }
+
+  /**
+   * Displays a temporary confirmation popup indicating that a new message was successfully sent.
+   * Automatically hides the popup after 3 seconds.
+   */
+  private showSentConfirmation() {
+    this.showSentPopup = true;
+    setTimeout(() => (this.showSentPopup = false), 3000);
+  }
+
+  /**
+   * Handles click on a message bubble (e.g., mentions).
+   */
   async onBubbleClick(evt: MouseEvent) {
     const t = evt.target as HTMLElement;
     if (!t.classList.contains('mention')) return;
@@ -344,6 +478,9 @@ export class ChatComponent implements OnChanges, OnInit {
     }
   }
 
+  /**
+   * Starts a chat with the selected profile user.
+   */
   startChatWithPartner() {
     if (!this.profileUser) return;
     const userCopy = { ...this.profileUser };
@@ -355,15 +492,24 @@ export class ChatComponent implements OnChanges, OnInit {
     }, 10);
   }
 
+  /**
+   * Opens the profile modal for a given user.
+   */
   onMemberClicked(user: User) {
     this.profileUser = user;
     this.showProfileModal = true;
   }
 
+  /**
+   * Closes the profile modal.
+   */
   closeProfileModal() {
     this.showProfileModal = false;
   }
 
+  /**
+   * Toggles a quick emoji reaction on a message.
+   */
   async onQuickReaction(msg: Message, emoji: string) {
     if (!msg.id || !this.currentUserUid) return;
     const isGroup = !!this.groupId;
@@ -390,16 +536,25 @@ export class ChatComponent implements OnChanges, OnInit {
     }
   }
 
+  /**
+   * Starts editing the selected message.
+   */
   startEdit(msg: Message) {
     this.editingMsgId = msg.id!;
     this.editText = msg.text;
   }
 
+  /**
+   * Cancels message editing.
+   */
   cancelEdit() {
     this.editingMsgId = null;
     this.editText = '';
   }
 
+  /**
+   * Saves edited message content.
+   */
   saveEdit(msg: Message) {
     if (!this.editingMsgId || !this.chatId) return;
 
@@ -413,11 +568,17 @@ export class ChatComponent implements OnChanges, OnInit {
       .catch((err) => console.error('Failed to update message', err));
   }
 
+  /**
+   * Toggles visibility of the message options menu.
+   */
   toggleOptions(msgId: string, event: MouseEvent) {
     event.stopPropagation();
     this.optionsOpen[msgId] = !this.optionsOpen[msgId];
   }
 
+  /**
+   * Opens the edit interface from the options menu.
+   */
   openEditFromOptions(msg: Message, event: MouseEvent) {
     event.stopPropagation();
     this.optionsOpen[msg.id!] = false;

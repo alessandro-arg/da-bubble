@@ -1,3 +1,8 @@
+/**
+ * AddMembersModalComponent provides a modal interface for adding users to a group.
+ * It includes search functionality, real-time presence status display, and mobile responsiveness.
+ */
+
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -41,6 +46,12 @@ export class AddMembersModalComponent implements OnInit {
     private mobileService: MobileService
   ) {}
 
+  /**
+   * Initializes the component:
+   * - Subscribes to mobile screen size
+   * - Loads all users
+   * - Subscribes to their presence status
+   */
   ngOnInit() {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
@@ -60,10 +71,19 @@ export class AddMembersModalComponent implements OnInit {
     });
   }
 
+  /**
+   * Emits the close event to signal the modal should be closed.
+   */
   onClose() {
     this.close.emit();
   }
 
+  /**
+   * Filters users based on the current search term, excluding:
+   * - Already in the group
+   * - Already selected for adding
+   * - Not matching the term in name or email
+   */
   filterUsers() {
     const t = this.searchTerm.trim().toLowerCase();
     if (!t) {
@@ -81,6 +101,11 @@ export class AddMembersModalComponent implements OnInit {
       .slice(0, 5);
   }
 
+  /**
+   * Adds a user to the selection list when clicked.
+   *
+   * @param u - The user to add
+   */
   selectUser(u: User) {
     if (!this.selectedUsers.find((x) => x.uid === u.uid)) {
       this.selectedUsers.push(u);
@@ -89,10 +114,19 @@ export class AddMembersModalComponent implements OnInit {
     this.filteredUsers = [];
   }
 
+  /**
+   * Removes a user from the selected list.
+   *
+   * @param u - The user to remove
+   */
   removeSelected(u: User) {
     this.selectedUsers = this.selectedUsers.filter((x) => x.uid !== u.uid);
   }
 
+  /**
+   * Confirms the selection and adds each selected user to the group.
+   * Emits the `added` event and closes the modal.
+   */
   async confirmAdd() {
     if (!this.groupId) return;
     for (const u of this.selectedUsers) {

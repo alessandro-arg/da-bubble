@@ -1,5 +1,4 @@
 <div class="flex flex-col gap-5 w-full cursor-default">
-  <!-- header -->
   <div class="flex flex-col g-1">
     <div
       class="flex justify-between items-center"
@@ -26,14 +25,13 @@
         </svg>
       </button>
     </div>
-    <!-- group name tag -->
+
     <div *ngIf="!isMobile" class="flex items-center gap-4">
       <img src="../../../assets/img/icons/tag_hover.png" class="w-5 h-5" />
       <span class="text-lg text-[#797EF3]">{{ groupName }}</span>
     </div>
   </div>
 
-  <!-- input + chips -->
   <div class="relative">
     <input
       type="text"
@@ -132,7 +130,6 @@
     </div>
   </div>
 
-  <!-- confirm -->
   <div class="flex justify-end">
     <button
       (click)="confirmAdd()"
