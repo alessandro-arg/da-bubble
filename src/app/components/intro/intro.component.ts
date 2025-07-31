@@ -15,7 +15,7 @@ export class IntroComponent implements AfterViewInit {
   constructor(
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) { }
 
   ngAfterViewInit(): void {
     this.startIntroSequence();
@@ -29,11 +29,18 @@ export class IntroComponent implements AfterViewInit {
           // Start sliding animation after text appears
           setTimeout(() => {
             const introContent = document.querySelector('.intro-content');
-            if (introContent) {
+            const backgroundColorIntro = document.querySelector('.background-color-intro');
+            const backgroundColorIntroLogo = document.querySelector('.background-color-intro-logo');
+            if (introContent && backgroundColorIntroLogo) {
               introContent.classList.add('slide-animation');
+              backgroundColorIntroLogo.classList.remove('background-color-intro-logo');
+              setTimeout(() => {
+                if (backgroundColorIntro) {
+                  backgroundColorIntro.classList.remove('background-color-intro');
+                }
+              }, 600);
             }
-            
-            // Navigate after sliding completes
+
             setTimeout(() => {
               this.navigateToLogin();
             }, 1000);
