@@ -1,3 +1,12 @@
+/**
+ * ChatMessageEditComponent allows the user to edit an existing message.
+ * Includes support for:
+ * - Emoji picker integration
+ * - Autosizing textarea
+ * - Mobile responsiveness
+ * - Event-based communication with parent
+ */
+
 import {
   Component,
   Input,
@@ -36,12 +45,18 @@ export class ChatMessageEditComponent implements AfterViewInit {
 
   constructor(private mobileService: MobileService) {}
 
+  /**
+   * Initializes mobile detection via MobileService.
+   */
   ngOnInit(): void {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
     });
   }
 
+  /**
+   * Imports the emoji picker and auto-grows the input on component init.
+   */
   async ngAfterViewInit() {
     if (typeof window !== 'undefined') {
       await import('emoji-picker-element');
@@ -50,10 +65,18 @@ export class ChatMessageEditComponent implements AfterViewInit {
     this.editInput.nativeElement.focus();
   }
 
+  /**
+   * Toggles the visibility of the emoji picker.
+   */
   togglePicker() {
     this.showPicker = !this.showPicker;
   }
 
+  /**
+   * Handles emoji selection and appends the emoji to the edit text.
+   *
+   * @param event - Emoji picker event with selected emoji detail
+   */
   onEmoji(event: any) {
     this.editText += event.detail.unicode;
     this.editTextChange.emit(this.editText);
@@ -61,6 +84,10 @@ export class ChatMessageEditComponent implements AfterViewInit {
     this.editInput.nativeElement.focus();
   }
 
+  /**
+   * Automatically grows the textarea height based on content.
+   * Emits the current edit text after resizing.
+   */
   autoGrow() {
     const ta = this.editInput.nativeElement;
     ta.style.height = 'auto';

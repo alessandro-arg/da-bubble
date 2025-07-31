@@ -1,3 +1,13 @@
+/**
+ * ChatInputComponent provides a rich message input field for composing and sending messages.
+ * Features include:
+ * - Emoji picker integration
+ * - Inline @mention and #group autocompletion
+ * - Dynamic placeholder based on context
+ * - Keyboard navigation for suggestion lists
+ * - Responsive layout for mobile/desktop
+ */
+
 import {
   Component,
   Input,
@@ -70,26 +80,41 @@ export class ChatInputComponent implements AfterViewInit {
 
   constructor(private mobileService: MobileService) {}
 
+  /**
+   * Initializes mobile responsiveness based on viewport size.
+   */
   ngOnInit(): void {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
     });
   }
 
+  /**
+   * Dynamically imports the emoji picker on init.
+   */
   async ngAfterViewInit() {
     if (typeof window !== 'undefined') {
       await import('emoji-picker-element');
     }
   }
 
+  /**
+   * Emits updated message content on input change.
+   */
   onTextChange() {
     this.newMessageChange.emit(this.newMessage);
   }
 
+  /**
+   * Emits when the user presses the send button.
+   */
   onSendClick() {
     this.sendPressed.emit();
   }
 
+  /**
+   * Detects if the user is typing a mention (`@`) or group (`#`) and shows autocomplete.
+   */
   onInput() {
     const ta = this.msgInput.nativeElement;
     const val = this.newMessage;
@@ -97,7 +122,6 @@ export class ChatInputComponent implements AfterViewInit {
     const hashIdx = val.lastIndexOf('#', pos - 1);
     const atIdx = val.lastIndexOf('@', pos - 1);
 
-    // — GROUP MENTION (#) —
     if (hashIdx > atIdx && (hashIdx === 0 || /\s/.test(val[hashIdx - 1]))) {
       const q = val.slice(hashIdx + 1, pos).toLowerCase();
       let pool = this.allGroups;
@@ -120,7 +144,6 @@ export class ChatInputComponent implements AfterViewInit {
       return;
     }
 
-    // — USER MENTION (@) —
     if (atIdx > hashIdx && (atIdx === 0 || /\s/.test(val[atIdx - 1]))) {
       const q = val.slice(atIdx + 1, pos).toLowerCase();
       const pool = this.groupId
@@ -137,6 +160,9 @@ export class ChatInputComponent implements AfterViewInit {
     this.showMentionList = this.showGroupList = false;
   }
 
+  /**
+   * Handles keyboard interactions within the textarea (arrows, tab, enter).
+   */
   onTextareaKeydown(e: KeyboardEvent) {
     if (this.showGroupList) {
       if (e.key === 'ArrowDown') {
@@ -188,6 +214,9 @@ export class ChatInputComponent implements AfterViewInit {
     }
   }
 
+  /**
+   * Scrolls the currently active mention item into view.
+   */
   private scrollMentionIntoView() {
     const items = this.mentionItems.toArray();
     items[this.activeMentionIndex]?.nativeElement.scrollIntoView({
@@ -195,6 +224,9 @@ export class ChatInputComponent implements AfterViewInit {
     });
   }
 
+  /**
+   * Inserts the selected user mention into the message.
+   */
   selectMentionUser(u: User) {
     const ta = this.msgInput.nativeElement;
     const before = this.newMessage.slice(0, this.mentionStartIndex);
@@ -209,6 +241,9 @@ export class ChatInputComponent implements AfterViewInit {
     }, 0);
   }
 
+  /**
+   * Inserts the selected group mention into the message.
+   */
   selectGroup(g: Group) {
     const ta = this.msgInput.nativeElement;
     const before = this.newMessage.slice(0, this.groupMentionStartIndex);
@@ -223,6 +258,9 @@ export class ChatInputComponent implements AfterViewInit {
     }, 0);
   }
 
+  /**
+   * Manually triggers user mention at the cursor position.
+   */
   triggerMention() {
     const ta = this.msgInput.nativeElement;
     ta.focus();
@@ -236,9 +274,16 @@ export class ChatInputComponent implements AfterViewInit {
     }, 0);
   }
 
+  /**
+   * Toggles the emoji picker visibility.
+   */
   toggleEmojiPicker() {
     this.showEmojiPicker = !this.showEmojiPicker;
   }
+
+  /**
+   * Inserts selected emoji into the message.
+   */
   addEmoji(evt: any) {
     this.newMessage += evt.detail.unicode;
     this.onTextChange();
@@ -246,6 +291,9 @@ export class ChatInputComponent implements AfterViewInit {
     this.msgInput.nativeElement.focus();
   }
 
+  /**
+   * Closes dropdowns and pickers when clicking outside.
+   */
   @HostListener('document:click', ['$event'])
   onClickOutside(evt: MouseEvent) {
     const tgt = evt.target as HTMLElement;
@@ -263,6 +311,9 @@ export class ChatInputComponent implements AfterViewInit {
     }
   }
 
+  /**
+   * Dynamic placeholder text based on chat context.
+   */
   get placeholderText(): string {
     if (this.isNewMessage) {
       return 'Starte eine neue Nachricht';

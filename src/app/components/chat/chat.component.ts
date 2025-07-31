@@ -23,7 +23,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DomSanitizer } from '@angular/platform-browser';
 import { shareReplay, take } from 'rxjs/operators';
 import { ChatService } from '../../services/chat.service';
 import { GroupService } from '../../services/group.service';
