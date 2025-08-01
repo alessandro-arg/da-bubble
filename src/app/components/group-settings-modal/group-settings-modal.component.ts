@@ -1,3 +1,11 @@
+/**
+ * Modal component for viewing and editing a group's settings, including:
+ * - group name and description
+ * - participant list
+ * - adding/removing members
+ * - leaving the group
+ */
+
 import {
   Component,
   Input,
@@ -60,6 +68,9 @@ export class GroupSettingsModalComponent {
     private mobileService: MobileService
   ) {}
 
+  /**
+   * Initializes mobile layout check and form fields.
+   */
   ngOnInit() {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
@@ -69,24 +80,29 @@ export class GroupSettingsModalComponent {
     this.newGroupDescription = this.group.description || '';
   }
 
+  /** Emits close event and resets editing states. */
   onClose() {
     this.editingGroupName = this.editingGroupDescription = false;
     this.close.emit();
   }
 
+  /** Emits a user clicked event. */
   onMemberClicked(u: User) {
     this.memberClicked.emit(u);
   }
 
+  /** Closes the members modal. */
   closeMembers() {
     this.showMembersModal = false;
   }
 
+  /** Opens add-members modal from within members modal. */
   onAddMembersFromMembers() {
     this.closeMembers();
     this.toggleAddMembers();
   }
 
+  /** Toggles the add-members modal and fetches users if needed. */
   toggleAddMembers() {
     this.showAddMembersModal = !this.showAddMembersModal;
 
@@ -97,6 +113,7 @@ export class GroupSettingsModalComponent {
     }
   }
 
+  /** Closes the add-members modal and clears related state. */
   closeAddMembers() {
     this.showAddMembersModal = false;
     this.searchTerm = '';
@@ -104,6 +121,7 @@ export class GroupSettingsModalComponent {
     this.selectedUsers = [];
   }
 
+  /** Filters users based on search input. */
   filterUsers() {
     const t = this.searchTerm.trim().toLowerCase();
     if (!t) {
@@ -121,6 +139,7 @@ export class GroupSettingsModalComponent {
       .slice(0, 5);
   }
 
+  /** Adds a user to the selected list. */
   selectUser(u: User) {
     if (!this.selectedUsers.find((s) => s.uid === u.uid)) {
       this.selectedUsers.push(u);
@@ -129,10 +148,12 @@ export class GroupSettingsModalComponent {
     this.filteredUsers = [];
   }
 
+  /** Removes a user from the selected list. */
   removeSelected(u: User) {
     this.selectedUsers = this.selectedUsers.filter((s) => s.uid !== u.uid);
   }
 
+  /** Confirms adding selected users to the group. */
   async confirmAdd() {
     if (!this.group.id) return;
     for (const u of this.selectedUsers) {
@@ -142,6 +163,7 @@ export class GroupSettingsModalComponent {
     this.closeAddMembers();
   }
 
+  /** Starts editing the group name. */
   startEditGroupName() {
     this.editingGroupName = true;
     this.newGroupName = this.group.name;
@@ -150,11 +172,13 @@ export class GroupSettingsModalComponent {
     }, 0);
   }
 
+  /** Cancels editing the group name. */
   cancelEditGroupName() {
     this.editingGroupName = false;
     this.newGroupName = this.group.name;
   }
 
+  /** Saves the updated group name to Firestore. */
   async saveGroupName() {
     await this.groupService.updateGroup(this.group.id, {
       name: this.newGroupName,
@@ -162,6 +186,7 @@ export class GroupSettingsModalComponent {
     this.editingGroupName = false;
   }
 
+  /** Starts editing the group description. */
   startEditGroupDescription() {
     this.editingGroupDescription = true;
     this.newGroupDescription = this.group.description || '';
@@ -170,11 +195,13 @@ export class GroupSettingsModalComponent {
     }, 0);
   }
 
+  /** Cancels editing the group description. */
   cancelEditGroupDescription() {
     this.editingGroupDescription = false;
     this.newGroupDescription = this.group.description || '';
   }
 
+  /** Saves the updated group description to Firestore. */
   async saveGroupDescription() {
     await this.groupService.updateGroup(this.group.id, {
       description: this.newGroupDescription,
@@ -182,6 +209,7 @@ export class GroupSettingsModalComponent {
     this.editingGroupDescription = false;
   }
 
+  /** Removes the current user from the group and emits a close signal. */
   async leaveChannel() {
     await this.groupService.removeUserFromGroup(
       this.group.id,
