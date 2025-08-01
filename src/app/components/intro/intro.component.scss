@@ -49,12 +49,20 @@
 .intro-overlay {
   position: relative;
   overflow: hidden;
-  //background: linear-gradient(to bottom, #747af4 0%, #353ee6 100%);
   transition: background-color 1s ease-out;
   
   &:not(.intro-background-color) {
     background-color: transparent;
   }
+}
+
+.background-color-intro { 
+  background: linear-gradient(to bottom, #747af4 0%, #353ee6 100%);
+  //   bg-gradient-to-b from-[#747af4] to-[#353ee6]
+}
+
+.background-color-intro-logo {
+  background: linear-gradient(to bottom, #434be9 0%, #3b44e8 100%);
 }
 
 /* Content styles */
