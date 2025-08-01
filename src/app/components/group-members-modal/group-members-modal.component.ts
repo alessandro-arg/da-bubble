@@ -1,3 +1,9 @@
+/**
+ * A modal component that displays the list of members in a group chat.
+ * Shows online/offline status, allows opening member profiles, and emits events
+ * for closing the modal or adding new members.
+ */
+
 import {
   Component,
   Input,
@@ -47,6 +53,9 @@ export class GroupMembersModalComponent implements OnInit, OnDestroy {
     private mobileService: MobileService
   ) {}
 
+  /**
+   * Initializes mobile layout detection and subscribes to participant presence statuses.
+   */
   ngOnInit() {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
@@ -62,22 +71,38 @@ export class GroupMembersModalComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Cleans up all presence subscriptions on component destruction.
+   */
   ngOnDestroy() {
     this.subs.forEach((s) => s.unsubscribe());
   }
 
+  /**
+   * Emits the close event to close the modal.
+   */
   onClose() {
     this.close.emit();
   }
 
+  /**
+   * Emits the addMembers event to trigger adding users to the group.
+   */
   onAddMembers() {
     this.addMembers.emit();
   }
 
+  /**
+   * Emits the memberClicked event when a group member is clicked.
+   * @param user The clicked user
+   */
   openProfileModal(user: any) {
     this.memberClicked.emit(user);
   }
 
+  /**
+   * Closes the profile modal.
+   */
   closeProfileModal() {
     this.showProfileModal = false;
     this.chatPartner = null;

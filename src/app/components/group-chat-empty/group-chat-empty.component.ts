@@ -1,3 +1,8 @@
+/**
+ * Displays an empty state for a group chat when no messages have been sent yet.
+ * It optionally shows a button to open group settings (if the current user is the creator).
+ */
+
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Group } from '../../models/group.model';
@@ -20,6 +25,9 @@ export class GroupChatEmptyComponent {
 
   constructor(private mobileService: MobileService) {}
 
+  /**
+   * Subscribes to mobile screen size changes to update the layout conditionally.
+   */
   ngOnInit(): void {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;

@@ -1,3 +1,10 @@
+/**
+ * Displays the header section for a group chat.
+ * Provides UI for viewing group members, managing group settings,
+ * and adding new members (for the group creator).
+ * Also handles responsive behavior for mobile devices.
+ */
+
 import {
   Component,
   Input,
@@ -56,6 +63,9 @@ export class GroupHeaderComponent {
     private mobileService: MobileService
   ) {}
 
+  /**
+   * Initializes screen responsiveness by subscribing to MobileService.
+   */
   ngOnInit(): void {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
@@ -64,40 +74,59 @@ export class GroupHeaderComponent {
     this.screenWidth = window.innerWidth;
   }
 
+  /**
+   * Updates screen width on browser resize.
+   * @param event - Resize event
+   */
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.screenWidth = event.target.innerWidth;
   }
 
+  /** Toggles the group settings modal. */
   toggleGroupSettings() {
     this.showGroupSettingsModal = !this.showGroupSettingsModal;
   }
 
+  /** Closes the group settings modal. */
   closeGroupSettings() {
     this.showGroupSettingsModal = false;
   }
 
+  /** Emits the closedChannel event when settings indicate the chat was closed. */
   onGroupSettingsChannelClosed() {
     this.closedChannel.emit();
   }
 
+  /** Toggles the group members modal. */
   toggleMembers() {
     this.showMembersModal = !this.showMembersModal;
   }
 
+  /** Closes the members modal. */
   closeMembers() {
     this.showMembersModal = false;
   }
 
+  /**
+   * Emits when a member is clicked (e.g. to open their profile).
+   * @param u - The user that was clicked
+   */
   onMemberClicked(u: User) {
     this.memberClicked.emit(u);
   }
 
+  /**
+   * Switches from the members modal to the add members modal.
+   */
   onAddMembersFromMembers() {
     this.closeMembers();
     this.toggleAddMembers();
   }
 
+  /**
+   * Toggles the add members modal and loads users if not already loaded.
+   */
   toggleAddMembers() {
     this.showAddMembersModal = !this.showAddMembersModal;
 
@@ -108,6 +137,7 @@ export class GroupHeaderComponent {
     }
   }
 
+  /** Closes the add members modal and resets search state. */
   closeAddMembers() {
     this.showAddMembersModal = false;
     this.searchTerm = '';
@@ -115,6 +145,9 @@ export class GroupHeaderComponent {
     this.selectedUsers = [];
   }
 
+  /**
+   * Filters available users based on search term, excluding already added and selected users.
+   */
   filterUsers() {
     const t = this.searchTerm.trim().toLowerCase();
     if (!t) {
@@ -132,6 +165,10 @@ export class GroupHeaderComponent {
       .slice(0, 5);
   }
 
+  /**
+   * Selects a user to be added to the group.
+   * @param u - The user to add
+   */
   selectUser(u: User) {
     if (!this.selectedUsers.find((s) => s.uid === u.uid)) {
       this.selectedUsers.push(u);
@@ -140,10 +177,18 @@ export class GroupHeaderComponent {
     this.filteredUsers = [];
   }
 
+  /**
+   * Removes a user from the selection list.
+   * @param u - The user to remove
+   */
   removeSelected(u: User) {
     this.selectedUsers = this.selectedUsers.filter((s) => s.uid !== u.uid);
   }
 
+  /**
+   * Adds all selected users to the group via the GroupService.
+   * Updates the local participants map as well.
+   */
   async confirmAdd() {
     if (!this.group.id) return;
     for (const u of this.selectedUsers) {
