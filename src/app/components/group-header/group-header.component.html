@@ -45,7 +45,7 @@
     <!-- group-settings modal -->
     <div
       *ngIf="showGroupSettingsModal && !isMobile"
-      class="absolute p-10 left-0 mt-2 w-max bg-white rounded-b-[30px] rounded-tr-[30px] shadow-[0px_6px_10px_0px_#00000033] z-50"
+      class="absolute p-10 left-0 mt-2 w-max bg-white rounded-b-[30px] rounded-tr-[30px] shadow-[0px_6px_10px_0px_#00000033] z-50 short:p-5 short:bottom-[100%]"
       (click)="$event.stopPropagation()"
     >
       <app-group-settings-modal
