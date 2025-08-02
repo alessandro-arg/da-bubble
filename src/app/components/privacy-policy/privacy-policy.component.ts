@@ -15,6 +15,11 @@ export class PrivacyPolicyComponent {
 
   constructor() { }
 
+  /**
+   * Lifecycle hook that is called after Angular has initialized the component.
+   * This method resets the scroll position of the document to the top of the page.
+   * It sets both `document.documentElement.scrollTop` and `document.body.scrollTop` to 0.
+   */
   ngOnInit(): void {
     screenTop = 0;
     document.documentElement.scrollTop = 0;
