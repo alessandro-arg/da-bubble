@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-
+import { ViewportScroller } from '@angular/common';
 
 @Component({
   selector: 'app-privacy-policy',
@@ -10,19 +10,15 @@ import { RouterLink } from '@angular/router';
   templateUrl: './privacy-policy.component.html',
   styleUrl: './privacy-policy.component.scss'
 })
-export class PrivacyPolicyComponent {
+export class PrivacyPolicyComponent implements OnInit {
 
-
-  constructor() { }
+  constructor(private viewportScroller: ViewportScroller) { }
 
   /**
    * Lifecycle hook that is called after Angular has initialized the component.
-   * This method resets the scroll position of the document to the top of the page.
-   * It sets both `document.documentElement.scrollTop` and `document.body.scrollTop` to 0.
+   * This method scrolls the viewport to the top-left position ([0, 0]) when the component is initialized.
    */
   ngOnInit(): void {
-    screenTop = 0;
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
+    this.viewportScroller.scrollToPosition([0, 0]);
   }
 }
