@@ -5,7 +5,7 @@
     <div
       class="flex items-center gap-4 rounded-full pr-5 cursor-pointer hover:bg-[#ECEEFE]"
     >
-      <img src="../../../assets/img/workspace-logo.png" alt="Image" />
+      <img src="assets/img/workspace-logo.png" alt="Image" />
       <h2 class="font-bold text-xl w-full">Devspace</h2>
     </div>
     <button
@@ -16,8 +16,8 @@
       <img
         [src]="
           editSquareHovered
-            ? '../../../assets/img/icons/edit_square_purple.png'
-            : '../../../assets/img/icons/edit_square.png'
+            ? 'assets/img/icons/edit_square_purple.png'
+            : 'assets/img/icons/edit_square.png'
         "
         alt="new chat"
         class="cursor-pointer"
@@ -67,8 +67,8 @@
         <img
           [src]="
             addChannelHover
-              ? '../../../assets/img/icons/add_purple.png'
-              : '../../../assets/img/icons/add.png'
+              ? 'assets/img/icons/add_purple.png'
+              : 'assets/img/icons/add.png'
           "
           alt="Add"
         />
@@ -103,10 +103,10 @@
           <img
             [src]="
               selectedGroupId === g.id
-                ? '../../../assets/img/icons/tag_purple.png'
+                ? 'assets/img/icons/tag_purple.png'
                 : hoveredGroupId === g.id
-                ? '../../../assets/img/icons/tag_hover.png'
-                : '../../../assets/img/icons/tag.png'
+                ? 'assets/img/icons/tag_hover.png'
+                : 'assets/img/icons/tag.png'
             "
             alt="group icon"
           />
@@ -129,8 +129,8 @@
           <img
             [src]="
               addChannelHover2
-                ? '../../../assets/img/icons/add_circle_purple.png'
-                : '../../../assets/img/icons/add_circle.png'
+                ? 'assets/img/icons/add_circle_purple.png'
+                : 'assets/img/icons/add_circle.png'
             "
             alt="add channel"
           />
@@ -181,7 +181,7 @@
           >
             <div class="relative w-12 h-12">
               <img
-                [src]="user.avatar || '../../../assets/img/profile.svg'"
+                [src]="user.avatar || 'assets/img/profile.svg'"
                 alt="User"
                 class="w-full h-full rounded-full object-cover"
               />
@@ -212,7 +212,7 @@
     (click)="onEditClick(); $event.stopPropagation()"
   >
     <img
-      src="../../../assets/img/icons/mobile_edit_square.png"
+      src="assets/img/icons/mobile_edit_square.png"
       alt="Edit"
       class="w-16 h-16"
     />

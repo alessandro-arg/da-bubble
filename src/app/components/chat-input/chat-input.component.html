@@ -34,7 +34,7 @@
       >
         <div class="relative w-12 h-12">
           <img
-            [src]="u.avatar || '/assets/img/profile.svg'"
+            [src]="u.avatar || 'assets/img/profile.svg'"
             alt="User"
             class="w-full h-full rounded-full object-cover"
           />
@@ -102,8 +102,8 @@
             <img
               [src]="
                 isEmojiHovered
-                  ? '/assets/img/icons/sentiment_satisfied_purple.png'
-                  : '/assets/img/icons/sentiment_satisfied.png'
+                  ? 'assets/img/icons/sentiment_satisfied_purple.png'
+                  : 'assets/img/icons/sentiment_satisfied.png'
               "
               class="w-6 h-6"
               alt="emoji"
@@ -128,8 +128,8 @@
           <img
             [src]="
               isAttachHovered
-                ? '/assets/img/icons/alternate_email_purple.png'
-                : '/assets/img/icons/alternate_email.png'
+                ? 'assets/img/icons/alternate_email_purple.png'
+                : 'assets/img/icons/alternate_email.png'
             "
             class="w-6 h-6"
             alt="mention"
@@ -142,7 +142,7 @@
         [disabled]="!newMessage.trim()"
         class="p-2 disabled:opacity-0 hover:opacity-70"
       >
-        <img src="/assets/img/icons/send.png" class="w-6 h-6" alt="send" />
+        <img src="assets/img/icons/send.png" class="w-6 h-6" alt="send" />
       </button>
     </div>
   </div>
