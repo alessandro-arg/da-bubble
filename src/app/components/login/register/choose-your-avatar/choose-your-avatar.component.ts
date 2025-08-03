@@ -16,95 +16,169 @@ import { firstValueFrom } from 'rxjs';
   styleUrl: './choose-your-avatar.component.scss',
 })
 export class ChooseYourAvatarComponent implements OnInit {
-  avatars = [
-    'assets/img/charaters.svg',
-    'assets/img/charaters(1).svg',
-    'assets/img/charaters(2).svg',
-    'assets/img/charaters(3).svg',
-    'assets/img/charaters(4).svg',
-    'assets/img/charaters(5).svg',
-  ];
-
+  avatars = this.getAvatarPaths();
   selectedAvatar: string = '';
   currentUser: User | null = null;
   loading = false;
   successMessage: string | null = null;
   errorMessage: string | null = null;
+  avatarSelectedConfirmed = false;
 
   constructor(
     private authService: AuthService,
     private userService: UserService,
     private registrationService: RegistrationService,
     private router: Router
-  ) {}
+  ) { }
 
-  async ngOnInit() {
+  ngOnInit() {
+    this.subscribeToCurrentUser();
+  }
+
+  private getAvatarPaths(): string[] {
+    return [
+      'assets/img/charaters.svg',
+      'assets/img/charaters(1).svg',
+      'assets/img/charaters(2).svg',
+      'assets/img/charaters(3).svg',
+      'assets/img/charaters(4).svg',
+      'assets/img/charaters(5).svg',
+    ];
+  }
+
+  private subscribeToCurrentUser(): void {
     this.authService.currentUser$.subscribe(async (firebaseUser) => {
       if (firebaseUser) {
-        this.currentUser = await this.userService.getUser(firebaseUser.uid);
-        if (this.currentUser?.isGuest) {
-          this.selectedAvatar = this.currentUser.avatar;
-          this.confirmAvatar();
-        }
+        await this.handleFirebaseUser(firebaseUser);
       }
     });
   }
 
-  selectAvatar(avatar: string) {
-    this.selectedAvatar = avatar;
+  private async handleFirebaseUser(firebaseUser: any): Promise<void> {
+    this.currentUser = await this.getUser(firebaseUser.uid);
+    this.handleGuestUser();
   }
 
-  async confirmAvatar() {
-    const data = this.registrationService.getRegistrationData();
+  private async getUser(uid: string): Promise<User | null> {
+    return await this.userService.getUser(uid);
+  }
 
-    if (!data || !this.selectedAvatar) {
-      this.errorMessage = 'Bitte vervollständigen Sie Ihre Registrierung.';
+  private handleGuestUser(): void {
+    if (this.currentUser?.isGuest) {
+      this.setGuestAvatar();
+      this.confirmAvatar();
+    }
+  }
+
+  private setGuestAvatar(): void {
+    if (this.currentUser) {
+      this.selectedAvatar = this.currentUser.avatar;
+    }
+  }
+
+  selectAvatar(avatar: string): void {
+    this.selectedAvatar = avatar;
+    this.avatarSelectedConfirmed = true;
+  }
+
+  async confirmAvatar(): Promise<void> {
+    if (!this.isValidInput()) {
+      this.setErrorMessage('Bitte vervollständigen Sie Ihre Registrierung.');
       return;
     }
 
-    this.loading = true;
+    this.setLoadingState(true);
+    await this.tryRegisterUser();
+  }
+
+  private isValidInput(): boolean {
+    const data = this.registrationService.getRegistrationData();
+    return !!data && !!this.selectedAvatar;
+  }
+
+  private setLoadingState(isLoading: boolean): void {
+    this.loading = isLoading;
+    this.clearMessages();
+  }
+
+  private clearMessages(): void {
     this.errorMessage = null;
     this.successMessage = null;
+  }
 
+  private async tryRegisterUser(): Promise<void> {
     try {
-      const { email, password, name } = data;
-
-      const userCredential = await firstValueFrom(
-        this.authService.register(email, password)
-      );
-
-      await this.userService.createUser({
-        uid: userCredential.user?.uid,
-        name: name,
-        email: email,
-        avatar: this.selectedAvatar,
-      });
-
-      this.successMessage = 'Konto erfolgreich erstellt!';
-      this.registrationService.clear();
-
-      setTimeout(() => {
-        this.router.navigate(['/login']);
-      }, 1800);
+      await this.registerNewUser();
+      this.handleRegistrationSuccess();
     } catch (error: any) {
-      if (error.code === 'auth/email-already-in-use') {
-        this.errorMessage =
-          'Diese E-Mail-Adresse ist bereits registriert. Bitte verwenden Sie eine andere E-Mail oder melden Sie sich an.';
-      } else if (error.code === 'auth/weak-password') {
-        this.errorMessage =
-          'Das Passwort ist zu schwach. Bitte wählen Sie ein stärkeres Passwort.';
-      } else if (error.code === 'auth/invalid-email') {
-        this.errorMessage =
-          'Ungültige E-Mail-Adresse. Bitte überprüfen Sie Ihre Eingabe.';
-      } else if (error.code === 'auth/operation-not-allowed') {
-        this.errorMessage =
-          'Registrierung ist derzeit nicht möglich. Bitte versuchen Sie es später erneut.';
-      } else {
-        this.errorMessage =
-          'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
-      }
+      this.handleRegistrationError(error);
     } finally {
-      this.loading = false;
+      this.setLoadingState(false);
     }
+  }
+
+  private async registerNewUser(): Promise<void> {
+    const data = this.getRegistrationData();
+    const { email, password, name } = data;
+
+    const userCredential = await this.registerWithAuthService(email, password);
+    await this.createUserInDatabase(userCredential, name);
+  }
+
+  private getRegistrationData(): any {
+    return this.registrationService.getRegistrationData();
+  }
+
+  private async registerWithAuthService(email: string, password: string): Promise<any> {
+    return await firstValueFrom(this.authService.register(email, password));
+  }
+
+  private async createUserInDatabase(userCredential: any, name: string): Promise<void> {
+    await this.userService.createUser({
+      uid: userCredential.user?.uid,
+      name: name,
+      email: userCredential.user?.email,
+      avatar: this.selectedAvatar,
+    });
+  }
+
+  private handleRegistrationSuccess(): void {
+    this.setSuccessMessage('Konto erfolgreich erstellt!');
+    this.clearRegistrationData();
+    this.navigateToLoginAfterDelay();
+  }
+
+  private setSuccessMessage(message: string): void {
+    this.successMessage = message;
+  }
+
+  private setErrorMessage(message: string): void {
+    this.errorMessage = message;
+  }
+
+  private clearRegistrationData(): void {
+    this.registrationService.clear();
+  }
+
+  private navigateToLoginAfterDelay(): void {
+    setTimeout(() => {
+      this.router.navigate(['/login']);
+    }, 1800);
+  }
+
+  private handleRegistrationError(error: any): void {
+    const errorMessage = this.getErrorMessageForCode(error.code);
+    this.setErrorMessage(errorMessage);
+  }
+
+  private getErrorMessageForCode(errorCode: string): string {
+    const errorMessages: Record<string, string> = {
+      'auth/email-already-in-use': 'Diese E-Mail-Adresse ist bereits registriert. Bitte verwenden Sie eine andere E-Mail oder melden Sie sich an.',
+      'auth/weak-password': 'Das Passwort ist zu schwach. Bitte wählen Sie ein stärkeres Passwort.',
+      'auth/invalid-email': 'Ungültige E-Mail-Adresse. Bitte überprüfen Sie Ihre Eingabe.',
+      'auth/operation-not-allowed': 'Registrierung ist derzeit nicht möglich. Bitte versuchen Sie es später erneut.'
+    };
+
+    return errorMessages[errorCode] || 'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
   }
 }

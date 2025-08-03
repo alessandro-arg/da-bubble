@@ -56,7 +56,8 @@
         />
       </div>
 
-      <p *ngIf="errorMessage" class=" text-red-500 text-sm mt-4">
+      <!-- Fehlermeldung, falls ein Fehler aufgetreten ist -->
+      <p *ngIf="errorMessage" class="error-message text-red-500 text-sm mt-4">
         {{ errorMessage }}
       </p>
 
@@ -67,6 +68,11 @@
       >
         Bitte wählen Sie einen Avatar aus.
       </p>
+
+       <!-- Erfolgreiche Avatar-Auswahl -->
+    <div *ngIf="avatarSelectedConfirmed && selectedAvatar && !loading" class="text-center mt-4 text-green-500">
+      Avatar erfolgreich ausgewählt!
+    </div> 
 
       <!-- Weiter-Button -->
       <div class="flex justify-end items-center w-full mt-6">
@@ -80,11 +86,7 @@
         </button>
       </div>
     </div>
-
-    <!-- Erfolgsmeldung 
-    <div *ngIf="!loading && currentUser?.avatar" class="success-message text-center mt-4 text-green-500">
-      Avatar erfolgreich ausgewählt!
-    </div>  -->
+    
 
     <!-- successMessage  -->
     <p *ngIf="successMessage" class="successMessage">

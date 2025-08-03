@@ -58,3 +58,16 @@
         opacity: 1;
     }
 }
+
+.error-message {
+    color: #FF0000;
+    font-size: 14px;
+    margin-top: 10px;
+
+        /* Animation properties */
+        opacity: 0;
+        transform: translateX(100%) translateY(100%);
+        animation:
+            slideIn ease-out 1300ms forwards,
+            dissolve ease-out 1300ms forwards;
+}
