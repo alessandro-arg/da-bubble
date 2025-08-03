@@ -1,3 +1,9 @@
+/**
+ * LandingPageComponent is the main container for the chat UI.
+ * It handles user sessions, responsive behavior, navigation between
+ * private chats, group chats, and message threads.
+ */
+
 import {
   Component,
   HostListener,
@@ -86,6 +92,9 @@ export class LandingPageComponent implements OnInit {
     });
   }
 
+  /**
+   * Initializes the component: checks auth, sets responsive state.
+   */
   ngOnInit() {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
@@ -101,6 +110,9 @@ export class LandingPageComponent implements OnInit {
     }
   }
 
+  /**
+   * Updates screen width on browser resize.
+   */
   @HostListener('window:resize', ['$event'])
   onResize(event: UIEvent) {
     if (this.isBrowser) {
@@ -108,6 +120,9 @@ export class LandingPageComponent implements OnInit {
     }
   }
 
+  /**
+   * Opens a private chat with the selected user.
+   */
   openPrivateChat(user: User) {
     this.selectedGroupId = null;
     this.selectedUser = user;
@@ -121,11 +136,17 @@ export class LandingPageComponent implements OnInit {
     }
   }
 
+  /**
+   * Opens the profile modal for a given user.
+   */
   openProfileModalFromUser(user: User) {
     this.profileUser = user;
     this.showProfileModal = true;
   }
 
+  /**
+   * Opens a group chat.
+   */
   openGroupChat(groupId: string) {
     this.selectedUser = null;
     this.selectedGroupId = groupId;
@@ -139,6 +160,9 @@ export class LandingPageComponent implements OnInit {
     }
   }
 
+  /**
+   * Handles thread selection from chat component.
+   */
   onThreadSelected(ev: { groupId: string; messageId: string }) {
     this.threadGroupId = ev.groupId;
     this.threadMessageId = ev.messageId;
@@ -149,6 +173,9 @@ export class LandingPageComponent implements OnInit {
     }
   }
 
+  /**
+   * Closes the thread view.
+   */
   onCloseThread() {
     this.threadGroupId = null;
     this.threadMessageId = null;
@@ -159,6 +186,9 @@ export class LandingPageComponent implements OnInit {
     }
   }
 
+  /**
+   * Resets the current channel view on close.
+   */
   onChannelClosed() {
     this.selectedGroupId = null;
     this.selectedUser = null;
@@ -166,19 +196,23 @@ export class LandingPageComponent implements OnInit {
     this.newMessageMode = false;
   }
 
+  /** Toggles the sidebar/workspace visibility. */
   toggleWorkspace() {
     this.isCollapsed = !this.isCollapsed;
   }
 
+  /** Toggles the top-right dropdown menu. */
   toggleDropdown() {
     this.showDropdown = !this.showDropdown;
   }
 
+  /** Opens the current user's profile modal. */
   openProfileModal() {
     this.showDropdown = false;
     this.showProfileModal = true;
   }
 
+  /** Closes the profile modal and resets edit state. */
   closeProfileModal() {
     if (this.isEditingName) {
       this.isEditingName = false;
@@ -187,16 +221,22 @@ export class LandingPageComponent implements OnInit {
     this.showDropdown = true;
   }
 
+  /** Closes all modals (dropdown, profile). */
   closeModals() {
     this.showDropdown = false;
     this.showProfileModal = false;
   }
 
+  /** Enables name editing for the current user. */
   enableEdit() {
     this.editedName = this.currentUser?.name || '';
     this.isEditingName = true;
   }
 
+  /**
+   * Validates the edited name (must include first and last name).
+   * @returns true if valid, false otherwise.
+   */
   validateName() {
     const name = this.editedName.trim();
     const isValid = /^[A-Za-zÄäÖöÜüß]+\s+[A-Za-zÄäÖöÜüß]+$/.test(name);
@@ -204,6 +244,9 @@ export class LandingPageComponent implements OnInit {
     return isValid;
   }
 
+  /**
+   * Saves the edited name to the database if valid.
+   */
   async saveName() {
     if (!this.validateName()) return;
 
@@ -221,6 +264,9 @@ export class LandingPageComponent implements OnInit {
     }
   }
 
+  /**
+   * Logs the user out and updates presence to offline.
+   */
   async logout() {
     try {
       if (this.currentUserUid) {
@@ -232,12 +278,16 @@ export class LandingPageComponent implements OnInit {
     }
   }
 
+  /** Opens the UI for composing a new message. */
   onNewMessage() {
     this.selectedUser = null;
     this.selectedGroupId = null;
     this.newMessageMode = true;
   }
 
+  /**
+   * Closes modals if user clicks outside of them.
+   */
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
     if (
@@ -248,6 +298,7 @@ export class LandingPageComponent implements OnInit {
     }
   }
 
+  /** Resets all views to the initial state in mobile mode. */
   goBackMobile() {
     this.selectedUser = null;
     this.selectedGroupId = null;
