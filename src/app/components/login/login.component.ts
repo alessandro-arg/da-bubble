@@ -1,3 +1,8 @@
+/**
+ * LoginComponent provides authentication functionality for registered users,
+ * Google sign-in users, and guest users.
+ */
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -24,16 +29,28 @@ export class LoginComponent {
     password: '',
   };
 
+  /**
+   * Constructor that injects required services.
+   * @param authService Service for authentication logic.
+   * @param userService Service for fetching or creating user data in Firestore.
+   * @param router Angular router for navigation.
+   */
   constructor(
     private authService: AuthService,
     private userService: UserService,
     private router: Router
   ) {}
 
+  /** Toggles visibility of the password input field. */
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
 
+  /**
+   * Handles standard email/password login.
+   * On success, user is redirected to their landing page.
+   * @param form Angular template-driven form for login input.
+   */
   async onSubmit(form: NgForm) {
     if (form.invalid) return;
 
@@ -62,6 +79,11 @@ export class LoginComponent {
     }
   }
 
+  /**
+   * Handles login using Google OAuth.
+   * If user doesn't exist in Firestore, a new one is created.
+   * On success, user is redirected to their landing page.
+   */
   async loginWithGoogle() {
     this.loading = true;
     this.errorMessage = null;
@@ -79,8 +101,6 @@ export class LoginComponent {
             avatar: result.user.photoURL || 'assets/img/avater.png',
           });
         }
-
-        // Prüfe ob es eine redirectUrl gibt
         const redirectUrl =
           this.authService.redirectUrl || `/landingpage/${result.user.uid}`;
         this.router.navigateByUrl(redirectUrl);
@@ -91,11 +111,16 @@ export class LoginComponent {
     } finally {
       this.loading = false;
       setTimeout(() => {
-        window.location.reload(); // Optional: Seite neu laden, um UI zu aktualisieren
-      }, 10); // Optional: Verzögerung für bessere UX
+        window.location.reload();
+      }, 10);
     }
   }
 
+  /**
+   * Handles anonymous (guest) login. A guest user is created in Firestore with
+   * a random avatar and name.
+   * On success, user is redirected to their landing page.
+   */
   async guestLogin() {
     this.loading = true;
     this.errorMessage = null;
@@ -139,6 +164,10 @@ export class LoginComponent {
     }
   }
 
+  /**
+   * Selects a random avatar URL from a predefined list.
+   * @returns A string representing the avatar image path.
+   */
   getRandomAvatar(): string {
     const avatars = [
       'assets/img/charaters.svg',

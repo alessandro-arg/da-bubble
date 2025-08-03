@@ -1,16 +1,18 @@
+/**
+ * Component for handling user registration.
+ * Collects user details and stores them temporarily for use in subsequent steps.
+ */
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import {
   ReactiveFormsModule,
   FormControl,
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { AuthService } from '../../../auth/auth.service';
-import { firstValueFrom } from 'rxjs';
-import { UserService } from '../../../services/user.service';
 import { RegistrationService } from '../../../services/registration.service';
 
 @Component({
@@ -26,9 +28,12 @@ export class RegisterComponent {
   errorMessage: string | null = null;
   loading = false;
 
+  /**
+   * Constructs the RegisterComponent and initializes the form.
+   * @param registrationService Service to temporarily store registration data.
+   * @param router Angular Router to navigate to the next registration step.
+   */
   constructor(
-    private authService: AuthService,
-    private userService: UserService,
     private registrationService: RegistrationService,
     private router: Router
   ) {
@@ -43,6 +48,9 @@ export class RegisterComponent {
     });
   }
 
+  /**
+   * Loads previously entered registration data if available.
+   */
   ngOnInit() {
     const savedData = this.registrationService.getRegistrationData();
     if (savedData) {
@@ -55,16 +63,26 @@ export class RegisterComponent {
     }
   }
 
+  /**
+   * Toggles the visibility of the password input field.
+   */
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
 
+  /**
+   * Manually toggles the privacy policy checkbox and marks it as touched.
+   */
   togglePrivacyPolicy() {
     const currentValue = this.registerForm.get('privacyPolicy')?.value;
     this.registerForm.get('privacyPolicy')?.setValue(!currentValue);
     this.registerForm.get('privacyPolicy')?.markAsTouched();
   }
 
+  /**
+   * Handles form submission.
+   * Stores registration data and navigates to the avatar selection step.
+   */
   async onSubmit() {
     if (this.registerForm.invalid) return;
     const { name, email, password, privacyPolicy } = this.registerForm.value;

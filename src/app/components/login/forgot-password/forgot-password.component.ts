@@ -1,7 +1,19 @@
+/**
+ * Component for handling password reset requests.
+ * Displays a form where users can input their email to receive
+ * a password reset link.
+ */
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
-import { FormsModule, ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { AuthService } from '../../../auth/auth.service';
 
 @Component({
@@ -9,24 +21,29 @@ import { AuthService } from '../../../auth/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, ReactiveFormsModule],
   templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.scss'
+  styleUrl: './forgot-password.component.scss',
 })
 export class ForgotPasswordComponent {
-
   resetForm: FormGroup;
   errorMessage: string | null = null;
   successMessage: string | null = null;
   loading = false;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {
+  /**
+   * Constructs the ForgotPasswordComponent and initializes the form.
+   * @param authService Service for authentication-related operations.
+   * @param router Angular Router to navigate after successful reset.
+   */
+  constructor(private authService: AuthService, private router: Router) {
     this.resetForm = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email])
+      email: new FormControl('', [Validators.required, Validators.email]),
     });
   }
 
+  /**
+   * Handles form submission.
+   * Sends password reset email and handles UI feedback.
+   */
   async onSubmit() {
     if (this.resetForm.invalid) {
       return;
@@ -45,7 +62,8 @@ export class ForgotPasswordComponent {
         this.router.navigate(['/login']);
       }, 3000);
     } catch (error: any) {
-      this.errorMessage = error.message || 'Fehler beim Senden der Zurücksetzen-E-Mail.';
+      this.errorMessage =
+        error.message || 'Fehler beim Senden der Zurücksetzen-E-Mail.';
     } finally {
       this.loading = false;
     }
