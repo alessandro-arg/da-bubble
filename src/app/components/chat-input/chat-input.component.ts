@@ -113,7 +113,8 @@ export class ChatInputComponent implements AfterViewInit {
   }
 
   /**
-   * Detects if the user is typing a mention (`@`) or group (`#`) and shows autocomplete.
+   * Called whenever the user types into the message input.
+   * Detects whether the user is triggering a `@mention` or `#group` and delegates accordingly.
    */
   onInput() {
     const ta = this.msgInput.nativeElement;
@@ -123,41 +124,61 @@ export class ChatInputComponent implements AfterViewInit {
     const atIdx = val.lastIndexOf('@', pos - 1);
 
     if (hashIdx > atIdx && (hashIdx === 0 || /\s/.test(val[hashIdx - 1]))) {
-      const q = val.slice(hashIdx + 1, pos).toLowerCase();
-      let pool = this.allGroups;
-      if (this.groupId) {
-        const parts = this.participantsMap;
-        pool = pool.filter((g) => g.participants?.every((uid) => parts[uid]));
-      } else if (this.chatPartner && this.currentUserUid) {
-        pool = pool.filter(
-          (g) =>
-            g.participants?.includes(this.currentUserUid!) &&
-            g.participants.includes(this.chatPartner!.uid!)
-        );
-      }
-      this.filteredGroups = pool.filter((g) =>
-        g.name.toLowerCase().startsWith(q)
+      this.handleGroupMention(pos, hashIdx);
+    } else if (atIdx > hashIdx && (atIdx === 0 || /\s/.test(val[atIdx - 1]))) {
+      this.handleUserMention(pos, atIdx);
+    } else {
+      this.showMentionList = this.showGroupList = false;
+    }
+  }
+
+  /**
+   * Handles `@mention` autocompletion logic, filtering and displaying user suggestions.
+   *
+   * @param pos - Cursor position in the message input
+   * @param atIdx - Index of the `@` character in the input string
+   */
+  private handleUserMention(pos: number, atIdx: number) {
+    const query = this.newMessage.slice(atIdx + 1, pos).toLowerCase();
+    const pool = this.groupId
+      ? Object.values(this.participantsMap)
+      : this.allUsers;
+
+    this.filteredUsers = pool.filter((u) =>
+      u.name.toLowerCase().startsWith(query)
+    );
+    this.showMentionList = this.filteredUsers.length > 0;
+    this.mentionStartIndex = atIdx;
+    this.showGroupList = false;
+  }
+
+  /**
+   * Handles `#group` autocompletion logic, filtering and displaying group suggestions.
+   *
+   * @param pos - Cursor position in the message input
+   * @param hashIdx - Index of the `#` character in the input string
+   */
+  private handleGroupMention(pos: number, hashIdx: number) {
+    const query = this.newMessage.slice(hashIdx + 1, pos).toLowerCase();
+    let pool = this.allGroups;
+
+    if (this.groupId) {
+      const parts = this.participantsMap;
+      pool = pool.filter((g) => g.participants?.every((uid) => parts[uid]));
+    } else if (this.chatPartner && this.currentUserUid) {
+      pool = pool.filter(
+        (g) =>
+          g.participants?.includes(this.currentUserUid!) &&
+          g.participants.includes(this.chatPartner!.uid!)
       );
-      this.showGroupList = this.filteredGroups.length > 0;
-      this.groupMentionStartIndex = hashIdx;
-      this.showMentionList = false;
-      return;
     }
 
-    if (atIdx > hashIdx && (atIdx === 0 || /\s/.test(val[atIdx - 1]))) {
-      const q = val.slice(atIdx + 1, pos).toLowerCase();
-      const pool = this.groupId
-        ? Object.values(this.participantsMap)
-        : this.allUsers;
-      this.filteredUsers = pool.filter((u) =>
-        u.name.toLowerCase().startsWith(q)
-      );
-      this.showMentionList = this.filteredUsers.length > 0;
-      this.mentionStartIndex = atIdx;
-      this.showGroupList = false;
-      return;
-    }
-    this.showMentionList = this.showGroupList = false;
+    this.filteredGroups = pool.filter((g) =>
+      g.name.toLowerCase().startsWith(query)
+    );
+    this.showGroupList = this.filteredGroups.length > 0;
+    this.groupMentionStartIndex = hashIdx;
+    this.showMentionList = false;
   }
 
   /**

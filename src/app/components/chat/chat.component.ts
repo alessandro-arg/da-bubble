@@ -270,7 +270,6 @@ export class ChatComponent implements OnChanges, OnInit {
    * Checks for participants (including the group's creator) that are not yet loaded
    * into `participantsMap` and fetches their user data from the user service.
    * Once fetched, the missing participants are added to the local map.
-   *
    * @param group - The group object containing the creator and participant UIDs.
    */
   private fetchMissingParticipants(group: Group) {
@@ -364,7 +363,6 @@ export class ChatComponent implements OnChanges, OnInit {
   /**
    * Sends a direct message to each user in the `selectedRecipients` list.
    * Ensures a chat exists between the current user and each recipient before sending the message.
-   *
    * @param text - The message content to send.
    * @param mentions - List of user or group IDs mentioned in the message.
    * @returns A promise that resolves to `true` if at least one message was sent; otherwise `false`.
@@ -392,7 +390,6 @@ export class ChatComponent implements OnChanges, OnInit {
 
   /**
    * Sends a message to each group in the `selectedGroupRecipients` list.
-   *
    * @param text - The message content to send.
    * @param mentions - List of user or group IDs mentioned in the message.
    * @returns A promise that resolves to `true` if at least one group message was sent; otherwise `false`.
@@ -417,7 +414,6 @@ export class ChatComponent implements OnChanges, OnInit {
   /**
    * Sends a message to the currently active chat or group if no specific recipients were selected.
    * Falls back to `groupId` or `chatId` based on context.
-   *
    * @param text - The message content to send.
    * @param mentions - List of user or group IDs mentioned in the message.
    */

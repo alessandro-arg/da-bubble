@@ -103,7 +103,6 @@ export class AddMembersModalComponent implements OnInit {
 
   /**
    * Adds a user to the selection list when clicked.
-   *
    * @param u - The user to add
    */
   selectUser(u: User) {
@@ -116,7 +115,6 @@ export class AddMembersModalComponent implements OnInit {
 
   /**
    * Removes a user from the selected list.
-   *
    * @param u - The user to remove
    */
   removeSelected(u: User) {
