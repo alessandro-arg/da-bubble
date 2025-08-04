@@ -98,7 +98,6 @@ export class ChooseYourAvatarComponent implements OnInit {
 
   private setLoadingState(isLoading: boolean): void {
     this.loading = isLoading;
-    this.clearMessages();
   }
 
   private clearMessages(): void {
@@ -107,6 +106,7 @@ export class ChooseYourAvatarComponent implements OnInit {
   }
 
   private async tryRegisterUser(): Promise<void> {
+    this.clearMessages();
     try {
       await this.registerNewUser();
       this.handleRegistrationSuccess();
@@ -143,7 +143,7 @@ export class ChooseYourAvatarComponent implements OnInit {
   }
 
   private handleRegistrationSuccess(): void {
-    this.setSuccessMessage('Konto erfolgreich erstellt!');
+    this.setSuccessMessage('Anmelden!');
     this.clearRegistrationData();
     this.navigateToLoginAfterDelay();
   }
