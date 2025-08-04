@@ -1,3 +1,9 @@
+/**
+ * NewMessageHeaderComponent allows users to compose a new message by selecting individual users
+ * (with @mentions) or groups (with #mentions). It supports keyboard navigation, real-time filtering,
+ * and emits selected recipients to the parent component.
+ */
+
 import {
   Component,
   Input,
@@ -7,7 +13,6 @@ import {
   ViewChildren,
   ElementRef,
   QueryList,
-  AfterViewInit,
   OnInit,
 } from '@angular/core';
 import { User } from '../../models/user.model';
@@ -54,12 +59,17 @@ export class NewMessageHeaderComponent implements OnInit {
 
   constructor(private mobileService: MobileService) {}
 
+  /** Initializes the component and subscribes to mobile state. */
   ngOnInit() {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
     });
   }
 
+  /**
+   * Called whenever input is typed into the mention field.
+   * Determines whether user or group mention is being typed, and filters accordingly.
+   */
   onRecipientInput() {
     const raw = this.recipientInputRef.nativeElement.value;
     const pos =
@@ -93,6 +103,10 @@ export class NewMessageHeaderComponent implements OnInit {
     }
   }
 
+  /**
+   * Handles keyboard navigation in mention/group dropdowns.
+   * @param e KeyboardEvent
+   */
   onRecipientKeydown(e: KeyboardEvent) {
     const navigate = (len: number, idx: number, delta: number) =>
       (idx + delta + len) % len;
@@ -158,23 +172,40 @@ export class NewMessageHeaderComponent implements OnInit {
     }
   }
 
+  /**
+   * Scrolls a selected dropdown item into view for keyboard navigation.
+   * @param list QueryList of ElementRefs
+   * @param index Index to scroll into view
+   */
   private scrollIntoView(list: QueryList<ElementRef>, index: number) {
     const el = list.toArray()[index]?.nativeElement;
     if (el) el.scrollIntoView({ block: 'nearest' });
   }
 
+  /**
+   * Adds a user to the selected recipients and emits the update.
+   * @param u User to select
+   */
   selectRecipient(u: User) {
     this.selectedRecipients.push(u);
     this.recipientsChange.emit(this.selectedRecipients);
     this.resetInput();
   }
 
+  /**
+   * Adds a group to the selected group recipients and emits the update.
+   * @param g Group to select
+   */
   selectGroupRecipient(g: Group) {
     this.selectedGroupRecipients.push(g);
     this.groupRecipientsChange.emit(this.selectedGroupRecipients);
     this.resetInput();
   }
 
+  /**
+   * Removes a selected user from recipients.
+   * @param u User to remove
+   */
   removeRecipient(u: User) {
     this.selectedRecipients = this.selectedRecipients.filter(
       (r) => r.uid !== u.uid
@@ -182,6 +213,10 @@ export class NewMessageHeaderComponent implements OnInit {
     this.recipientsChange.emit(this.selectedRecipients);
   }
 
+  /**
+   * Removes a selected group from group recipients.
+   * @param g Group to remove
+   */
   removeGroupRecipient(g: Group) {
     this.selectedGroupRecipients = this.selectedGroupRecipients.filter(
       (x) => x.id !== g.id
@@ -189,6 +224,9 @@ export class NewMessageHeaderComponent implements OnInit {
     this.groupRecipientsChange.emit(this.selectedGroupRecipients);
   }
 
+  /**
+   * Resets the input field and dropdown state.
+   */
   private resetInput() {
     this.recipientQuery = '';
     this.showRecipientList = this.showRecipientGroupList = false;

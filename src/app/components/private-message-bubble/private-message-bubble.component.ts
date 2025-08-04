@@ -1,3 +1,8 @@
+/**
+ * Component responsible for rendering a single private message bubble,
+ * including user info, message formatting, reactions, and hover actions.
+ */
+
 import {
   Component,
   Input,
@@ -41,6 +46,9 @@ export class PrivateMessageBubbleComponent {
 
   constructor(private mobileService: MobileService) {}
 
+  /**
+   * Initializes the component and subscribes to the mobile device state.
+   */
   ngOnInit(): void {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;

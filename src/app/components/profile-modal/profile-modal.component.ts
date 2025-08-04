@@ -1,3 +1,8 @@
+/**
+ * Displays a modal showing a user's profile information, including online status,
+ * and allows sending a message or closing the modal.
+ */
+
 import {
   Component,
   Input,
@@ -40,6 +45,11 @@ export class ProfileModalComponent implements OnChanges, OnDestroy, OnInit {
     private mobileService: MobileService
   ) {}
 
+  /**
+   * Reacts to changes in `profileUser` or `show` inputs.
+   * Subscribes to presence updates if modal is shown.
+   * @param changes Detected input property changes.
+   */
   ngOnChanges(changes: SimpleChanges) {
     const showChanged = changes['show'];
     const userChanged = changes['profileUser'];
@@ -53,12 +63,18 @@ export class ProfileModalComponent implements OnChanges, OnDestroy, OnInit {
     }
   }
 
+  /**
+   * Initializes mobile detection logic on component load.
+   */
   ngOnInit(): void {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
     });
   }
 
+  /**
+   * Subscribes to the presence updates of the profile user.
+   */
   private subscribePresence() {
     this.unsubscribePresence();
     if (!this.profileUser?.uid) return;
@@ -69,19 +85,31 @@ export class ProfileModalComponent implements OnChanges, OnDestroy, OnInit {
       });
   }
 
+  /**
+   * Unsubscribes from any existing presence subscriptions.
+   */
   private unsubscribePresence() {
     this.presenceSub?.unsubscribe();
     this.presenceSub = undefined;
   }
 
+  /**
+   * Emits the close event when the modal is closed.
+   */
   onClose() {
     this.close.emit();
   }
 
+  /**
+   * Emits the message event when the message button is clicked.
+   */
   onMessageClick() {
     this.message.emit();
   }
 
+  /**
+   * Cleans up the presence subscription when the component is destroyed.
+   */
   ngOnDestroy() {
     this.unsubscribePresence();
   }
