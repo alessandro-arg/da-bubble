@@ -89,7 +89,10 @@
     
 
     <!-- successMessage  -->
-    <p *ngIf="successMessage" class="successMessage">
+    <p
+      *ngIf="successMessage"
+      class="successMessage flex justify-center items-center text-3xl text-center font-bold fixed bottom-5 right-5 w-max h-max p-6 bg-[#444DF2] text-white rounded-t-[30px]  rounded-bl-[30px] shadow-[0px_6px_10px_0px_#00000033]"
+    >
       {{ successMessage }}
     </p>
   </div>
