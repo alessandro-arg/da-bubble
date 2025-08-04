@@ -1,3 +1,8 @@
+/**
+ * Component for displaying and interacting with emoji reactions on a message.
+ * Supports adding/removing reactions in private chats, group chats, and threads.
+ */
+
 import {
   Component,
   Input,
@@ -37,6 +42,10 @@ export class ReactionBarComponent {
     private host: ElementRef<HTMLElement>
   ) {}
 
+  /**
+   * Detects and handles clicks outside of the component to hide the emoji picker.
+   * @param targetElement The clicked element.
+   */
   @HostListener('document:click', ['$event.target'])
   onClickOutside(targetElement: HTMLElement) {
     if (!this.showPicker) return;
@@ -45,28 +54,47 @@ export class ReactionBarComponent {
     this.showPicker = false;
   }
 
+  /**
+   * Toggles visibility of the emoji picker.
+   */
   togglePicker() {
     this.showPicker = !this.showPicker;
   }
 
+  /**
+   * Toggles the expanded state of the reactions display.
+   */
   toggleReactions() {
     this.expanded = !this.expanded;
   }
 
+  /**
+   * Checks if the reactions list is expanded.
+   */
   isExpanded() {
     return this.expanded;
   }
 
+  /**
+   * Computes the number of additional reactions beyond `maxVisible`.
+   */
   extraCount() {
     const total = this.summarizeReactions(this.msg.reactions).length;
     return total > this.maxVisible ? total - this.maxVisible : 0;
   }
 
+  /**
+   * Returns the set of reactions to display based on expansion state.
+   */
   displayedReactions() {
     const all = this.summarizeReactions(this.msg.reactions);
     return this.expanded ? all : all.slice(0, this.maxVisible);
   }
 
+  /**
+   * Summarizes a list of reactions into unique emojis with total counts.
+   * @param reactions List of individual user reactions.
+   */
   summarizeReactions(
     reactions: Reaction[] = []
   ): { emoji: string; count: number }[] {
@@ -75,6 +103,10 @@ export class ReactionBarComponent {
     return Object.entries(counter).map(([emoji, count]) => ({ emoji, count }));
   }
 
+  /**
+   * Handles the logic of toggling a reaction (add or remove) for the current user.
+   * @param emoji The selected emoji.
+   */
   async onReactionClick(emoji: string) {
     if (!this.msg.id || !this.currentUserUid) return;
 
@@ -130,6 +162,11 @@ export class ReactionBarComponent {
     }
   }
 
+  /**
+   * Gets the names of users who reacted with a given emoji.
+   * @param emoji The emoji to look up.
+   * @returns List of usernames (or "Du" for current user).
+   */
   getReactionUserNames(emoji: string): string[] {
     return (this.msg.reactions ?? [])
       .filter((r) => r.emoji === emoji)

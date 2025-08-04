@@ -1,3 +1,9 @@
+/**
+ * UserListComponent displays a list of users and groups for chatting.
+ * It supports selecting users or groups, opening modals, and toggling dropdowns.
+ * This component also tracks online presence and is responsive for mobile view.
+ */
+
 import {
   Component,
   Output,
@@ -81,6 +87,9 @@ export class UserListComponent implements OnInit, OnDestroy {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
+  /**
+   * Subscribes to mobile detection, auth state, and initializes screen width.
+   */
   ngOnInit() {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
@@ -97,12 +106,19 @@ export class UserListComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Cleans up subscriptions on destroy.
+   */
   ngOnDestroy(): void {
     this.authUnsub?.();
     this.usersSub?.unsubscribe();
     this.groupsSub?.unsubscribe();
   }
 
+  /**
+   * Updates screen width on window resize.
+   * @param event UIEvent
+   */
   @HostListener('window:resize', ['$event'])
   onResize(event: UIEvent) {
     if (this.isBrowser) {
@@ -110,6 +126,9 @@ export class UserListComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Subscribes to live user updates and tracks online presence.
+   */
   listenToUsers() {
     this.usersSub = this.userService.getAllUsersLive().subscribe((allUsers) => {
       const filtered = allUsers.filter((u) => u.name !== 'Gast');
@@ -127,6 +146,9 @@ export class UserListComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Subscribes to groups the current user participates in.
+   */
   listenToGroups() {
     if (!this.currentUserUid) {
       return;
@@ -148,50 +170,76 @@ export class UserListComponent implements OnInit, OnDestroy {
     );
   }
 
+  /** Emits the editClicked event */
   onEditClick() {
     this.editClicked.emit();
   }
 
+  /** Opens the modal to create a new group */
   openAddGroupModal() {
     this.showAddGroupModal = true;
   }
 
+  /** Closes the create group modal */
   closeAddGroupModal() {
     this.showAddGroupModal = false;
   }
 
+  /**
+   * Emits a userSelected event and sets the active user.
+   * @param user Selected user
+   */
   onClick(user: User) {
     this.activeUserUid = user.uid;
     this.activeGroupId = null;
     this.userSelected.emit(user);
   }
 
+  /**
+   * Emits a userProfileClicked event.
+   * @param user User whose profile was clicked
+   */
   onProfileClick(user: User) {
     this.userProfileClicked.emit(user);
   }
 
+  /**
+   * Emits a groupSelected event and sets the active group.
+   * @param g Selected group
+   */
   onGroupClick(g: Group) {
     this.activeGroupId = g.id;
     this.activeUserUid = null;
     this.groupSelected.emit(g.id);
   }
 
+  /** Toggles the "Direktnachrichten" dropdown visibility */
   toggleDirektDropdown() {
     this.direktDropdownOpen = !this.direktDropdownOpen;
   }
 
+  /** Toggles the "Channels" dropdown visibility */
   toggleChannelsDropdown() {
     this.channelsDropdownOpen = !this.channelsDropdownOpen;
   }
 
+  /**
+   * Emits userSelected event for direct chat.
+   * @param user Target user
+   */
   openPrivateChat(user: User) {
     this.userSelected.emit(user);
   }
 
+  /**
+   * Emits groupSelected event for group chat.
+   * @param groupId Target group ID
+   */
   openGroupChat(groupId: string) {
     this.groupSelected.emit(groupId);
   }
 
+  /** Returns appropriate arrow icon for direct chat dropdown */
   get direktArrowSrc() {
     if (this.direktArrowHover) {
       return 'assets/img/icons/arrow_drop_down_purple.png';
@@ -199,12 +247,14 @@ export class UserListComponent implements OnInit, OnDestroy {
     return 'assets/img/icons/arrow_drop_down.png';
   }
 
+  /** Returns account icon for direct chats */
   get direktAccountSrc() {
     return this.direktAccountHover
       ? 'assets/img/icons/account_circle_purple.png'
       : 'assets/img/icons/account_circle.png';
   }
 
+  /** Returns appropriate arrow icon for channels dropdown */
   get channelsArrowSrc() {
     if (this.channelsArrowHover) {
       return 'assets/img/icons/arrow_drop_down_purple.png';
@@ -212,6 +262,7 @@ export class UserListComponent implements OnInit, OnDestroy {
     return 'assets/img/icons/arrow_drop_down.png';
   }
 
+  /** Returns account icon for channels */
   get channelsAccountSrc() {
     return this.channelsAccountHover
       ? 'assets/img/icons/workspaces_purple.png'

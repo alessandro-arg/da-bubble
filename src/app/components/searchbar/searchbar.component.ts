@@ -1,4 +1,9 @@
-// searchbar.component.ts
+/**
+ * Component that provides a search bar for finding users or groups
+ * by entering `@name` or `#group`. Emits selection events for integration
+ * with private or group chat navigation.
+ */
+
 import {
   Component,
   EventEmitter,
@@ -9,7 +14,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
-import { ChatService } from '../../services/chat.service';
 import { GroupService } from '../../services/group.service';
 import { Group } from '../../models/group.model';
 import { MobileService } from '../../services/mobile.service';
@@ -38,7 +42,6 @@ export class SearchbarComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private chatService: ChatService,
     private groupService: GroupService,
     private mobileService: MobileService
   ) {
@@ -46,24 +49,37 @@ export class SearchbarComponent implements OnInit {
     this.loadAllGroups();
   }
 
+  /**
+   * Initializes the component, including checking for mobile device context.
+   */
   ngOnInit() {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
     });
   }
 
+  /**
+   * Loads and caches all users, sorted alphabetically.
+   */
   private async loadAllUsers() {
     this.allUsers = await this.userService.getAllUsers();
     this.allUsers.sort((a, b) => a.name.localeCompare(b.name));
     this.filteredUsers = [...this.allUsers];
   }
 
+  /**
+   * Loads and caches all groups.
+   */
   private async loadAllGroups() {
     const groups = await this.groupService.getAllGroups();
     this.allGroups = groups;
     this.filteredGroups = [...this.allGroups];
   }
 
+  /**
+   * Detects clicks outside the search popup or input field and hides the popup.
+   * @param event Mouse click event
+   */
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
@@ -75,6 +91,11 @@ export class SearchbarComponent implements OnInit {
     }
   }
 
+  /**
+   * Handles input changes to detect mentions or group references
+   * and filter the available users/groups accordingly.
+   * @param event Input event from the search field
+   */
   async onInputChange(event: Event) {
     const input = event.target as HTMLInputElement;
     this.searchQuery = input.value;
@@ -88,35 +109,40 @@ export class SearchbarComponent implements OnInit {
     const rest = this.searchQuery.slice(1).toLowerCase();
 
     if (first === '@') {
-      // user‐only search
       this.filteredUsers = rest
         ? this.allUsers.filter((u) => u.name.toLowerCase().includes(rest))
         : [...this.allUsers];
       this.filteredGroups = [];
       this.showPopup = this.filteredUsers.length > 0;
     } else if (first === '#') {
-      // group‐only search
       this.filteredGroups = rest
         ? this.allGroups.filter((g) => g.name.toLowerCase().includes(rest))
         : [...this.allGroups];
       this.filteredUsers = [];
       this.showPopup = this.filteredGroups.length > 0;
     } else {
-      // neither @ nor # → hide
       this.filteredUsers = [];
       this.filteredGroups = [];
       this.showPopup = false;
     }
   }
 
+  /**
+   * Called when a user is selected from the search results.
+   * Clears the search and emits the `userSelected` event.
+   * @param user The selected user
+   */
   selectUser(user: User) {
-    // for an @mention you might want to insert into a larger text, but here we'll
-    // just fire the event and clear
     this.searchQuery = '';
     this.showPopup = false;
     this.userSelected.emit(user);
   }
 
+  /**
+   * Called when a group is selected from the search results.
+   * Clears the search and emits the `groupSelected` event.
+   * @param group The selected group
+   */
   selectGroup(group: Group) {
     this.searchQuery = '';
     this.showPopup = false;

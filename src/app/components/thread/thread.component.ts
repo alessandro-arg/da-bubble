@@ -1,3 +1,8 @@
+/**
+ * ThreadComponent displays a threaded conversation view tied to a specific message within a group chat.
+ * It handles loading of original message, thread replies, and allows reactions, editing, and replies to thread messages.
+ */
+
 import { CommonModule } from '@angular/common';
 import {
   Component,
@@ -84,6 +89,9 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
     private mobileService: MobileService
   ) {}
 
+  /**
+   * Initializes screen size, mobile detection, and group list loading.
+   */
   ngOnInit(): void {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
@@ -96,11 +104,17 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
     });
   }
 
+  /**
+   * Updates screen width on resize.
+   */
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.screenWidth = event.target.innerWidth;
   }
 
+  /**
+   * Dynamically loads emoji-picker web component after view init.
+   */
   async ngAfterViewInit() {
     if (typeof window !== 'undefined') {
       if (!('requestAnimationFrame' in window)) {
@@ -111,6 +125,10 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
     }
   }
 
+  /**
+   * Reacts to changes in groupId or messageId inputs.
+   * Triggers data loading for group, original message and thread messages.
+   */
   ngOnChanges(changes: SimpleChanges) {
     if (this.groupId) {
       this.group$ = this.chatService.getGroup(this.groupId);
@@ -132,6 +150,9 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
     }
   }
 
+  /**
+   * Loads all users involved in the current group thread for participant display.
+   */
   private async loadAllThreadParticipants(groupId: string) {
     const groupRef = doc(this.firestore, `groups/${groupId}`);
     const groupSnap = await getDoc(groupRef);
@@ -159,10 +180,15 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
     this.participantsMap = usersMap;
   }
 
+  /** Emits closeThread output event to parent */
   onClose() {
     this.closeThread.emit();
   }
 
+  /**
+   * Handles click outside of emoji-picker and thread options.
+   * Closes pickers or menus accordingly.
+   */
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
     const target = event.target as HTMLElement;
@@ -179,11 +205,17 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
     this.optionsOpen = {};
   }
 
+  /**
+   * Scrolls the thread container to the bottom.
+   */
   private scrollToBottom() {
     const el = this.threadContainer.nativeElement;
     el.scrollTop = el.scrollHeight;
   }
 
+  /**
+   * Sends a new message to the current thread.
+   */
   async sendThread() {
     if (
       !this.threadText.trim() ||
@@ -205,6 +237,10 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
     setTimeout(() => this.scrollToBottom(), 50);
   }
 
+  /**
+   * Handles Enter key to send thread message.
+   * @param event KeyboardEvent
+   */
   onTextareaKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.altKey) {
       event.preventDefault();
@@ -212,17 +248,23 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
     }
   }
 
+  /** Toggles the emoji picker for thread message input */
   toggleEmojiPicker() {
     this.showEmojiPicker = !this.showEmojiPicker;
   }
 
+  /**
+   * Adds selected emoji to thread input.
+   * @param event EmojiPicker event
+   */
   addEmoji(event: any) {
     this.threadText += event.detail.unicode;
     this.showEmojiPicker = false;
   }
 
   /**
-   * Toggle the emoji‐picker for a single message.
+   * Toggle emoji picker for a specific thread message.
+   * @param msgId ID of the message
    */
   toggleMessagePicker(msgId: string) {
     const wasOpen = !!this.messagePicker[msgId];
@@ -232,6 +274,11 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
     }
   }
 
+  /**
+   * Handles quick emoji reaction click in a thread.
+   * @param msg The message object
+   * @param emoji Emoji string
+   */
   async onQuickThreadReaction(msg: Message, emoji: string) {
     if (!msg.id || !this.currentUserUid || !this.groupId || !this.messageId) {
       return;
@@ -263,17 +310,26 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
     }
   }
 
+  /**
+   * Begins editing a message within the thread.
+   * @param msg Message to edit
+   */
   startEdit(msg: Message) {
     this.editingMsgId = msg.id!;
     this.editText = msg.text;
     setTimeout(() => this.editInput?.nativeElement.focus(), 0);
   }
 
+  /** Cancels an active edit state */
   cancelEdit() {
     this.editingMsgId = null;
     this.editText = '';
   }
 
+  /**
+   * Saves the edited thread message.
+   * @param msg Message to update
+   */
   saveEdit(msg: Message) {
     if (!this.editingMsgId || !this.groupId || !this.messageId) return;
 
@@ -291,11 +347,21 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
       .catch((err) => console.error('Failed to update thread message', err));
   }
 
+  /**
+   * Toggles the options menu for a message.
+   * @param msgId ID of the message
+   * @param event Click event
+   */
   toggleOptions(msgId: string, event: MouseEvent) {
     event.stopPropagation();
     this.optionsOpen[msgId] = !this.optionsOpen[msgId];
   }
 
+  /**
+   * Opens the edit state from the options menu.
+   * @param msg Message to edit
+   * @param event Click event
+   */
   openEditFromOptions(msg: Message, event: MouseEvent) {
     event.stopPropagation();
     this.optionsOpen[msg.id!] = false;

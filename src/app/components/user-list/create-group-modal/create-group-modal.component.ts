@@ -1,3 +1,9 @@
+/**
+ * CreateGroupModalComponent allows users to create a new group by entering a name, description,
+ * and optionally selecting specific users (or all users). The component supports two steps:
+ * 1) Group info entry and 2) Member selection.
+ */
+
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -45,6 +51,10 @@ export class CreateGroupModalComponent implements OnInit {
     private mobileService: MobileService
   ) {}
 
+  /**
+   * Loads all users (excluding self), subscribes to their online status,
+   * and detects screen size.
+   */
   async ngOnInit() {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
@@ -65,10 +75,17 @@ export class CreateGroupModalComponent implements OnInit {
     });
   }
 
+  /**
+   * Prevents modal click from closing when clicking inside.
+   * @param event MouseEvent
+   */
   stopPropagation(event: MouseEvent) {
     event.stopPropagation();
   }
 
+  /**
+   * Filters users based on the current search term, excluding already selected users.
+   */
   get filteredUsers(): User[] {
     const term = this.searchTerm.toLowerCase().trim();
     if (!term) return [];
@@ -81,12 +98,18 @@ export class CreateGroupModalComponent implements OnInit {
       .slice(0, 5);
   }
 
+  /**
+   * Closes the modal and resets its state.
+   */
   onClose() {
     this.reset();
     this.step = 1;
     this.close.emit();
   }
 
+  /**
+   * Proceeds to step 2 if group name is valid.
+   */
   onCreate() {
     if (!this.name.trim()) {
       return;
@@ -94,19 +117,33 @@ export class CreateGroupModalComponent implements OnInit {
     this.step = 2;
   }
 
+  /**
+   * Navigates back to the first step of the modal.
+   */
   backToStep1() {
     this.step = 1;
   }
 
+  /**
+   * Adds a user to the selected list.
+   * @param user User to add
+   */
   addUser(user: User) {
     this.selectedUsers.push(user);
     this.searchTerm = '';
   }
 
+  /**
+   * Removes a user from the selected list.
+   * @param user User to remove
+   */
   removeUser(user: User) {
     this.selectedUsers = this.selectedUsers.filter((x) => x.uid !== user.uid);
   }
 
+  /**
+   * Finalizes the group creation, emits the new group ID, and closes the modal.
+   */
   async onFinish() {
     let groupId: string;
     if (this.addAll) {
@@ -127,6 +164,9 @@ export class CreateGroupModalComponent implements OnInit {
     this.onClose();
   }
 
+  /**
+   * Resets form fields and selections.
+   */
   private reset() {
     this.name = '';
     this.description = '';
