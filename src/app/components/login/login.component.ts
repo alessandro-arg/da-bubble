@@ -126,18 +126,11 @@ export class LoginComponent {
     this.errorMessage = null;
 
     try {
-      // 1. Anmeldung als Gast
       const userCredential = await firstValueFrom(
         this.authService.guestLogin()
       );
-
-      // 2. Zufälligen Gastnamen generieren
       const guestName = this.authService.generateRandomGuestName();
-
-      // 3. Zufälligen Avatar auswählen
       const randomAvatar = this.getRandomAvatar();
-
-      // 4. Gast-Benutzer in Firestore erstellen/aktualisieren
       const userData = {
         uid: userCredential.user.uid,
         name: guestName,
@@ -150,8 +143,6 @@ export class LoginComponent {
       };
 
       await this.userService.createUser(userData);
-
-      // 5. Weiterleitung mit Gast-spezifischer Route
       const redirectUrl =
         this.authService.redirectUrl ||
         `/landingpage/${userCredential.user.uid}`;

@@ -186,52 +186,60 @@ export class ChatInputComponent implements AfterViewInit {
    */
   onTextareaKeydown(e: KeyboardEvent) {
     if (this.showGroupList) {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        this.activeGroupIndex =
-          (this.activeGroupIndex + 1) % this.filteredGroups.length;
-        return;
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        this.activeGroupIndex =
-          (this.activeGroupIndex - 1 + this.filteredGroups.length) %
-          this.filteredGroups.length;
-        return;
-      }
-      if (e.key === 'Enter' || e.key === 'Tab') {
-        e.preventDefault();
-        this.selectGroup(this.filteredGroups[this.activeGroupIndex]);
-        return;
-      }
+      this.groupListKeydown(e);
     }
 
     if (this.showMentionList) {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        this.activeMentionIndex =
-          (this.activeMentionIndex + 1) % this.filteredUsers.length;
-        this.scrollMentionIntoView();
-        return;
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        this.activeMentionIndex =
-          (this.activeMentionIndex - 1 + this.filteredUsers.length) %
-          this.filteredUsers.length;
-        this.scrollMentionIntoView();
-        return;
-      }
-      if (e.key === 'Enter' || e.key === 'Tab') {
-        e.preventDefault();
-        this.selectMentionUser(this.filteredUsers[this.activeMentionIndex]);
-        return;
-      }
+      this.mentionListKeydown(e);
     }
 
     if (e.key === 'Enter' && !e.altKey) {
       e.preventDefault();
       this.onSendClick();
+    }
+  }
+
+  groupListKeydown(e: KeyboardEvent) {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.activeGroupIndex =
+        (this.activeGroupIndex + 1) % this.filteredGroups.length;
+      return;
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.activeGroupIndex =
+        (this.activeGroupIndex - 1 + this.filteredGroups.length) %
+        this.filteredGroups.length;
+      return;
+    }
+    if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault();
+      this.selectGroup(this.filteredGroups[this.activeGroupIndex]);
+      return;
+    }
+  }
+
+  mentionListKeydown(e: KeyboardEvent) {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.activeMentionIndex =
+        (this.activeMentionIndex + 1) % this.filteredUsers.length;
+      this.scrollMentionIntoView();
+      return;
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.activeMentionIndex =
+        (this.activeMentionIndex - 1 + this.filteredUsers.length) %
+        this.filteredUsers.length;
+      this.scrollMentionIntoView();
+      return;
+    }
+    if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault();
+      this.selectMentionUser(this.filteredUsers[this.activeMentionIndex]);
+      return;
     }
   }
 
