@@ -182,23 +182,45 @@ export class ChatInputComponent implements AfterViewInit {
   }
 
   /**
-   * Handles keyboard interactions within the textarea (arrows, tab, enter).
+   * Handles keydown in the textarea.
+   * - Sends message on Enter (without Alt).
+   * - Inserts newline on Alt+Enter.
+   * - Delegates arrow key handling to autocomplete lists.
    */
   onTextareaKeydown(e: KeyboardEvent) {
+    if (e.key === 'Enter' && e.shiftKey) {
+      return;
+    }
+
     if (this.showGroupList) {
       this.groupListKeydown(e);
+      return;
     }
 
     if (this.showMentionList) {
       this.mentionListKeydown(e);
+      return;
     }
 
-    if (e.key === 'Enter' && !e.altKey) {
+    if (e.key === 'Enter' && !this.showGroupList && !this.showMentionList) {
+      e.preventDefault();
+      this.onSendClick();
+    }
+
+    if (
+      e.key === 'Enter' &&
+      !e.shiftKey &&
+      !this.showGroupList &&
+      !this.showMentionList
+    ) {
       e.preventDefault();
       this.onSendClick();
     }
   }
 
+  /**
+   * Handles keyboard navigation and selection within the group mention (`#`) autocomplete list.
+   */
   groupListKeydown(e: KeyboardEvent) {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -220,6 +242,9 @@ export class ChatInputComponent implements AfterViewInit {
     }
   }
 
+  /**
+   * Handles keyboard navigation and selection within the user mention (`@`) autocomplete list.
+   */
   mentionListKeydown(e: KeyboardEvent) {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
