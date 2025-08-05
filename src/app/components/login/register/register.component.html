@@ -75,7 +75,7 @@
               registerForm.get('name')?.hasError('required') &&
               registerForm.get('name')?.touched
             "
-            class="error"
+            class="text-red-600"
           >
             Bitte geben Sie Ihren Namen ein
           </p>
@@ -84,7 +84,7 @@
               registerForm.get('name')?.hasError('pattern') &&
               registerForm.get('name')?.touched
             "
-            class="error"
+            class="text-red-600"
           >
             Nur Buchstaben sind erlaubt
           </p>
@@ -118,7 +118,7 @@
               registerForm.get('email')?.hasError('required') &&
               registerForm.get('email')?.touched
             "
-            class="error"
+            class="text-red-600"
           >
             Bitte geben Sie eine E-Mail-Adresse ein
           </p>
@@ -127,7 +127,7 @@
               registerForm.get('email')?.hasError('email') &&
               registerForm.get('email')?.touched
             "
-            class="error"
+            class="text-red-600"
           >
             Bitte geben Sie eine gültige E-Mail-Adresse ein
           </p>
@@ -181,7 +181,7 @@
               registerForm.get('password')?.hasError('required') &&
               registerForm.get('password')?.touched
             "
-            class="error"
+            class="text-red-600"
           >
             Bitte geben Sie ein Passwort ein
           </p>
@@ -190,7 +190,7 @@
               registerForm.get('password')?.hasError('minlength') &&
               registerForm.get('password')?.touched
             "
-            class="error"
+            class="text-red-600"
           >
             Das Passwort muss mindestens 6 Zeichen lang sein
           </p>
@@ -199,7 +199,7 @@
 
       <!-- Privacy Policy Checkbox -->
       <div class="form-group">
-        <div class="flex items-start">
+        <div class="flex items-start gap-2">
           <div class="relative">
             <img
               src="assets/img/check_box.svg"
@@ -236,7 +236,7 @@
             registerForm.get('privacyPolicy')?.hasError('requiredTrue') &&
             registerForm.get('privacyPolicy')?.touched
           "
-          class="error"
+          class="text-red-600"
         >
           Sie müssen der Datenschutzerklärung zustimmen
         </p>
@@ -244,7 +244,7 @@
 
       <!-- Server Error Message -->
       <div *ngIf="errorMessage" class="text-center">
-        <p class="error" role="alert" aria-live="assertive">
+        <p class="text-red-600" role="alert" aria-live="assertive">
           {{ errorMessage }}
         </p>
       </div>
