@@ -343,11 +343,13 @@ export class ChatComponent implements OnChanges, OnInit {
     );
     this.newMessage = '';
 
-    let didSend = await this.sendToSelectedRecipients(text, mentions);
+    const didSendToUsers = await this.sendToSelectedRecipients(text, mentions);
+    const didSendToGroups = await this.sendToSelectedGroupRecipients(
+      text,
+      mentions
+    );
 
-    if (!didSend) {
-      didSend = await this.sendToSelectedGroupRecipients(text, mentions);
-    }
+    const didSend = didSendToUsers || didSendToGroups;
 
     if (!didSend) {
       await this.sendToActiveChatOrGroup(text, mentions);

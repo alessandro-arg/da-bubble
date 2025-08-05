@@ -1,3 +1,13 @@
+/**
+ * Component to display a single message bubble within a group chat.
+ *
+ * Features:
+ * - Displays the sender's avatar and message.
+ * - Supports quick emoji reactions and hover options.
+ * - Allows message editing and thread replies.
+ * - Detects mobile mode for responsive UI.
+ */
+
 import {
   Component,
   Input,
@@ -46,12 +56,18 @@ export class GroupMessageBubbleComponent implements OnInit {
 
   constructor(private mobileService: MobileService) {}
 
+  /**
+   * Subscribes to the mobile service to determine device type.
+   */
   ngOnInit(): void {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
     });
   }
 
+  /**
+   * Returns the author (sender) of the message based on the sender UID.
+   */
   get author(): User {
     return this.participantsMap[this.msg.sender]!;
   }

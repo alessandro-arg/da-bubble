@@ -112,53 +112,86 @@ export class ReactionBarComponent {
 
     const isGroup = !!this.groupId && !this.parentMessageId;
     const isThread = !!this.groupId && !!this.parentMessageId;
+    const isPrivate = !this.groupId;
     const targetId = isGroup ? this.groupId! : this.chatId!;
     const parentId = this.parentMessageId!;
+    const alreadyReacted = this.hasUserReacted(emoji);
 
-    const already = (this.msg.reactions ?? []).some(
+    if (alreadyReacted) {
+      await this.removeReaction(emoji, isThread, isGroup, targetId, parentId);
+    } else {
+      await this.addReaction(emoji, isThread, isGroup, targetId, parentId);
+    }
+  }
+
+  /**
+   * Checks if the current user has already reacted with a specific emoji.
+   */
+  private hasUserReacted(emoji: string): boolean {
+    return (this.msg.reactions ?? []).some(
       (r) => r.userId === this.currentUserUid && r.emoji === emoji
     );
+  }
 
-    if (already) {
-      if (isThread) {
-        await this.chatService.removeThreadReaction(
-          this.groupId!,
-          parentId,
-          this.msg.id,
-          emoji,
-          this.currentUserUid
-        );
-      } else {
-        await this.chatService.removeReaction(
-          targetId,
-          this.msg.id,
-          emoji,
-          this.currentUserUid,
-          isGroup
-        );
-      }
-    } else {
-      const reaction: Reaction = {
+  /**
+   * Handles removing a reaction for thread, group, or private messages.
+   */
+  private async removeReaction(
+    emoji: string,
+    isThread: boolean,
+    isGroup: boolean,
+    targetId: string,
+    parentId: string
+  ) {
+    if (isThread) {
+      await this.chatService.removeThreadReaction(
+        this.groupId!,
+        parentId,
+        this.msg.id!,
         emoji,
-        userId: this.currentUserUid,
-        createdAt: new Date(),
-      };
+        this.currentUserUid!
+      );
+    } else {
+      await this.chatService.removeReaction(
+        targetId,
+        this.msg.id!,
+        emoji,
+        this.currentUserUid!,
+        isGroup
+      );
+    }
+  }
 
-      if (isThread) {
-        await this.chatService.addThreadReaction(
-          this.groupId!,
-          parentId,
-          this.msg.id,
-          reaction
-        );
-      } else {
-        await this.chatService.addReaction(
-          targetId,
-          this.msg.id,
-          reaction,
-          isGroup
-        );
-      }
+  /**
+   * Handles adding a reaction for thread, group, or private messages.
+   */
+  private async addReaction(
+    emoji: string,
+    isThread: boolean,
+    isGroup: boolean,
+    targetId: string,
+    parentId: string
+  ) {
+    const reaction: Reaction = {
+      emoji,
+      userId: this.currentUserUid!,
+      createdAt: new Date(),
+    };
+
+    if (isThread) {
+      await this.chatService.addThreadReaction(
+        this.groupId!,
+        parentId,
+        this.msg.id!,
+        reaction
+      );
+    } else {
+      await this.chatService.addReaction(
+        targetId,
+        this.msg.id!,
+        reaction,
+        isGroup
+      );
     }
   }
 

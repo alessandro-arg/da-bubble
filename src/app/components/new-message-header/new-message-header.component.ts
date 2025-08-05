@@ -104,71 +104,88 @@ export class NewMessageHeaderComponent implements OnInit {
   }
 
   /**
-   * Handles keyboard navigation in mention/group dropdowns.
-   * @param e KeyboardEvent
+   * Handles keydown events when navigating the recipient mention/group lists.
+   * Delegates to specific list keydown handlers based on visibility.
+   *
+   * @param e KeyboardEvent - The key press event
    */
   onRecipientKeydown(e: KeyboardEvent) {
-    const navigate = (len: number, idx: number, delta: number) =>
-      (idx + delta + len) % len;
-
     if (this.showRecipientList) {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        this.activeRecipientIndex = navigate(
-          this.filteredRecipients.length,
-          this.activeRecipientIndex,
-          1
-        );
-        this.scrollIntoView(this.inputMentionItems, this.activeRecipientIndex);
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        this.activeRecipientIndex = navigate(
-          this.filteredRecipients.length,
-          this.activeRecipientIndex,
-          -1
-        );
-        this.scrollIntoView(this.inputMentionItems, this.activeRecipientIndex);
-      }
-      if (e.key === 'Enter' || e.key === 'Tab') {
-        e.preventDefault();
-        this.selectRecipient(
-          this.filteredRecipients[this.activeRecipientIndex]
-        );
-      }
+      this.mentionListKeydown(e);
     }
 
     if (this.showRecipientGroupList) {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        this.activeRecipientGroupIndex = navigate(
-          this.filteredRecipientGroups.length,
-          this.activeRecipientGroupIndex,
-          1
-        );
-        this.scrollIntoView(
-          this.inputGroupItems,
-          this.activeRecipientGroupIndex
-        );
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        this.activeRecipientGroupIndex = navigate(
-          this.filteredRecipientGroups.length,
-          this.activeRecipientGroupIndex,
-          -1
-        );
-        this.scrollIntoView(
-          this.inputGroupItems,
-          this.activeRecipientGroupIndex
-        );
-      }
-      if (e.key === 'Enter' || e.key === 'Tab') {
-        e.preventDefault();
-        this.selectGroupRecipient(
-          this.filteredRecipientGroups[this.activeRecipientGroupIndex]
-        );
-      }
+      this.groupListKeydown(e);
+    }
+  }
+
+  /**
+   * Handles keyboard navigation and selection for the user recipient mention list.
+   * Supports ArrowUp/ArrowDown to navigate and Enter/Tab to select.
+   *
+   * @param e KeyboardEvent - The key press event
+   */
+  mentionListKeydown(e: KeyboardEvent) {
+    const navigate = (len: number, idx: number, delta: number) =>
+      (idx + delta + len) % len;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.activeRecipientIndex = navigate(
+        this.filteredRecipients.length,
+        this.activeRecipientIndex,
+        1
+      );
+      this.scrollIntoView(this.inputMentionItems, this.activeRecipientIndex);
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.activeRecipientIndex = navigate(
+        this.filteredRecipients.length,
+        this.activeRecipientIndex,
+        -1
+      );
+      this.scrollIntoView(this.inputMentionItems, this.activeRecipientIndex);
+    }
+    if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault();
+      this.selectRecipient(this.filteredRecipients[this.activeRecipientIndex]);
+    }
+  }
+
+  /**
+   * Handles keyboard navigation and selection for the group recipient list.
+   * Supports ArrowUp/ArrowDown to navigate and Enter/Tab to select.
+   *
+   * @param e KeyboardEvent - The key press event
+   */
+  groupListKeydown(e: KeyboardEvent) {
+    const navigate = (len: number, idx: number, delta: number) =>
+      (idx + delta + len) % len;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.activeRecipientGroupIndex = navigate(
+        this.filteredRecipientGroups.length,
+        this.activeRecipientGroupIndex,
+        1
+      );
+      this.scrollIntoView(this.inputGroupItems, this.activeRecipientGroupIndex);
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.activeRecipientGroupIndex = navigate(
+        this.filteredRecipientGroups.length,
+        this.activeRecipientGroupIndex,
+        -1
+      );
+      this.scrollIntoView(this.inputGroupItems, this.activeRecipientGroupIndex);
+    }
+    if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault();
+      this.selectGroupRecipient(
+        this.filteredRecipientGroups[this.activeRecipientGroupIndex]
+      );
     }
   }
 

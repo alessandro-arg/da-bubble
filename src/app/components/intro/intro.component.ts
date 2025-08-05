@@ -45,33 +45,7 @@ export class IntroComponent implements AfterViewInit {
       if (isPlatformBrowser(this.platformId)) {
         const introAlreadyShown = sessionStorage.getItem('introShown');
         if (!introAlreadyShown) {
-          // Start sliding animation after text appears
-          setTimeout(() => {
-            const introContent = document.querySelector('.intro-content');
-            const backgroundColorIntro = document.querySelector(
-              '.background-color-intro'
-            );
-            const backgroundColorIntroLogo = document.querySelector(
-              '.background-color-intro-logo'
-            );
-            if (introContent && backgroundColorIntroLogo) {
-              introContent.classList.add('slide-animation');
-              backgroundColorIntroLogo.classList.remove(
-                'background-color-intro-logo'
-              );
-              setTimeout(() => {
-                if (backgroundColorIntro) {
-                  backgroundColorIntro.classList.remove(
-                    'background-color-intro'
-                  );
-                }
-              }, 600);
-            }
-
-            setTimeout(() => {
-              this.navigateToLogin();
-            }, 1000);
-          }, 1000);
+          this.runIntroAnimationSequence();
         } else {
           this.navigateToLogin();
         }
@@ -79,6 +53,42 @@ export class IntroComponent implements AfterViewInit {
         this.navigateToLogin();
       }
     }, 100);
+  }
+
+  /**
+   * Runs the full intro animation and navigates to login after it's finished.
+   */
+  private runIntroAnimationSequence(): void {
+    setTimeout(() => {
+      this.animateIntroElements();
+      setTimeout(() => {
+        this.navigateToLogin();
+      }, 1000);
+    }, 1000);
+  }
+
+  /**
+   * Handles DOM manipulation to perform the sliding intro animation.
+   */
+  private animateIntroElements(): void {
+    const introContent = document.querySelector('.intro-content');
+    const backgroundColorIntro = document.querySelector(
+      '.background-color-intro'
+    );
+    const backgroundColorIntroLogo = document.querySelector(
+      '.background-color-intro-logo'
+    );
+
+    if (introContent && backgroundColorIntroLogo) {
+      introContent.classList.add('slide-animation');
+      backgroundColorIntroLogo.classList.remove('background-color-intro-logo');
+
+      setTimeout(() => {
+        if (backgroundColorIntro) {
+          backgroundColorIntro.classList.remove('background-color-intro');
+        }
+      }, 600);
+    }
   }
 
   /**
