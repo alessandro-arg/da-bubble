@@ -7,6 +7,7 @@ import { UserService } from '../../../../services/user.service';
 import { User } from '../../../../models/user.model';
 import { RegistrationService } from '../../../../services/registration.service';
 import { firstValueFrom } from 'rxjs';
+import { set } from '@angular/fire/database';
 
 @Component({
   selector: 'app-choose-your-avatar',
@@ -113,16 +114,22 @@ export class ChooseYourAvatarComponent implements OnInit {
     }
   }
 
+ 
   /**
-   * Selects an avatar and updates the component state accordingly.
+   * Selects an avatar and updates the component's state accordingly.
    * 
    * @param avatar - The identifier or URL of the avatar to be selected.
-   * Updates the `selectedAvatar` property with the provided avatar and
-   * sets `avatarSelectedConfirmed` to `true` to confirm the selection.
+   * 
+   * This method sets the `selectedAvatar` property to the provided avatar,
+   * confirms the avatar selection by setting `avatarSelectedConfirmed` to `true`,
+   * and then resets the confirmation state to `false` after a delay of 1500 milliseconds.
    */
   selectAvatar(avatar: string): void {
     this.selectedAvatar = avatar;
     this.avatarSelectedConfirmed = true;
+    setTimeout(() => {
+      this.avatarSelectedConfirmed = false;
+    }, 1500);
   }
 
   /**
