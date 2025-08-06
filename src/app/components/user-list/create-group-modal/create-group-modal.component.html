@@ -4,13 +4,11 @@
   (click)="close.emit()"
 >
   <div
-    class="bg-white w-full lg:h-auto max-w-[872px] relative flex flex-col lg:justify-between shadow-[0px_-3px_10px_0px_#00000033]"
+    class="bg-white w-full lg:h-auto max-w-[872px] relative flex flex-col gap-[25px] lg:gap-[30px] lg:justify-between shadow-[0px_-3px_10px_0px_#00000033]"
     [ngClass]="{
-      'lg:rounded-[30px] p-10 flex h-full flex-col gap-[25px] lg:gap-[30px]':
-        !isMobile,
-      'p-10 flex h-full flex-col gap-[25px] lg:gap-[30px]':
-        isMobile && step === 1,
-      'rounded-t-[25px] py-10 px-5 h-auto gap-[30px] fixed bottom-0':
+      'rounded-[30px] p-[40px] h-full': !isMobile,
+      'p-10 h-full': isMobile && step === 1,
+      'rounded-t-[25px] py-10 px-5 h-auto fixed bottom-0':
         isMobile && step === 2
     }"
     (click)="stopPropagation($event)"
@@ -101,7 +99,10 @@
     </ng-container>
 
     <ng-container *ngIf="step === 2">
-      <div class="flex justify-between items-center mb-[25px]">
+      <div
+        class="flex justify-between items-center"
+        [ngClass]="{ 'mb-[25px]': isMobile }"
+      >
         <!-- Header -->
         <h2 class="text-2xl font-bold">Leute hinzufügen</h2>
         <button
@@ -126,7 +127,7 @@
         </button>
       </div>
 
-      <div class="flex flex-col gap-5 mb-[25px]">
+      <div class="flex flex-col gap-5" [ngClass]="{ 'mb-[25px]': isMobile }">
         <label class="flex items-center gap-3">
           <input
             type="radio"
