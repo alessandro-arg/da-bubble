@@ -29,7 +29,7 @@
 
   <!-- list current participants -->
   <ul
-    class="flex flex-col gap-[15px]"
+    class="flex flex-col gap-[15px] max-h-[350px] overflow-y-auto"
     [ngClass]="isMobile ? 'w-full' : ' w-[335px]'"
   >
     <li *ngFor="let uid of group.participants" class="flex items-center gap-3">
@@ -63,8 +63,8 @@
       </ng-container>
 
       <ng-template #loading>
-        <div class="flex items-center gap-3 animate-pulse">
-          <div class="w-8 h-8 bg-gray-200 rounded-full"></div>
+        <div class="flex items-center gap-3 animate-pulse ml-9">
+          <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
           <div class="h-4 bg-gray-200 rounded w-24"></div>
         </div>
       </ng-template>
