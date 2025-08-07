@@ -31,6 +31,7 @@ import { MobileService } from '../../services/mobile.service';
 import { ChatInputComponent } from '../chat-input/chat-input.component';
 import { GroupService } from '../../services/group.service';
 import { ChatMessageEditComponent } from '../chat-message-edit/chat-message-edit.component';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-thread',
@@ -86,6 +87,7 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
     private firestore: Firestore,
     public chatService: ChatService,
     private groupService: GroupService,
+    private userService: UserService,
     private mobileService: MobileService
   ) {}
 
@@ -101,6 +103,11 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
 
     this.groupService.getAllGroupsLive().subscribe((groups) => {
       this.allGroups = groups;
+    });
+
+    this.userService.getAllUsersLive().subscribe((users) => {
+      this.allUsers = users;
+      this.participantsMap = Object.fromEntries(users.map((u) => [u.uid!, u]));
     });
   }
 

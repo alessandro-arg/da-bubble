@@ -119,7 +119,7 @@
     >
       <ng-container *ngIf="!editingGroupDescription; else editDesc">
         <div
-          class="rounded-xl relative flex flex-col gap-5 max-w-[750px] short:gap-2"
+          class="rounded-xl relative flex flex-col gap-5 max-w-[550px] short:gap-2"
         >
           <div class="flex justify-between items-center">
             <span class="text-lg font-bold">Beschreibung</span>
@@ -137,7 +137,7 @@
               <img src="assets/img/icons/mobile_edit_group.png" alt="" />
             </button>
           </div>
-          <div class="text-lg">
+          <div class="text-lg break-words">
             {{ group.description || "Keine Beschreibung" }}
           </div>
         </div>

@@ -20,10 +20,11 @@ import {
   EventEmitter,
   OnInit,
   HostListener,
+  OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { shareReplay, take } from 'rxjs/operators';
+import { shareReplay, skip, take } from 'rxjs/operators';
 import { ChatService } from '../../services/chat.service';
 import { GroupService } from '../../services/group.service';
 import { UserService } from '../../services/user.service';
@@ -69,7 +70,7 @@ import { MobileService } from '../../services/mobile.service';
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
 })
-export class ChatComponent implements OnChanges, OnInit {
+export class ChatComponent implements OnChanges, OnInit, OnDestroy {
   @Input() chatPartner!: User | null;
   @Input() currentUserUid!: string | null;
   @Input() groupId!: string | null;
@@ -98,11 +99,14 @@ export class ChatComponent implements OnChanges, OnInit {
   statusMap: Record<string, boolean> = {};
   private presenceSubs: Subscription[] = [];
 
-  participantsMap: Record<string, User> = {};
+  public get participantsMap(): Record<string, User> {
+    return this.allUsersMap;
+  }
   currentGroup: Group | null = null;
 
   threadStreams: Record<string, Observable<Message[]>> = {};
   private messagesSub?: Subscription;
+  private scrollSub?: Subscription;
 
   editingMsgId: string | null = null;
   editText = '';
@@ -176,6 +180,7 @@ export class ChatComponent implements OnChanges, OnInit {
     if (changes['groupId']) {
       if (!this.groupId) {
         this.messagesSub?.unsubscribe();
+        this.scrollSub?.unsubscribe();
         this.threadStreams = {};
         this.messages$ = this.chatService.emptyStream;
       }
@@ -188,6 +193,12 @@ export class ChatComponent implements OnChanges, OnInit {
     if (changes['groupId'] && this.groupId) {
       await this.loadGroupChat(this.groupId);
     }
+  }
+
+  ngOnDestroy() {
+    this.messagesSub?.unsubscribe();
+    this.scrollSub?.unsubscribe();
+    this.presenceSubs.forEach((s) => s.unsubscribe());
   }
 
   /**
@@ -223,10 +234,10 @@ export class ChatComponent implements OnChanges, OnInit {
   private async loadPrivateChat(meUid: string, them: User) {
     this.chatId = await this.chatService.ensureChat(meUid, them.uid!);
     this.messages$ = this.chatService.getChatMessages(this.chatId);
-    const me = await this.userService.getUser(meUid);
-    this.participantsMap = me
-      ? { [meUid]: me, ...(them.uid !== meUid && { [them.uid!]: them }) }
-      : { [them.uid!]: them };
+    this.scrollSub?.unsubscribe();
+    this.scrollSub = this.messages$
+      .pipe(skip(1))
+      .subscribe(() => setTimeout(() => this.scrollToBottom(), 50));
     this.finishLoading();
   }
 
@@ -235,8 +246,12 @@ export class ChatComponent implements OnChanges, OnInit {
    */
   private async loadGroupChat(groupId: string) {
     this.messagesSub?.unsubscribe();
+    this.scrollSub?.unsubscribe();
     this.chatId = groupId;
     this.messages$ = this.chatService.getGroupMessages(groupId);
+    this.scrollSub = this.messages$
+      .pipe(skip(1))
+      .subscribe(() => setTimeout(() => this.scrollToBottom(), 50));
     this.group$ = this.chatService.getGroup(groupId);
     this.subscribeToGroup();
     this.finishLoading();

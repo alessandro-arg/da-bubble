@@ -122,7 +122,7 @@
     class="fixed inset-x-0 bottom-0 bg-white shadow-[0px_-3px_10px_0px_#00000033] z-50 rounded-t-[30px] py-[30px] px-[26px]"
     (click)="$event.stopPropagation()"
   >
-    <!-- • grab‑handle -->
+    <!-- grab‑handle -->
     <div
       class="w-[62px] h-[6px] bg-[#D9D9D9] rounded-[23px] mx-auto mb-5"
       (click)="closeModals()"
@@ -238,7 +238,9 @@
         <img src="assets/img/icons/mail.png" alt="" />
         <span>E-Mail-Adresse</span>
       </div>
-      <div class="ml-[50px] mt-[15px] font-medium text-lg text-[#1381FF]">
+      <div
+        class="ml-[50px] mt-[15px] font-medium text-lg text-[#1381FF] break-words"
+      >
         {{ currentUser?.email }}
       </div>
     </div>
@@ -246,10 +248,7 @@
     <!-- Edit Mode -->
     <div *ngIf="isEditingName" class="w-full">
       <div class="flex items-center gap-5 mb-2">
-        <img
-          src="assets/img/icons/account_circle.png"
-          alt="user icon"
-        />
+        <img src="assets/img/icons/account_circle.png" alt="user icon" />
         <span class="font-semibold text-lg">Vollständiger Name</span>
       </div>
 
