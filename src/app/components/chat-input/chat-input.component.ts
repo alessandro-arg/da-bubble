@@ -112,6 +112,10 @@ export class ChatInputComponent implements AfterViewInit {
     this.sendPressed.emit();
   }
 
+  public focusInput(): void {
+    this.msgInput.nativeElement.focus();
+  }
+
   /**
    * Called whenever the user types into the message input.
    * Detects whether the user is triggering a `@mention` or `#group` and delegates accordingly.

@@ -112,6 +112,7 @@ export class ChatComponent implements OnChanges, OnInit, OnDestroy {
   editText = '';
   optionsOpen: Record<string, boolean> = {};
 
+  @ViewChild('chatInputRef') private chatInput?: ChatInputComponent;
   @ViewChild('grpHeader') grpHeader!: GroupHeaderComponent;
   @ViewChild('chatContainer', { read: ElementRef })
   private chatContainer!: ElementRef<HTMLElement>;
@@ -188,10 +189,12 @@ export class ChatComponent implements OnChanges, OnInit, OnDestroy {
 
     if (changes['chatPartner'] && this.chatPartner && this.currentUserUid) {
       await this.loadPrivateChat(this.currentUserUid, this.chatPartner);
+      this.focusMessageInput();
     }
 
     if (changes['groupId'] && this.groupId) {
       await this.loadGroupChat(this.groupId);
+      this.focusMessageInput();
     }
   }
 
@@ -218,6 +221,12 @@ export class ChatComponent implements OnChanges, OnInit, OnDestroy {
       this.allGroupsMap,
       this.participantsMap
     );
+
+  private focusMessageInput() {
+    setTimeout(() => {
+      this.chatInput?.focusInput();
+    }, 0);
+  }
 
   /**
    * Opens the group settings modal from the header component.

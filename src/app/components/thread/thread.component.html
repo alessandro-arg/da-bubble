@@ -209,6 +209,7 @@
 
   <!-- Input Field -->
   <app-chat-input
+    #threadInputRef
     [(newMessage)]="threadText"
     [currentGroup]="group$ | async"
     [currentUserUid]="currentUserUid"

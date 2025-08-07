@@ -77,6 +77,8 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
 
   @ViewChild('threadContainer', { read: ElementRef })
   threadContainer!: ElementRef<HTMLElement>;
+  @ViewChild('threadInputRef')
+  private threadInput?: ChatInputComponent;
 
   editInput?: ElementRef<HTMLTextAreaElement>;
 
@@ -154,7 +156,14 @@ export class ThreadComponent implements OnChanges, AfterViewInit, OnInit {
         this.groupId,
         this.messageId
       );
+      this.focusThreadInput();
     }
+  }
+
+  private focusThreadInput() {
+    setTimeout(() => {
+      this.threadInput?.focusInput();
+    }, 0);
   }
 
   /**
