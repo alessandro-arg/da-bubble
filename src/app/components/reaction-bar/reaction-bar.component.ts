@@ -9,12 +9,14 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   ElementRef,
   HostListener,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatService } from '../../services/chat.service';
 import { Message, Reaction } from '../../models/chat.model';
 import { User } from '../../models/user.model';
 import { FormsModule } from '@angular/forms';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-reaction-bar',
@@ -24,7 +26,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './reaction-bar.component.html',
   styleUrls: ['./reaction-bar.component.scss'],
 })
-export class ReactionBarComponent {
+export class ReactionBarComponent implements OnInit {
   @Input() msg!: Message;
   @Input() currentUserUid!: string | null;
   @Input() participantsMap!: Record<string, User>;
@@ -36,11 +38,19 @@ export class ReactionBarComponent {
 
   showPicker = false;
   expanded = false;
+  isMobile = false;
 
   constructor(
     private chatService: ChatService,
+    private mobileService: MobileService,
     private host: ElementRef<HTMLElement>
   ) {}
+
+  ngOnInit() {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+  }
 
   /**
    * Detects and handles clicks outside of the component to hide the emoji picker.

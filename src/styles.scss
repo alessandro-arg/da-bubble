@@ -76,3 +76,13 @@ emoji-picker ::-webkit-scrollbar-thumb {
   border-radius: 30px;
   border: 2px solid white;
 }
+
+@media (max-width: 640px) {
+  emoji-picker {
+    width: 260px;
+    height: 250px;
+    --emoji-size: 1rem;
+    --emoji-padding: 0.5rem;
+    --num-columns: 6;
+  }
+}

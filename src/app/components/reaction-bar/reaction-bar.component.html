@@ -1,9 +1,9 @@
 <div
   class="flex items-center mt-1 gap-1"
-  [class.px-[45px]]="!inThread"
+  [class.px-[10px]]="!inThread"
   [ngClass]="{
-    'pr-0 flex-row-reverse justify-end': msg.sender === currentUserUid,
-    'pl-0 justify-start': msg.sender !== currentUserUid
+    'pr-0 flex-row-reverse justify-end -mr-10': msg.sender === currentUserUid,
+    'pl-0 justify-start -ml-10': msg.sender !== currentUserUid
   }"
 >
   <!-- picker -->
@@ -13,11 +13,7 @@
       (click)="togglePicker()"
       aria-label="Add reaction"
     >
-      <img
-        src="assets/img/icons/add_reaction.png"
-        class="w-6 h-6"
-        alt=""
-      />
+      <img src="assets/img/icons/add_reaction.png" class="w-6 h-6" alt="" />
     </button>
     <div
       *ngIf="showPicker"
@@ -35,12 +31,13 @@
   <!-- reactions -->
   <div
     class="flex flex-1 flex-wrap items-center gap-1"
-    [ngClass]="{ 'space-x-reverse': msg.sender === currentUserUid }"
+    [ngClass]="{ 'flex-row-reverse': msg.sender === currentUserUid }"
   >
     <ng-container *ngFor="let r of displayedReactions()">
       <div class="relative flex-shrink-0">
         <span
-          class="peer flex items-center gap-2 z-10 whitespace-nowrap px-2 py-1 text-base border border-[#ADB0D9] bg-white rounded-full cursor-pointer hover:border-[#444DF2]"
+          class="peer flex items-center z-10 px-2 whitespace-nowrap py-1 text-base border border-[#ADB0D9] bg-white rounded-full cursor-pointer hover:border-[#444DF2]"
+          [ngClass]="{ 'gap-1': isMobile, 'gap-2': !isMobile }"
           (click)="onReactionClick(r.emoji)"
         >
           <span class="text-lg">{{ r.emoji }}</span>
