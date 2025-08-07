@@ -172,8 +172,9 @@ export class ChatInputComponent implements AfterViewInit {
     let pool = this.allGroups;
 
     if (this.groupId) {
-      const parts = this.participantsMap;
-      pool = pool.filter((g) => g.participants?.every((uid) => parts[uid]));
+      pool = this.allGroups.filter((g) =>
+        g.participants?.includes(this.currentUserUid!)
+      );
     } else if (this.chatPartner && this.currentUserUid) {
       pool = pool.filter(
         (g) =>
