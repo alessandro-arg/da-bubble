@@ -50,7 +50,8 @@
           class="cursor-pointer transform transition-transform duration-200"
           [ngClass]="{
             '-rotate-90': !channelsDropdownOpen,
-            'scale-105': channelsArrowHover
+            'scale-105': channelsArrowHover,
+            'hidden xl:flex': !isMobile
           }"
         />
         <div class="flex items-center gap-2">
@@ -94,7 +95,7 @@
           (click)="onGroupClick(g)"
           (mouseenter)="hoveredGroupId = g.id"
           (mouseleave)="hoveredGroupId = null"
-          class="flex items-center gap-2 ml-[25px] w-max rounded-2xl py-1 px-5 cursor-pointer transition-colors duration-200"
+          class="flex items-center gap-2 ml-0 xl:ml-[25px] w-max rounded-2xl py-1 px-5 cursor-pointer transition-colors duration-200"
           [ngClass]="{
             'bg-[#ECEEFE]': selectedGroupId === g.id,
             'hover:bg-[#E0E2FF]': selectedGroupId !== g.id
@@ -121,7 +122,7 @@
           </p>
         </div>
         <div
-          class="w-max flex gap-2 ml-[25px] rounded-2xl py-1 px-5 cursor-pointer hover:text-[#535AF1] transition-colors"
+          class="w-max flex gap-2 ml-0 xl:ml-[25px] rounded-2xl py-1 xl:px-5 cursor-pointer hover:text-[#535AF1] transition-colors"
           (click)="openAddGroupModal()"
           (mouseenter)="addChannelHover2 = true"
           (mouseleave)="addChannelHover2 = false"
@@ -151,7 +152,8 @@
           class="cursor-pointer transform transition-transform duration-200"
           [ngClass]="{
             '-rotate-90': !direktDropdownOpen,
-            'scale-105': direktArrowHover
+            'scale-105': direktArrowHover,
+            'hidden xl:flex': !isMobile
           }"
         />
 
@@ -162,7 +164,7 @@
       </div>
 
       <div
-        class="transition-all duration-300 ease-in-out"
+        class="transition-all duration-300 ease-in-out overflow-x-hidden"
         [ngClass]="
           direktDropdownOpen
             ? 'max-h-[100%] opacity-1'
@@ -173,7 +175,7 @@
           <div
             *ngFor="let user of users"
             (click)="onClick(user)"
-            class="w-max ml-4 mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+            class="w-full break-words xl:w-max ml-0 xl:ml-4 mr-[5px] flex items-center gap-3 xl:gap-4 px-4 xl:px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
             [ngClass]="{
               'bg-[#ECEEFE]': user.uid === selectedUserUid,
               'hover:bg-[#ECEEFE]': user.uid !== selectedUserUid
