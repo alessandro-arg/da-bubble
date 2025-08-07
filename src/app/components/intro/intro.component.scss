@@ -10,26 +10,26 @@
   }
 }
 
-@keyframes moveToTopLeft {
+/* @keyframes moveToTopLeft {
   0% {
-    bottom: 2.25rem;
-    right: 10%;
+    bottom: 30%;
+    right: 30%;
   }
   100% {
     bottom: auto;
-    top: 2.25rem;
-    left: 4.25rem;
+    top: 75px;
+    left: 0%;
     right: auto;
     transform: scale(0.7);
   }
-}
+} */
 
 @keyframes slideToTopLeft {
   0% {
     transform: translate(0, 0);
   }
   100% {
-    transform: translate(calc(-90vw + 100%), calc(-100vh + 100%));
+    transform: translate(calc(-65vw + 100%), calc(-70vh + 100%));
   }
 }
 
@@ -61,7 +61,7 @@
 }
 
 .background-color-intro-logo {
-  background: linear-gradient(to bottom, #434be9 0%, #3b44e8 100%);
+  background: linear-gradient(to bottom, #5159ef 0%, #454dec 100%);
 }
 
 .intro-content {
@@ -69,8 +69,8 @@
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  bottom: 2.25rem;
-  right: 10%;
+  bottom: 30%;
+  right: 30%;
   margin-top: 6rem;
   margin-left: 9rem;
 
