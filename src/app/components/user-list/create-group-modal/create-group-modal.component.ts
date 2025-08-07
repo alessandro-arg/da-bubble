@@ -29,6 +29,7 @@ export class CreateGroupModalComponent implements OnInit {
   @Output() created = new EventEmitter<string>();
 
   name = '';
+  nameError = '';
   description = '';
 
   addAll = true;
@@ -90,11 +91,13 @@ export class CreateGroupModalComponent implements OnInit {
     const term = this.searchTerm.toLowerCase().trim();
     if (!term) return [];
     return this.allUsers
-      .filter(
-        (u) =>
-          u.name.toLowerCase().includes(term) &&
-          !this.selectedUsers.find((s) => s.uid === u.uid)
-      )
+      .filter((u) => {
+        const parts = u.name.toLowerCase().split(/\s+/);
+        const matchesName = parts.some((part) => part.startsWith(term));
+        const notSelected = !this.selectedUsers.some((s) => s.uid === u.uid);
+        return matchesName && notSelected;
+      })
+      .sort((a, b) => a.name.localeCompare(b.name))
       .slice(0, 5);
   }
 
@@ -110,10 +113,18 @@ export class CreateGroupModalComponent implements OnInit {
   /**
    * Proceeds to step 2 if group name is valid.
    */
-  onCreate() {
+  async onCreate() {
+    this.nameError = '';
     if (!this.name.trim()) {
       return;
     }
+
+    const exists = await this.groupService.isGroupNameTaken(this.name);
+    if (exists) {
+      this.nameError = 'Es gibt bereits einen Channel mit diesem Namen';
+      return;
+    }
+
     this.step = 2;
   }
 

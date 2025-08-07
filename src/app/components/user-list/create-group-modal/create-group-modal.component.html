@@ -67,6 +67,11 @@
             class="w-full h-full pl-[60px] pr-5 border border-[#ADB0D9] rounded-full text-lg cursor-pointer placeholder-[#686868] focus:outline-none focus:ring-1 focus:ring-[#535AF1] hover:border-[#797EF3] focus:border-transparent transition duration-200"
           />
         </div>
+        <div class="h-3">
+          <p *ngIf="nameError" class="text-red-500 text-sm pl-8">
+            {{ nameError }}
+          </p>
+        </div>
       </div>
 
       <!-- Description -->

@@ -17,6 +17,9 @@ import {
   arrayRemove,
   collectionData,
   CollectionReference,
+  limit,
+  query,
+  where,
 } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { User } from './../models/user.model';
@@ -172,5 +175,19 @@ export class GroupService {
       'groups'
     ) as CollectionReference<Group>;
     return collectionData(groupsRef, { idField: 'id' }) as Observable<Group[]>;
+  }
+
+  async isGroupNameTaken(name: string): Promise<boolean> {
+    // 1) reference the "groups" collection
+    const groupsRef = collection(this.firestore, 'groups');
+
+    // 2) build a query for name == passed name, but only need 1 result
+    const nameQuery = query(groupsRef, where('name', '==', name), limit(1));
+
+    // 3) run it
+    const snap = await getDocs(nameQuery);
+
+    // 4) if it's non-empty, the name is taken
+    return !snap.empty;
   }
 }
