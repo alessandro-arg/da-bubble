@@ -144,9 +144,14 @@ export class ChatInputComponent implements AfterViewInit {
    */
   private handleUserMention(pos: number, atIdx: number) {
     const query = this.newMessage.slice(atIdx + 1, pos).toLowerCase();
-    const pool = this.groupId
-      ? Object.values(this.participantsMap)
-      : this.allUsers;
+    let pool: User[];
+    if (this.groupId && this.currentGroup) {
+      pool = this.allUsers.filter((u) =>
+        this.currentGroup!.participants.includes(u.uid)
+      );
+    } else {
+      pool = this.allUsers;
+    }
 
     this.filteredUsers = pool.filter((u) =>
       u.name.toLowerCase().startsWith(query)
