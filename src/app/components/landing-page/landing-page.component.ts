@@ -27,6 +27,7 @@ import { ThreadComponent } from '../thread/thread.component';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { PresenceService } from '../../services/presence.service';
 import { MobileService } from '../../services/mobile.service';
+import { AvatarEditModalComponent } from './avatar-edit-modal/avatar-edit-modal.component';
 
 @Component({
   selector: 'app-landing-page',
@@ -39,6 +40,7 @@ import { MobileService } from '../../services/mobile.service';
     WorkspaceToggleButtonComponent,
     ChatComponent,
     ThreadComponent,
+    AvatarEditModalComponent,
   ],
   templateUrl: './landing-page.component.html',
   styleUrl: './landing-page.component.scss',
@@ -48,6 +50,7 @@ export class LandingPageComponent implements OnInit {
   isMobile = false;
   showDropdown = false;
   showProfileModal = false;
+  showAvatarEditor = false;
 
   currentUser: User | null = null;
   isEditingName = false;
@@ -212,6 +215,10 @@ export class LandingPageComponent implements OnInit {
     this.showProfileModal = true;
   }
 
+  openAvatarEditor() {
+    this.showAvatarEditor = true;
+  }
+
   /** Closes the profile modal and resets edit state. */
   closeProfileModal() {
     if (this.isEditingName) {
@@ -262,6 +269,15 @@ export class LandingPageComponent implements OnInit {
     } catch (error) {
       console.error('Name konnte nicht gespeichert werden:', error);
     }
+  }
+
+  async uploadAvatar(newAvatar: string) {
+    if (!this.currentUser) return;
+    await this.userService.updateUser(this.currentUser.uid, {
+      avatar: newAvatar,
+    });
+    this.currentUser.avatar = newAvatar;
+    this.showAvatarEditor = false;
   }
 
   /**

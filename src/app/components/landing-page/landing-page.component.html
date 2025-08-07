@@ -197,12 +197,21 @@
     <div
       class="flex justify-center"
       [ngClass]="{ 'w-full': isMobile, 'w-[420px]': !isMobile }"
+      (click)="$event.stopPropagation()"
     >
-      <img
-        [src]="currentUser?.avatar || 'assets/img/profile.svg'"
-        class="w-[200px] h-[200px] rounded-full object-cover"
-        alt="Avatar"
-      />
+      <div class="relative">
+        <img
+          [src]="currentUser?.avatar || 'assets/img/profile.svg'"
+          class="w-[200px] h-[200px] rounded-full object-cover"
+          alt="Avatar"
+        />
+        <img
+          src="assets/img/icons/mobile_edit_user.png"
+          alt="Edit avatar"
+          class="absolute top-2 right-2 w-8 h-8 cursor-pointer bg-white rounded-full p-[2px] shadow"
+          (click)="openAvatarEditor(); $event.stopPropagation()"
+        />
+      </div>
     </div>
 
     <!-- Name & Edit -->
@@ -289,6 +298,13 @@
         </button>
       </div>
     </div>
+
+    <app-avatar-edit-modal
+      *ngIf="showAvatarEditor"
+      [currentAvatar]="currentUser?.avatar"
+      (avatarChange)="uploadAvatar($event)"
+      (closed)="showAvatarEditor = false"
+    ></app-avatar-edit-modal>
   </div>
 
   <div class="flex h-full w-full flex-row overflow-hidden">
