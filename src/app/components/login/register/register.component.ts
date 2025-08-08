@@ -14,6 +14,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { RegistrationService } from '../../../services/registration.service';
+import { MobileService } from '../../../services/mobile.service';
 
 @Component({
   selector: 'app-register',
@@ -27,6 +28,7 @@ export class RegisterComponent {
   showPassword = false;
   errorMessage: string | null = null;
   loading = false;
+  isMobile = false;
 
   /**
    * Constructs the RegisterComponent and initializes the form.
@@ -35,11 +37,21 @@ export class RegisterComponent {
    */
   constructor(
     private registrationService: RegistrationService,
-    private router: Router
+    private router: Router,
+    private mobileService: MobileService
   ) {
     this.registerForm = new FormGroup({
-      name: new FormControl('', [Validators.required]),
-      email: new FormControl('', [Validators.required, Validators.email]),
+      name: new FormControl('', [
+        Validators.required,
+        Validators.pattern(
+          '^[A-Za-zÄÖÜäöüß]{2,12}(?:\\s+[A-Za-zÄÖÜäöüß]{2,12})+$'
+        ),
+      ]),
+      email: new FormControl('', [
+        Validators.required,
+        Validators.email,
+        Validators.pattern('[^@]+@[^@]+\\.[a-zA-Z]{2,6}'),
+      ]),
       password: new FormControl('', [
         Validators.required,
         Validators.minLength(6),
@@ -52,6 +64,10 @@ export class RegisterComponent {
    * Loads previously entered registration data if available.
    */
   ngOnInit() {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+
     const savedData = this.registrationService.getRegistrationData();
     if (savedData) {
       this.registerForm.setValue({

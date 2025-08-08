@@ -3,10 +3,10 @@
   (click)="cancel()"
 >
   <div
-    class="bg-white p-[30px] rounded-[30px] shadow-lg relative max-w-sm w-full"
+    class="flex flex-col gap-10 bg-white p-[30px] rounded-[30px] shadow-lg relative max-w-sm w-[95%]"
     (click)="$event.stopPropagation()"
   >
-    <h3 class="text-xl font-bold mb-4">Avatar ändern</h3>
+    <h3 class="text-xl font-bold">Avatar ändern</h3>
     <div class="flex flex-wrap justify-center gap-4">
       <div
         *ngFor="let avatar of avatars"
@@ -25,15 +25,15 @@
       </div>
     </div>
 
-    <div class="mt-6 flex justify-end gap-4">
+    <div class="flex justify-end gap-4">
       <button
-        class="px-4 py-2 rounded-full border border-gray-300 hover:bg-gray-100"
+        class="px-[25px] py-3 text-[#444DF2] font-bold text-lg rounded-[25px] border border-[#797EF3] hover:bg-[#535AF1] hover:text-white"
         (click)="cancel()"
       >
         Abbrechen
       </button>
       <button
-        class="px-4 py-2 rounded-full bg-[#444DF2] text-white disabled:opacity-50"
+        class="px-[25px] py-3 rounded-[25px] bg-[#444DF2] font-bold text-lg text-white hover:bg-[#797EF3] disabled:bg-[#686868]"
         [disabled]="selectedAvatar === currentAvatar"
         (click)="save()"
       >
