@@ -25,7 +25,7 @@ import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  public currentUserSubject = new BehaviorSubject<User | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
   redirectUrl: string | null = null;
 
@@ -45,20 +45,8 @@ export class AuthService {
   login(email: string, password: string): Observable<UserCredential> {
     return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
       catchError((error: FirebaseError) => {
-        console.error('Firebase login error:', error);
         let errorMessage = 'Login fehlgeschlagen.';
-
         switch (error.code) {
-          case 'auth/invalid-credential':
-            errorMessage =
-              'Ungültige Anmeldedaten. Bitte überprüfen Sie E-Mail und Passwort.';
-            break;
-          case 'auth/user-not-found':
-            errorMessage = 'Kein Konto mit dieser E-Mail gefunden.';
-            break;
-          case 'auth/wrong-password':
-            errorMessage = 'Falsches Passwort.';
-            break;
           case 'auth/too-many-requests':
             errorMessage =
               'Zu viele fehlgeschlagene Versuche. Bitte später erneut versuchen.';

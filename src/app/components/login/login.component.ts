@@ -61,28 +61,39 @@ export class LoginComponent implements OnInit {
    * @param form Angular template-driven form for login input.
    */
   async onSubmit(form: NgForm) {
+    const emailCtrl = form.form.controls['email'];
+    const pwCtrl = form.form.controls['password'];
+
+    emailCtrl.setErrors(null);
+    pwCtrl.setErrors(null);
+
     if (form.invalid) return;
 
     this.loading = true;
     this.errorMessage = null;
 
-    try {
-      const userCredential = await this.authService
-        .login(this.credentials.email, this.credentials.password)
-        .toPromise();
+    const exists = await this.userService.isEmailTaken(this.credentials.email);
+    if (!exists) {
+      emailCtrl.setErrors({ userNotFound: true });
+      emailCtrl.markAsTouched();
+      this.loading = false;
+      return;
+    }
 
-      if (userCredential?.user) {
-        const userData = await this.userService.getUser(
-          userCredential.user.uid
-        );
-        const redirectUrl =
-          this.authService.redirectUrl ||
-          `/landingpage/${userCredential.user.uid}`;
-        this.router.navigateByUrl(redirectUrl);
-      }
-    } catch (error: any) {
-      this.errorMessage = error.message || 'Login fehlgeschlagen.';
-      console.error('Login error:', error);
+    try {
+      await firstValueFrom(
+        this.authService.login(
+          this.credentials.email,
+          this.credentials.password
+        )
+      );
+      const redirectUrl =
+        this.authService.redirectUrl ||
+        `/landingpage/${this.authService.currentUserSubject.value?.uid}`;
+      this.router.navigateByUrl(redirectUrl);
+    } catch {
+      pwCtrl.setErrors({ incorrect: true });
+      pwCtrl.markAsTouched();
     } finally {
       this.loading = false;
     }

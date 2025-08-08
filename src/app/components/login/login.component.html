@@ -71,7 +71,9 @@
               type="email"
               id="email"
               name="email"
+              pattern="[^@]+@[^@]+\.[a-zA-Z]{2,6}"
               [(ngModel)]="credentials.email"
+              #emailCtrl="ngModel"
               placeholder="beispielname@email.com"
               required
               email
@@ -83,16 +85,22 @@
           [ngClass]="{ 'text-base': !isMobile, 'text-sm': isMobile }"
         >
           <p
-            *ngIf="loginForm.form.controls['email']?.errors?.['required'] && loginForm.form.controls['email']?.touched"
+            *ngIf="emailCtrl.errors?.required && emailCtrl.touched"
             class="text-[#ED1E79]"
           >
             Bitte geben Sie eine E-Mail-Adresse ein.
           </p>
           <p
-            *ngIf="loginForm.form.controls['email']?.errors?.['email'] && loginForm.form.controls['email']?.touched"
+            *ngIf="emailCtrl.errors?.pattern && emailCtrl.touched"
             class="text-[#ED1E79]"
           >
             Diese E-Mail-Adresse ist leider ungültig.
+          </p>
+          <p
+            *ngIf="emailCtrl.errors?.userNotFound && emailCtrl.touched"
+            class="text-[#ED1E79]"
+          >
+            Diese E-Mail-Adresse ist nicht registriert.
           </p>
         </div>
       </div>
@@ -116,6 +124,7 @@
             id="password"
             name="password"
             [(ngModel)]="credentials.password"
+            #pwCtrl="ngModel"
             placeholder="Passwort"
             required
           />
@@ -144,10 +153,16 @@
           [ngClass]="{ 'text-base': !isMobile, 'text-sm': isMobile }"
         >
           <p
-            *ngIf="loginForm.form.controls['password']?.errors?.['required'] && loginForm.form.controls['password']?.touched"
+            *ngIf="pwCtrl.errors?.required && pwCtrl.touched"
             class="text-[#ED1E79]"
           >
             Bitte geben Sie ein Passwort ein.
+          </p>
+          <p
+            *ngIf="pwCtrl.errors?.incorrect && pwCtrl.touched"
+            class="text-[#ED1E79]"
+          >
+            Passwort ist falsch. Bitte versuchen Sie es erneut.
           </p>
         </div>
       </div>
@@ -159,12 +174,6 @@
             class="text-[#797EF3] hover:text-[#444DF2] hover:bg-[#ECEEFE] rounded-[30px] py-[5px] px-[15px] hover:font-medium transition-all duration-200"
             >Passwort vergessen?</a
           >
-        </div>
-        <!-- Error Message from API -->
-        <div class="absolute top-[100%] w-full h-6 p-2">
-          <p *ngIf="errorMessage" class="text-[#ED1E79]">
-            {{ errorMessage }}
-          </p>
         </div>
       </div>
 
@@ -187,7 +196,7 @@
             class="w-[38px] h-[38px]"
           />
           <span *ngIf="!loading">Anmelden mit Google</span>
-          <span *ngIf="loading">Wird geladen...</span>
+          <span *ngIf="loading">Laden...</span>
         </button>
       </div>
 
@@ -203,7 +212,7 @@
           [disabled]="loading || !loginForm.valid"
         >
           <span *ngIf="!loading">Anmelden</span>
-          <span *ngIf="loading">Anmeldung läuft...</span>
+          <span *ngIf="loading">Anmelden...</span>
         </button>
         <button
           type="button"
@@ -212,7 +221,7 @@
           class="guest-login-btn border text-[#444DF2] border-[#797EF3] hover:bg-[#535AF1] py-3 px-6 rounded-full disabled:pointer-events-none bg-white disabled:text-[#686868] disabled:border-[#686868] transition-all duration-200"
         >
           <span *ngIf="!loading">Gäste-Login</span>
-          <span *ngIf="loading">Wird geladen...</span>
+          <span *ngIf="loading">Laden...</span>
         </button>
       </div>
     </form>
