@@ -3,7 +3,7 @@
  * Google sign-in users, and guest users.
  */
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
@@ -11,6 +11,7 @@ import { AuthService } from '../../auth/auth.service';
 import { UserService } from '../../services/user.service';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-login',
@@ -19,10 +20,11 @@ import { environment } from '../../../environments/environment';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   showPassword = false;
   errorMessage: string | null = null;
   loading = false;
+  isMobile = false;
 
   credentials = {
     email: '',
@@ -38,8 +40,15 @@ export class LoginComponent {
   constructor(
     private authService: AuthService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private mobileService: MobileService
   ) {}
+
+  ngOnInit() {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+  }
 
   /** Toggles visibility of the password input field. */
   togglePasswordVisibility() {

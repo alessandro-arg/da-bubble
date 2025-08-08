@@ -3,8 +3,11 @@
 >
   <!-- Logo Section -->
   <header
-    class="logo-container flex items-center w-full max-w-[1920px] mt-[75px]"
-    [ngClass]="{ 'justify-between': !isMobile, 'justify-center': isMobile }"
+    class="logo-container flex items-center w-full max-w-[1920px]"
+    [ngClass]="{
+      'mt-[75px] justify-between': !isMobile,
+      'justify-center mt-20px': isMobile
+    }"
   >
     <div class="logo flex items-center gap-2">
       <img src="assets/img/logo.svg" alt="DABubble Logo" class="w-16 h-auto" />
@@ -242,7 +245,7 @@
       </div>
 
       <!-- Privacy Policy Checkbox -->
-      <div class="form-group" [ngClass]="{ hidden: isMobile }">
+      <div class="form-group">
         <div class="flex items-center gap-3">
           <div class="relative items-center flex justify-center">
             <img

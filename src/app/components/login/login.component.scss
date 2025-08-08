@@ -1,57 +1,51 @@
 .form-group-input-div {
-    &:hover {
-        border: 1px solid #444DF2;
-    }
+  &:hover {
+    border: 1px solid #444df2;
+  }
 
-    &:has(input:focus) {
-        border: 1px solid #444DF2;
-    }
+  &:has(input:focus) {
+    border: 1px solid #444df2;
+  }
 }
 
-
 h1 {
-    color: #444DF2;
+  color: #444df2;
 }
 
 .guest-login-btn {
-    color: #444DF2;
-    border-color: #444DF2;
+  color: #444df2;
+  border-color: #444df2;
 
-    &:hover {
-        background-color: #444DF2;
-        color: white;
-    }
+  &:hover {
+    background-color: #444df2;
+    color: white;
+  }
 }
 
 .error {
-    font-size: 0.8rem;
-    margin-top: 0.5rem;
-    text-align: center;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  text-align: center;
 }
 
 .register-link-mobile {
-    display: none;
+  display: none;
 }
 
 @media screen and (max-width: 430px) {
-    .register-link-destop {
-        display: none;
-    }
+  .register-link-destop {
+    display: none;
+  }
 
-    .logo-container {
-        justify-content: center;
+  .logo-container {
+    justify-content: center;
+  }
 
-        p {
-            font-size: 2rem;
-        }
-    }
+  .register-link-mobile {
+    display: flex;
+  }
 
-    .register-link-mobile {
-        display: flex;
-    }
-
-    footer {
-        display: none;
-    }
-
+  footer {
+    display: none;
+  }
 }

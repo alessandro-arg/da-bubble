@@ -2,7 +2,11 @@
   class="login-page container mx-auto p-5 flex flex-col justify-center min-h-screen relative"
 >
   <div
-    class="logo-container flex justify-between items-center w-full max-w-[1920px] mt-[75px]"
+    class="logo-container flex items-center w-full max-w-[1920px]"
+    [ngClass]="{
+      'mt-[75px] justify-between': !isMobile,
+      'justify-center mt-20px': isMobile
+    }"
   >
     <div class="logo flex items-center gap-2">
       <img src="assets/img/logo.svg" alt="DABubble Logo" class="w-16 h-auto" />

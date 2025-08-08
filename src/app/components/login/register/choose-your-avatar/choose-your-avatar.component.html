@@ -3,8 +3,11 @@
 >
   <!-- Logo Section -->
   <header
-    class="logo-container flex items-center w-full max-w-[1920px] mt-[75px]"
-    [ngClass]="{ 'justify-between': !isMobile, 'justify-center': isMobile }"
+    class="logo-container flex items-center w-full max-w-[1920px]"
+    [ngClass]="{
+      'mt-[75px] justify-between': !isMobile,
+      'justify-center mt-20px': isMobile
+    }"
   >
     <div class="logo flex items-center gap-2">
       <img src="assets/img/logo.svg" alt="DABubble Logo" class="w-16 h-auto" />
@@ -36,7 +39,7 @@
           />
         </a>
         <h1
-          class="text-[#444DF2] font-bold"
+          class="text-[#444DF2] font-bold text-center w-[95%]"
           [ngClass]="{ 'text-[46px]': !isMobile, 'text-[32px]': isMobile }"
         >
           Wähle deinen Avatar
@@ -63,7 +66,7 @@
 
       <!-- Avatar-Auswahl -->
       <div
-        class="flex items-center justify-center gap-4 flex-wrap w-full mb-10"
+        class="flex items-center justify-center px-2 gap-4 flex-wrap w-full mb-10"
       >
         <img
           *ngFor="let avatar of avatars"
