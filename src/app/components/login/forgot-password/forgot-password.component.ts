@@ -4,7 +4,7 @@
  * a password reset link.
  */
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import {
@@ -13,8 +13,14 @@ import {
   FormControl,
   FormGroup,
   Validators,
+  AsyncValidatorFn,
+  AbstractControl,
+  ValidationErrors,
 } from '@angular/forms';
 import { AuthService } from '../../../auth/auth.service';
+import { MobileService } from '../../../services/mobile.service';
+import { UserService } from '../../../services/user.service';
+import { Observable, of, from, map, catchError, first } from 'rxjs';
 
 @Component({
   selector: 'app-forgot-password',
@@ -23,20 +29,36 @@ import { AuthService } from '../../../auth/auth.service';
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',
 })
-export class ForgotPasswordComponent {
+export class ForgotPasswordComponent implements OnInit {
   resetForm: FormGroup;
   errorMessage: string | null = null;
   successMessage: string | null = null;
   loading = false;
+  isMobile = false;
 
   /**
    * Constructs the ForgotPasswordComponent and initializes the form.
    * @param authService Service for authentication-related operations.
    * @param router Angular Router to navigate after successful reset.
    */
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private mobileService: MobileService,
+    private userService: UserService
+  ) {
     this.resetForm = new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email]),
+      email: new FormControl('', [
+        Validators.required,
+        Validators.email,
+        Validators.pattern('[^@]+@[^@]+\\.[a-zA-Z]{2,6}'),
+      ]),
+    });
+  }
+
+  ngOnInit() {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
     });
   }
 
@@ -45,6 +67,10 @@ export class ForgotPasswordComponent {
    * Sends password reset email and handles UI feedback.
    */
   async onSubmit() {
+    const emailCtrl = this.resetForm.get('email')!;
+    if (emailCtrl.hasError('emailNotFound')) {
+      emailCtrl.setErrors(null);
+    }
     if (this.resetForm.invalid) {
       return;
     }
@@ -52,8 +78,15 @@ export class ForgotPasswordComponent {
     this.loading = true;
     this.errorMessage = null;
     this.successMessage = null;
+    const email = emailCtrl.value;
 
-    const email = this.resetForm.get('email')?.value;
+    const exists = await this.userService.isEmailTaken(email);
+    if (!exists) {
+      emailCtrl.setErrors({ emailNotFound: true });
+      emailCtrl.markAsTouched();
+      this.loading = false;
+      return;
+    }
 
     try {
       await this.authService.sendPasswordResetEmail(email).toPromise();

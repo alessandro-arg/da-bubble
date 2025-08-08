@@ -1,11 +1,11 @@
 <div
-  class="login-page container mx-auto p-5 flex flex-col justify-center min-h-screen relative"
+  class="login-page container mx-auto p-5 flex flex-col items-center min-h-screen relative"
 >
   <div
-    class="logo-container flex items-center w-full max-w-[1920px] medShort:mt-[20px]"
+    class="logo-container flex items-center w-full max-w-[1920px]"
     [ngClass]="{
-      'mt-[75px] justify-between': !isMobile,
-      'justify-center mt-[20px]': isMobile
+      'mt-[75px] justify-between medShort:mt-[20px]': !isMobile,
+      'justify-center mt-20px': isMobile
     }"
   >
     <div class="logo flex items-center gap-2">
