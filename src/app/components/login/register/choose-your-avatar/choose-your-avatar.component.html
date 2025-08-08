@@ -3,47 +3,67 @@
 >
   <!-- Logo Section -->
   <header
-    class="logo-container flex justify-between items-center w-full max-w-[1920px] mt-24"
+    class="logo-container flex items-center w-full max-w-[1920px] mt-[75px]"
+    [ngClass]="{ 'justify-between': !isMobile, 'justify-center': isMobile }"
   >
-    <div class="logo w-full flex gap-2" aria-label="DABubble Logo">
-      <img
-        src="assets/img/logo.svg"
-        alt=""
-        class="w-11 h-auto"
-        aria-hidden="true"
-      />
-      <h1 class="text-lg font-bold">DABubble</h1>
+    <div class="logo flex items-center gap-2">
+      <img src="assets/img/logo.svg" alt="DABubble Logo" class="w-16 h-auto" />
+      <p class="text-2xl font-bold">DABubble</p>
     </div>
   </header>
 
   <div
-    class="login-container container mx-auto p-8 md:p-16 flex flex-col items-center justify-center bg-white rounded-3xl shadow-lg w-full max-w-2xl mt-8"
+    class="login-container container mx-auto md:px-8 md:py-10 flex flex-col items-center justify-center bg-white rounded-[30px] shadow-[0px_2px_10px_0px_#00000014] w-full max-w-[606px] mt-8"
+    [ngClass]="{ 'p-8': !isMobile, 'px-2 py-3': isMobile }"
   >
     <div class="flex justify-center flex-col items-center w-full mt-4">
-      <div class="flex items-center justify-start w-full mb-6 gap-5">
-        <a routerLink="/register" class="text-blue-500 hover:text-blue-700">
-          <img src="assets/img/arrow_back.svg" alt="Back" class="w-5 h-auto" />
+      <div
+        class="relative flex flex-col items-center"
+        [ngClass]="{
+          'gap-8 w-[90%] mb-10': !isMobile,
+          'gap-1 w-full mb-5': isMobile
+        }"
+      >
+        <a
+          routerLink="/register"
+          class="absolute"
+          [ngClass]="{ '-left-3 top-6': !isMobile, 'left-3 top-4': isMobile }"
+        >
+          <img
+            src="assets/img/arrow_back.svg"
+            alt="Back"
+            [ngClass]="{ 'w-4 h-auto': !isMobile, 'w-4': isMobile }"
+          />
         </a>
-        <h1 class="text-2xl font-bold">Wähle deinen Avatar</h1>
+        <h1
+          class="text-[#444DF2] font-bold"
+          [ngClass]="{ 'text-[46px]': !isMobile, 'text-[32px]': isMobile }"
+        >
+          Wähle deinen Avatar
+        </h1>
       </div>
 
       <!-- Anzeige des ausgewählten Avatars oder Standard-Profilbildes -->
       <img
         [src]="selectedAvatar || 'assets/img/profile.svg'"
         alt="profile image"
-        class="w-24 h-24 rounded-full mb-4 object-cover"
+        class="rounded-full mb-4 object-cover"
+        [ngClass]="{
+          'w-[168px] h-[168px]': !isMobile,
+          'w-[120px] h-[120px]': isMobile
+        }"
       />
 
       <!-- Anzeige des Benutzernamens -->
-      <div class="font-medium text-lg">
-        {{ currentUser?.name || "Benutzer" }}
+      <div class="font-bold text-[32px]">
+        {{ registrationName || currentUser?.name || "Benutzer" }}
       </div>
 
-      <p class="text-center mb-6 text-gray-600">Aus der Liste wählen</p>
+      <p class="self-start mb-6 ml-10 text-xl">Aus der Liste wählen</p>
 
       <!-- Avatar-Auswahl -->
       <div
-        class="flex justify-center items-center gap-4 flex-wrap w-full max-w-2xl"
+        class="flex items-center justify-center gap-4 flex-wrap w-full mb-10"
       >
         <img
           *ngFor="let avatar of avatars"
@@ -61,37 +81,23 @@
         {{ errorMessage }}
       </p>
 
-      <!-- Fehlermeldung, falls kein Avatar ausgewählt -->
-      <p
-        *ngIf="!selectedAvatar && currentUser"
-        class="text-red-500 text-sm mt-4"
-      >
-        Bitte wählen Sie einen Avatar aus.
-      </p>
-
-       <!-- Erfolgreiche Avatar-Auswahl -->
-    <div *ngIf="avatarSelectedConfirmed && selectedAvatar && !loading" class="text-center mt-4 text-green-500">
-      Avatar erfolgreich ausgewählt!
-    </div> 
-
       <!-- Weiter-Button -->
       <div class="flex justify-end items-center w-full mt-6">
         <button
           (click)="confirmAvatar()"
           [disabled]="!selectedAvatar || loading"
-          class=" bg-[#444DF2] hover:bg-[#3739C8] text-white py-2 px-6 rounded-full disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-[#686868] transition-colors"
+          class="bg-[#444DF2] hover:bg-[#3739C8] text-white py-3 px-6 font-bold text-lg rounded-full disabled:cursor-default disabled:bg-[#686868] transition-colors"
         >
           <span *ngIf="!loading">Weiter</span>
           <span *ngIf="loading">Wird gespeichert...</span>
         </button>
       </div>
     </div>
-    
 
     <!-- successMessage  -->
     <p
       *ngIf="successMessage"
-      class="successMessage flex justify-center items-center text-3xl text-center font-bold fixed bottom-5 right-5 w-max h-max p-6 bg-[#444DF2] text-white rounded-t-[30px]  rounded-bl-[30px] shadow-[0px_6px_10px_0px_#00000033]"
+      class="successMessage flex justify-center items-center text-3xl text-center font-bold fixed bottom-5 right-5 w-max h-max p-6 bg-[#444DF2] text-white rounded-t-[30px] rounded-bl-[30px] shadow-[0px_6px_10px_0px_#00000033]"
     >
       {{ successMessage }}
     </p>

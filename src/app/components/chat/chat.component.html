@@ -29,8 +29,11 @@
         >
           <div class="relative w-12 h-12">
             <img
-              [src]="chatPartner!.avatar || 'assets/img/profile.svg'"
-              alt="User"
+              [src]="
+                participantsMap[chatPartner!.uid]?.avatar ||
+                'assets/img/profile.svg'
+              "
+              alt="{{ participantsMap[chatPartner!.uid]?.name || 'User' }}"
               class="w-full h-full rounded-full object-cover"
             />
             <div
@@ -40,7 +43,9 @@
               "
             ></div>
           </div>
-          <p class="text-xl lg:text-2xl font-bold">{{ chatPartner!.name }}</p>
+          <p class="text-xl lg:text-2xl font-bold">
+            {{ participantsMap[chatPartner!.uid]?.name || "User" }}
+          </p>
         </div>
       </div>
 
@@ -129,8 +134,8 @@
                 <ng-template #readOnly>
                   <img
                     *ngIf="msg.sender !== currentUserUid"
-                    [src]="participantsMap[msg.sender].avatar"
-                    alt="{{ participantsMap[msg.sender].name }}"
+                    [src]="user.avatar"
+                    alt="{{ user.name }}"
                     class="rounded-full"
                     [ngClass]="
                       isMobile ? 'w-[50px] h-[50px]' : 'w-[70px] h-[70px]'

@@ -7,8 +7,8 @@
     (click)="onMemberClick()"
   >
     <img
-      [src]="chatPartner.avatar"
-      [alt]="chatPartner.name"
+      [src]="participantsMap[chatPartner.uid]?.avatar || chatPartner.avatar"
+      [alt]="participantsMap[chatPartner.uid]?.name || chatPartner.name"
       class="rounded-full"
       [ngClass]="isMobile ? 'w-[88px] h-[88px]' : 'w-[100px] h-[100px]'"
     />
@@ -16,7 +16,7 @@
       class="h-max font-bold hover:text-[#535AF1]"
       [ngClass]="isMobile ? 'text-xl' : 'text-2xl'"
     >
-      {{ chatPartner.name }}
+      {{ participantsMap[chatPartner.uid]?.name || chatPartner.name }}
       <span *ngIf="chatPartner.uid === currentUserUid">(Du)</span>
     </p>
   </div>

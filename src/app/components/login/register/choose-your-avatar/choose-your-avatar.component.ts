@@ -8,6 +8,7 @@ import { User } from '../../../../models/user.model';
 import { RegistrationService } from '../../../../services/registration.service';
 import { firstValueFrom } from 'rxjs';
 import { set } from '@angular/fire/database';
+import { MobileService } from '../../../../services/mobile.service';
 
 @Component({
   selector: 'app-choose-your-avatar',
@@ -24,13 +25,16 @@ export class ChooseYourAvatarComponent implements OnInit {
   successMessage: string | null = null;
   errorMessage: string | null = null;
   avatarSelectedConfirmed = false;
+  isMobile = false;
+  registrationName = '';
 
   constructor(
     private authService: AuthService,
     private userService: UserService,
     private registrationService: RegistrationService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private mobileService: MobileService
+  ) {}
 
   /**
    * Lifecycle hook that is called after Angular has initialized the component.
@@ -38,7 +42,16 @@ export class ChooseYourAvatarComponent implements OnInit {
    * reacts to changes in user information.
    */
   ngOnInit() {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+
     this.subscribeToCurrentUser();
+
+    const data = this.registrationService.getRegistrationData();
+    if (data?.name) {
+      this.registrationName = data.name;
+    }
   }
 
   /**
@@ -114,12 +127,11 @@ export class ChooseYourAvatarComponent implements OnInit {
     }
   }
 
- 
   /**
    * Selects an avatar and updates the component's state accordingly.
-   * 
+   *
    * @param avatar - The identifier or URL of the avatar to be selected.
-   * 
+   *
    * This method sets the `selectedAvatar` property to the provided avatar,
    * confirms the avatar selection by setting `avatarSelectedConfirmed` to `true`,
    * and then resets the confirmation state to `false` after a delay of 1500 milliseconds.
@@ -134,12 +146,12 @@ export class ChooseYourAvatarComponent implements OnInit {
 
   /**
    * Confirms the avatar selection and proceeds with the registration process.
-   * 
+   *
    * This method first validates the user input to ensure all required fields are completed.
    * If the input is invalid, it sets an error message prompting the user to complete their registration.
-   * 
+   *
    * If the input is valid, it sets the loading state to true and attempts to register the user asynchronously.
-   * 
+   *
    * @returns {Promise<void>} A promise that resolves when the registration process is complete.
    */
   async confirmAvatar(): Promise<void> {
@@ -185,9 +197,9 @@ export class ChooseYourAvatarComponent implements OnInit {
   /**
    * Attempts to register a new user by clearing messages, invoking the registration process,
    * and handling success or error scenarios. Ensures the loading state is updated upon completion.
-   * 
+   *
    * @returns {Promise<void>} A promise that resolves when the registration process is complete.
-   * 
+   *
    * @throws {any} Propagates any errors encountered during the registration process.
    */
   private async tryRegisterUser(): Promise<void> {
@@ -207,7 +219,7 @@ export class ChooseYourAvatarComponent implements OnInit {
    * 1. Retrieves registration data including email, password, and name.
    * 2. Registers the user with the authentication service using the provided email and password.
    * 3. Creates a user entry in the database with the obtained user credentials and name.
-   * 
+   *
    * @returns {Promise<void>} A promise that resolves when the registration process is complete.
    * @throws {Error} Throws an error if registration with the authentication service or database creation fails.
    */
@@ -221,7 +233,7 @@ export class ChooseYourAvatarComponent implements OnInit {
 
   /**
    * Retrieves the registration data from the registration service.
-   * 
+   *
    * @returns {any} The registration data.
    */
   private getRegistrationData(): any {
@@ -237,7 +249,10 @@ export class ChooseYourAvatarComponent implements OnInit {
    * @param password - The password for the user to register.
    * @returns A Promise that resolves with the result of the registration process.
    */
-  private async registerWithAuthService(email: string, password: string): Promise<any> {
+  private async registerWithAuthService(
+    email: string,
+    password: string
+  ): Promise<any> {
     return await firstValueFrom(this.authService.register(email, password));
   }
 
@@ -248,7 +263,10 @@ export class ChooseYourAvatarComponent implements OnInit {
    * @param name - The name of the user to be stored in the database.
    * @returns A promise that resolves when the user is successfully created in the database.
    */
-  private async createUserInDatabase(userCredential: any, name: string): Promise<void> {
+  private async createUserInDatabase(
+    userCredential: any,
+    name: string
+  ): Promise<void> {
     await this.userService.createUser({
       uid: userCredential.user?.uid,
       name: name,
@@ -301,7 +319,7 @@ export class ChooseYourAvatarComponent implements OnInit {
   /**
    * Navigates to the login page after a specified delay.
    * This method uses a timeout to delay the navigation by 1800 milliseconds.
-   * 
+   *
    * @private
    */
   private navigateToLoginAfterDelay(): void {
@@ -337,12 +355,19 @@ export class ChooseYourAvatarComponent implements OnInit {
    */
   private getErrorMessageForCode(errorCode: string): string {
     const errorMessages: Record<string, string> = {
-      'auth/email-already-in-use': 'Diese E-Mail-Adresse ist bereits registriert. Bitte verwenden Sie eine andere E-Mail oder melden Sie sich an.',
-      'auth/weak-password': 'Das Passwort ist zu schwach. Bitte wählen Sie ein stärkeres Passwort.',
-      'auth/invalid-email': 'Ungültige E-Mail-Adresse. Bitte überprüfen Sie Ihre Eingabe.',
-      'auth/operation-not-allowed': 'Registrierung ist derzeit nicht möglich. Bitte versuchen Sie es später erneut.'
+      'auth/email-already-in-use':
+        'Diese E-Mail-Adresse ist bereits registriert. Bitte verwenden Sie eine andere E-Mail oder melden Sie sich an.',
+      'auth/weak-password':
+        'Das Passwort ist zu schwach. Bitte wählen Sie ein stärkeres Passwort.',
+      'auth/invalid-email':
+        'Ungültige E-Mail-Adresse. Bitte überprüfen Sie Ihre Eingabe.',
+      'auth/operation-not-allowed':
+        'Registrierung ist derzeit nicht möglich. Bitte versuchen Sie es später erneut.',
     };
 
-    return errorMessages[errorCode] || 'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
+    return (
+      errorMessages[errorCode] ||
+      'Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.'
+    );
   }
 }

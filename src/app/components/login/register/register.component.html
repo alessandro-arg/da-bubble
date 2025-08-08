@@ -26,14 +26,12 @@
     >
       <a
         routerLink="/login"
-        class="absolute text-blue-500 hover:text-blue-700"
+        class="absolute"
         [ngClass]="{ '-left-3 top-6': !isMobile, 'left-3 top-4': isMobile }"
         aria-label="Zurück zur Anmeldung"
       >
         <img
           src="assets/img/arrow_back.svg"
-          alt=""
-          class=""
           [ngClass]="{ 'w-5 h-auto': !isMobile, 'w-4': isMobile }"
           aria-hidden="true"
         />
