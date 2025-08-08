@@ -1,4 +1,69 @@
-/* Animation keyframes */
+.background-color-intro {
+  background: linear-gradient(to bottom, #747af4 0%, #353ee6 100%);
+  transition: opacity 0.5s ease-out;
+}
+
+.background-color-intro-logo {
+  background: linear-gradient(to bottom, #5c64ef 0%, #4d55eb 100%);
+  transition: all 0.5s ease-out;
+}
+
+.intro-content {
+  &.animate-active {
+    animation: slideToTopLeft 1s ease-in-out forwards;
+    animation-delay: 0.5s;
+  }
+}
+
+.title span {
+  animation: slideIn 0.5s ease-out forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideToTopLeft {
+  from {
+    transform: translateX(0) translateY(0);
+  }
+  to {
+    transform: translateX(-250px) translateY(-200px);
+  }
+}
+
+@media screen and (max-width: 640px) {
+  @keyframes slideToTopLeft {
+    from, to {
+      transform: translateX(50%) translateY(0);
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Animation keyframes *
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -22,7 +87,7 @@
     right: auto;
     transform: scale(0.7);
   }
-} */
+} *
 
 @keyframes slideToTopLeft {
   0% {
@@ -74,13 +139,13 @@
   margin-top: 6rem;
   margin-left: 9rem;
 
-  /* Initial text animation */
+  /* Initial text animation *
   .title span {
     animation: slideIn 0.5s ease-out forwards;
     animation-delay: 0.1s;
   }
 
-  /* Final animation state */
+  /* Final animation state *
   &.final-animation {
     animation: moveToTopLeft 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
     
@@ -89,7 +154,7 @@
     }
   }
 
-  /* Slide animation state */
+  /* Slide animation state *
   &.slide-animation {
     animation: slideToTopLeft 1.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
     
@@ -115,13 +180,15 @@
     margin-left: 0;
 
     .logo {
-      width: 80px; /* Adjust logo size for smaller screens */
+      width: 80px; 
       margin-left: 40%;
     }
 
     .title {
       text-align: center;
-      font-size: 1.5rem; /* Adjust title size for smaller screens */
+      font-size: 1.5rem; 
     }
   }
 }
+
+*/
