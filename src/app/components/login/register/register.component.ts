@@ -15,6 +15,7 @@ import {
 } from '@angular/forms';
 import { RegistrationService } from '../../../services/registration.service';
 import { MobileService } from '../../../services/mobile.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-register',
@@ -38,7 +39,8 @@ export class RegisterComponent {
   constructor(
     private registrationService: RegistrationService,
     private router: Router,
-    private mobileService: MobileService
+    private mobileService: MobileService,
+    private userService: UserService
   ) {
     this.registerForm = new FormGroup({
       name: new FormControl('', [
@@ -101,13 +103,30 @@ export class RegisterComponent {
    */
   async onSubmit() {
     if (this.registerForm.invalid) return;
+    this.loading = true;
     const { name, email, password, privacyPolicy } = this.registerForm.value;
-    this.registrationService.setRegistrationData({
-      name,
-      email,
-      password,
-      privacyPolicy,
-    });
-    this.router.navigate(['/choose-your-avatar']);
+    try {
+      if (await this.userService.isNameTaken(name)) {
+        this.registerForm.get('name')?.setErrors({ nameTaken: true });
+        this.registerForm.get('name')?.markAsTouched();
+        return;
+      }
+      if (await this.userService.isEmailTaken(email)) {
+        this.registerForm.get('email')?.setErrors({ emailTaken: true });
+        this.registerForm.get('email')?.markAsTouched();
+        return;
+      }
+      this.registrationService.setRegistrationData({
+        name,
+        email,
+        password,
+        privacyPolicy,
+      });
+      this.router.navigate(['/choose-your-avatar']);
+    } catch (err) {
+      this.errorMessage = 'Unexpected error. Please try again.';
+    } finally {
+      this.loading = false;
+    }
   }
 }

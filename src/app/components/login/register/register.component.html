@@ -106,6 +106,15 @@
           >
             Mindestens Vor- und Nachname.
           </p>
+          <p
+            *ngIf="
+              registerForm.get('name')?.hasError('nameTaken') &&
+              registerForm.get('name')?.touched
+            "
+            class="text-[#ED1E79]"
+          >
+            Dieser Name wird bereits verwendet.
+          </p>
         </div>
       </div>
 
@@ -153,6 +162,15 @@
             class="text-[#ED1E79]"
           >
             *Diese E-Mail-Adresse ist ungültig.
+          </p>
+          <p
+            *ngIf="
+              registerForm.get('email')?.hasError('emailTaken') &&
+              registerForm.get('email')?.touched
+            "
+            class="text-[#ED1E79]"
+          >
+            Diese E-Mail-Adresse ist bereits registriert.
           </p>
         </div>
       </div>

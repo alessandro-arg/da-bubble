@@ -14,6 +14,8 @@ import {
   getDocs,
   CollectionReference,
   collectionData,
+  query,
+  where,
 } from '@angular/fire/firestore';
 import { User } from '../models/user.model';
 import { Observable } from 'rxjs';
@@ -96,5 +98,21 @@ export class UserService {
 
     const userRef = doc(this.firestore, `users/${uid}`);
     await updateDoc(userRef, data);
+  }
+
+  /** Returns true if any user has exactly this email */
+  async isEmailTaken(email: string): Promise<boolean> {
+    const usersRef = collection(this.firestore, 'users');
+    const q = query(usersRef, where('email', '==', email));
+    const snap = await getDocs(q);
+    return !snap.empty;
+  }
+
+  /** Returns true if any user has exactly this name */
+  async isNameTaken(name: string): Promise<boolean> {
+    const usersRef = collection(this.firestore, 'users');
+    const q = query(usersRef, where('name', '==', name));
+    const snap = await getDocs(q);
+    return !snap.empty;
   }
 }
