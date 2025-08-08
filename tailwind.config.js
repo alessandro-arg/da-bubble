@@ -5,6 +5,7 @@ module.exports = {
     extend: {
       screens: {
         short: { raw: "(max-height: 810px)" },
+        medShort: { raw: "(max-height: 980px)" },
       },
     },
   },

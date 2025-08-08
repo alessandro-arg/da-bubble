@@ -1,4 +1,6 @@
 .form-group-input-div {
+  border: solid 1px transparent;
+
   &:hover {
     border: 1px solid #444df2;
   }
@@ -20,12 +22,6 @@ h1 {
     background-color: #444df2;
     color: white;
   }
-}
-
-.error {
-  font-size: 0.8rem;
-  margin-top: 0.5rem;
-  text-align: center;
 }
 
 .register-link-mobile {
