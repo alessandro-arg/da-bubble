@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
@@ -10,6 +10,9 @@ import { Router } from '@angular/router';
   styleUrls: ['./intro.component.scss'],
 })
 export class IntroComponent implements OnInit {
+  private platformId = inject(PLATFORM_ID);
+  private doc = inject(DOCUMENT);
+
   constructor(private router: Router) {}
 
   /**
@@ -19,7 +22,9 @@ export class IntroComponent implements OnInit {
    * @see https://angular.io/api/core/OnInit
    */
   ngOnInit(): void {
-    this.startAnimationSequence();
+    if (isPlatformBrowser(this.platformId)) {
+      this.startAnimationSequence();
+    }
   }
 
   /**
@@ -33,7 +38,9 @@ export class IntroComponent implements OnInit {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     await this.triggerElementAnimations();
 
-    this.router.navigate(['/login']);
+    if (isPlatformBrowser(this.platformId)) {
+      this.router.navigate(['/login']);
+    }
   }
 
   /**
@@ -47,22 +54,22 @@ export class IntroComponent implements OnInit {
    */
   private triggerElementAnimations(): Promise<void> {
     return new Promise((resolve) => {
-      const elements = {
-        background: document.querySelector('.background-color-intro'),
-        logo: document.querySelector('.background-color-intro-logo'),
-        content: document.querySelector('.intro-content'),
-      };
+      const background = this.doc.querySelector(
+        '.background-color-intro'
+      ) as HTMLElement | null;
+      const logo = this.doc.querySelector(
+        '.background-color-intro-logo'
+      ) as HTMLElement | null;
+      const content = this.doc.querySelector(
+        '.intro-content'
+      ) as HTMLElement | null;
 
       setTimeout(() => {
-        if (elements.logo) {
-          elements.logo.classList.remove('background-color-intro-logo');
-        }
+        logo?.classList.remove('background-color-intro-logo');
       }, 600);
 
       setTimeout(() => {
-        if (elements.background) {
-          elements.background.classList.remove('background-color-intro');
-        }
+        background?.classList.remove('background-color-intro');
         resolve();
       }, 900);
     });

@@ -1,5 +1,5 @@
-import { CommonModule, Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { CommonModule, isPlatformBrowser, Location } from '@angular/common';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { ViewportScroller } from '@angular/common';
 import { MobileService } from '../../services/mobile.service';
@@ -16,8 +16,10 @@ export class ImpressumComponent implements OnInit {
   isMobile = false;
   arrowHover = false;
 
+  private platformId = inject(PLATFORM_ID);
+
   constructor(
-    private ViewportScroller: ViewportScroller,
+    private viewportScroller: ViewportScroller,
     private mobileService: MobileService,
     private location: Location,
     private router: Router
@@ -29,7 +31,9 @@ export class ImpressumComponent implements OnInit {
    * It ensures that the user starts at the top of the page when the component is loaded.
    */
   ngOnInit(): void {
-    this.ViewportScroller.scrollToPosition([0, 0]);
+    if (isPlatformBrowser(this.platformId)) {
+      this.viewportScroller.scrollToPosition([0, 0]);
+    }
 
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
@@ -37,7 +41,7 @@ export class ImpressumComponent implements OnInit {
   }
 
   goBack() {
-    if (window.history.length > 1) {
+    if (isPlatformBrowser(this.platformId) && history.length > 1) {
       this.location.back();
     } else {
       this.router.navigate(['/login']);
