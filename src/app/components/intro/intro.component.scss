@@ -73,6 +73,26 @@
 }
 
 
+@media screen and (min-width: 1920px) {
+  @keyframes slideToTopLeft {
+    from {
+      transform: translateX(0) translateY(0) scale(1);
+    }
+    to {
+      transform: 
+        translateX(-50%)  
+        translateY(calc(-60vh + 50%)) 
+        scale(0.5);
+      left: 0;  
+    }
+  }
+  
+  .intro-content.animate-active {
+    position: relative;
+    left: 0;
+  }
+}
+
 
 
 
