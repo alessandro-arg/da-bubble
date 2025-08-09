@@ -3,11 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ViewportScroller } from '@angular/common';
 import { MobileService } from '../../services/mobile.service';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-impressum',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule, ReactiveFormsModule],
   templateUrl: './impressum.component.html',
   styleUrl: './impressum.component.scss',
 })
