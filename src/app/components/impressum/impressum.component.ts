@@ -2,17 +2,23 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ViewportScroller } from '@angular/common';
-
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-impressum',
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './impressum.component.html',
-  styleUrl: './impressum.component.scss'
+  styleUrl: './impressum.component.scss',
 })
 export class ImpressumComponent implements OnInit {
-  constructor(private ViewportScroller: ViewportScroller) { }
+  isMobile = false;
+  arrowHover = false;
+
+  constructor(
+    private ViewportScroller: ViewportScroller,
+    private mobileService: MobileService
+  ) {}
 
   /**
    * Lifecycle hook that is called after Angular has initialized the component.
@@ -21,5 +27,9 @@ export class ImpressumComponent implements OnInit {
    */
   ngOnInit(): void {
     this.ViewportScroller.scrollToPosition([0, 0]);
+
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
   }
 }
