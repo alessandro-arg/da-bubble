@@ -25,30 +25,78 @@
     opacity: 0;
     transform: translateX(-100px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
   }
 }
 
-@keyframes slideToTopLeft {
-  from {
-    transform: translateX(0) translateY(0);
-  }
-  to {
-    transform: translateX(-250px) translateY(-200px);
-  }
-}
-
-@media screen and (max-width: 640px) {
+@media screen and (min-width: 300px) {
   @keyframes slideToTopLeft {
-    from, to {
-      transform: translateX(50%) translateY(0);
+    from {
+      transform: translateX(0) translateY(0) scale(1);
+    }
+
+    to {
+      transform:
+        translateX(calc(-95vw + 100%)) translateY(calc(-70vh + 100%)) scale(0.5);
     }
   }
 }
 
 
+@media screen and (min-width: 431px) {
+  @keyframes slideToTopLeft {
+    from {
+      transform: translateX(0) translateY(0) scale(1);
+    }
+
+    to {
+      transform:
+        translateX(calc(-80vw + 50%)) translateY(calc(-60vh + 50%)) scale(0.5);
+    }
+  }
+}
+
+@media screen and (min-width: 640px) {
+  @keyframes slideToTopLeft {
+    from {
+      transform: translateX(0) translateY(0) scale(1);
+    }
+
+    to {
+      transform:
+        translateX(calc(-120vw + 100%)) translateY(calc(-95vh + 100%)) scale(0.5);
+    }
+  }
+}
+
+@media screen and (min-width: 768px) {
+  @keyframes slideToTopLeft {
+    from {
+      transform: translateX(0) translateY(0) scale(1);
+    }
+
+    to {
+      transform:
+        translateX(calc(-85vw + 100%)) translateY(calc(-70vh + 100%)) scale(0.5);
+    }
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  @keyframes slideToTopLeft {
+    from {
+      transform: translateX(0) translateY(0) scale(1);
+    }
+
+    to {
+      transform:
+        translateX(calc(-85vw + 100%)) translateY(calc(-70vh + 100%)) scale(0.5);
+    }
+  }
+}
 
 
 

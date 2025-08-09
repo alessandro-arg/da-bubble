@@ -10,44 +10,46 @@ import { Router } from '@angular/router';
   styleUrls: ['./intro.component.scss'],
 })
 export class IntroComponent implements OnInit {
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     this.startAnimationSequence();
   }
 
-  private startAnimationSequence(): void {
-    // Starte die Hauptanimation
-    setTimeout(() => {
-      this.triggerElementAnimations();
-    }, 100);
+  private async startAnimationSequence(): Promise<void> {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await this.triggerElementAnimations();
 
-    // Navigiere nach Abschluss der Animation
     setTimeout(() => {
       this.router.navigate(['/login']);
-    }, 1800);
+    }, 250);
   }
 
-  private triggerElementAnimations(): void {
-    const elements = {
-      background: document.querySelector('.background-color-intro'),
-      logo: document.querySelector('.background-color-intro-logo'),
-      content: document.querySelector('.intro-content')
-    };
+  private triggerElementAnimations(): Promise<void> {
+    return new Promise(resolve => {
+      const elements = {
+        background: document.querySelector('.background-color-intro'),
+        logo: document.querySelector('.background-color-intro-logo'),
+        content: document.querySelector('.intro-content')
+      };
 
-    if (elements.content) {
-      elements.content.classList.add('animate-active');
-    }
-
-    if (elements.logo) {
-      elements.logo.classList.remove('background-color-intro-logo');
-    }
-
-    setTimeout(() => {
-      if (elements.background) {
-        elements.background.classList.remove('background-color-intro');
+      if (elements.content) {
+        elements.content.classList.add('animate-active');
       }
-    }, 1000);
+
+      setTimeout(() => {
+        if (elements.logo) {
+          elements.logo.classList.remove('background-color-intro-logo');
+        }
+      }, 600);
+
+      setTimeout(() => {
+        if (elements.background) {
+          elements.background.classList.remove('background-color-intro');
+        }
+        resolve();
+      }, 900);
+    });
   }
 }
 
