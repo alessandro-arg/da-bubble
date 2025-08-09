@@ -66,19 +66,10 @@ export class LoginComponent implements OnInit {
 
     emailCtrl.setErrors(null);
     pwCtrl.setErrors(null);
-
     if (form.invalid) return;
 
     this.loading = true;
     this.errorMessage = null;
-
-    const exists = await this.userService.isEmailTaken(this.credentials.email);
-    if (!exists) {
-      emailCtrl.setErrors({ userNotFound: true });
-      emailCtrl.markAsTouched();
-      this.loading = false;
-      return;
-    }
 
     try {
       const cred = await firstValueFrom(
@@ -87,16 +78,17 @@ export class LoginComponent implements OnInit {
           this.credentials.password
         )
       );
-
-      // ✅ use the UID from the login result
       const uid = cred.user.uid;
-      // (optional) clear any stale redirect
       this.authService.redirectUrl = null;
-
       this.router.navigate(['/landingpage', uid]);
-    } catch {
-      pwCtrl.setErrors({ incorrect: true });
-      pwCtrl.markAsTouched();
+    } catch (e: any) {
+      if (e?.code === 'auth/too-many-requests') {
+        this.errorMessage =
+          'Zu viele fehlgeschlagene Versuche. Bitte später erneut versuchen.';
+      } else {
+        pwCtrl.setErrors({ incorrect: true });
+        pwCtrl.markAsTouched();
+      }
     } finally {
       this.loading = false;
     }
@@ -133,9 +125,6 @@ export class LoginComponent implements OnInit {
       this.errorMessage = error.message || 'Google-Anmeldung fehlgeschlagen.';
     } finally {
       this.loading = false;
-      setTimeout(() => {
-        window.location.reload();
-      }, 10);
     }
   }
 

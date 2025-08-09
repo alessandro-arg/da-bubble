@@ -26,6 +26,7 @@ export class ChooseYourAvatarComponent implements OnInit {
   errorMessage: string | null = null;
   avatarSelectedConfirmed = false;
   isMobile = false;
+  arrowHover = false;
   registrationName = '';
 
   constructor(

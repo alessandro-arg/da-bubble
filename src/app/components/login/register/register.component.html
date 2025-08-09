@@ -30,12 +30,20 @@
       <a
         routerLink="/login"
         class="absolute"
-        [ngClass]="{ '-left-3 top-6': !isMobile, 'left-3 top-4': isMobile }"
-        aria-label="Zurück zur Anmeldung"
+        [ngClass]="{
+          '-left-3 top-[16px]': !isMobile,
+          'left-3 top-2': isMobile
+        }"
+        (mouseenter)="arrowHover = true"
+        (mouseleave)="arrowHover = false"
       >
         <img
-          src="assets/img/arrow_back.svg"
-          [ngClass]="{ 'w-5 h-auto': !isMobile, 'w-4': isMobile }"
+          [src]="
+            arrowHover
+              ? 'assets/img/arrow_back_purple.svg'
+              : 'assets/img/arrow_back_large.svg'
+          "
+          [ngClass]="{ 'w-10 h-10': !isMobile, 'w-8 h-8': isMobile }"
           aria-hidden="true"
         />
       </a>
@@ -337,13 +345,13 @@
   <footer class="footer flex justify-center items-center gap-4 mt-auto mb-2">
     <a
       routerLink="/impressum"
-      class="mt-8 px-4 py-2 text-[18px] font-normal text-[#797EF3] hover:rounded-full hover:border hover:border-[#cbcbd1] hover:text-[#3739C8]"
+      class="mt-8 px-[15px] py-[10px] text-[18px] font-medium border border-transparent text-[#797EF3] rounded-[30px] hover:border hover:border-[#ADB0D9] hover:text-[#444DF2] transition-colors duration-200"
     >
       Impressum
     </a>
     <a
       routerLink="/privacy-policy"
-      class="mt-8 px-4 py-2 text-[18px] font-normal text-[#797EF3] hover:rounded-full hover:border hover:border-[#cbcbd1] hover:text-[#3739C8]"
+      class="mt-8 px-[15px] py-[10px] text-[18px] font-medium border border-transparent text-[#797EF3] rounded-[30px] hover:border hover:border-[#ADB0D9] hover:text-[#444DF2] transition-colors duration-200"
     >
       Datenschutz</a
     >

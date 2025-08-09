@@ -19,9 +19,8 @@
       class="relative md:max-w-[1000px] w-full flex flex-col px-[56px] py-[48px] gap-[32px] shadow-[0px_2px_10px_0px_#00000014] rounded-[30px] bg-white mt-8"
     >
       <a
-        routerLink="/login"
-        aria-label="Zurück zur Anmeldung"
-        class="w-max"
+        (click)="goBack()"
+        class="w-max cursor-pointer"
         (mouseenter)="arrowHover = true"
         (mouseleave)="arrowHover = false"
       >
@@ -31,7 +30,6 @@
               ? 'assets/img/arrow_back_purple.svg'
               : 'assets/img/arrow_back_large.svg'
           "
-          alt=""
           class="w-10 h-10"
           aria-hidden="true"
         />

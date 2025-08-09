@@ -19,9 +19,8 @@
       class="relative min-w-full md:min-w-[670px] w-full flex flex-col px-[56px] py-[48px] gap-[32px] shadow-[0px_2px_10px_0px_#00000014] rounded-[30px] bg-white mt-8"
     >
       <a
-        routerLink="/login"
-        aria-label="Zurück zur Anmeldung"
-        class="w-max"
+        (click)="goBack()"
+        class="w-max cursor-pointer"
         (mouseenter)="arrowHover = true"
         (mouseleave)="arrowHover = false"
       >

@@ -13,14 +13,10 @@ import {
   FormControl,
   FormGroup,
   Validators,
-  AsyncValidatorFn,
-  AbstractControl,
-  ValidationErrors,
 } from '@angular/forms';
 import { AuthService } from '../../../auth/auth.service';
 import { MobileService } from '../../../services/mobile.service';
 import { UserService } from '../../../services/user.service';
-import { Observable, of, from, map, catchError, first } from 'rxjs';
 
 @Component({
   selector: 'app-forgot-password',
@@ -35,6 +31,7 @@ export class ForgotPasswordComponent implements OnInit {
   successMessage: string | null = null;
   loading = false;
   isMobile = false;
+  arrowHover = false;
 
   /**
    * Constructs the ForgotPasswordComponent and initializes the form.

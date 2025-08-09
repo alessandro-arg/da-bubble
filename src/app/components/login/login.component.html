@@ -104,12 +104,6 @@
           >
             Diese E-Mail-Adresse ist leider ungültig.
           </p>
-          <p
-            *ngIf="emailCtrl.errors?.userNotFound && emailCtrl.touched"
-            class="text-[#ED1E79]"
-          >
-            Diese E-Mail-Adresse ist nicht registriert.
-          </p>
         </div>
       </div>
 
@@ -170,7 +164,7 @@
             *ngIf="pwCtrl.errors?.incorrect && pwCtrl.touched"
             class="text-[#ED1E79]"
           >
-            Passwort ist falsch. Bitte versuchen Sie es erneut.
+            E-Mail oder Passwort sind falsch.
           </p>
         </div>
       </div>

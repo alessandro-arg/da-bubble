@@ -88,12 +88,12 @@ emoji-picker ::-webkit-scrollbar-thumb {
 }
 
 ::view-transition-group(app-logo) {
-  animation-duration: 1000ms;
+  animation-duration: 700ms;
   animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 ::view-transition-old(app-logo),
 ::view-transition-new(app-logo) {
-  animation-duration: 1000ms;
+  animation-duration: 700ms;
   animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
 }

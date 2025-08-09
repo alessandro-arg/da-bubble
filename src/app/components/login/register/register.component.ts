@@ -30,6 +30,7 @@ export class RegisterComponent {
   errorMessage: string | null = null;
   loading = false;
   isMobile = false;
+  arrowHover = false;
 
   /**
    * Constructs the RegisterComponent and initializes the form.

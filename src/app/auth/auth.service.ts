@@ -43,19 +43,7 @@ export class AuthService {
    */
 
   login(email: string, password: string): Observable<UserCredential> {
-    return from(signInWithEmailAndPassword(this.auth, email, password)).pipe(
-      catchError((error: FirebaseError) => {
-        let errorMessage = 'Login fehlgeschlagen.';
-        switch (error.code) {
-          case 'auth/too-many-requests':
-            errorMessage =
-              'Zu viele fehlgeschlagene Versuche. Bitte später erneut versuchen.';
-            break;
-        }
-
-        throw new Error(errorMessage);
-      })
-    );
+    return from(signInWithEmailAndPassword(this.auth, email, password));
   }
 
   /**

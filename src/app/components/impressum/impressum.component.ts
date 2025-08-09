@@ -1,6 +1,6 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ViewportScroller } from '@angular/common';
 import { MobileService } from '../../services/mobile.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -8,7 +8,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 @Component({
   selector: 'app-impressum',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './impressum.component.html',
   styleUrl: './impressum.component.scss',
 })
@@ -18,7 +18,9 @@ export class ImpressumComponent implements OnInit {
 
   constructor(
     private ViewportScroller: ViewportScroller,
-    private mobileService: MobileService
+    private mobileService: MobileService,
+    private location: Location,
+    private router: Router
   ) {}
 
   /**
@@ -32,5 +34,13 @@ export class ImpressumComponent implements OnInit {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
     });
+  }
+
+  goBack() {
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 }
