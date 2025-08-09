@@ -132,37 +132,43 @@
                 </ng-container>
 
                 <ng-template #readOnly>
-                  <img
-                    *ngIf="msg.sender !== currentUserUid"
-                    [src]="user.avatar"
-                    alt="{{ user.name }}"
-                    class="rounded-full"
-                    [ngClass]="
-                      isMobile ? 'w-[50px] h-[50px]' : 'w-[70px] h-[70px]'
-                    "
-                  />
+                  <ng-container *ngIf="participantsMap[msg.sender] as user">
+                    <img
+                      *ngIf="msg.sender !== currentUserUid"
+                      [src]="user.avatar"
+                      alt="{{ user.name }}"
+                      class="rounded-full"
+                      [ngClass]="
+                        isMobile ? 'w-[50px] h-[50px]' : 'w-[70px] h-[70px]'
+                      "
+                    />
 
-                  <app-private-message-bubble
-                    [msg]="msg"
-                    [currentUserUid]="currentUserUid"
-                    [participantsMap]="participantsMap"
-                    [chatId]="chatId"
-                    [formatMessageHtml]="formatMessage"
-                    (bubbleClick)="onBubbleClick($event)"
-                    (quickReaction)="onQuickReaction($event.msg, $event.emoji)"
-                    (toggleOptions)="toggleOptions($event.msgId, $event.event)"
-                    (openEdit)="openEditFromOptions($event.msg, $event.event)"
-                  ></app-private-message-bubble>
+                    <app-private-message-bubble
+                      [msg]="msg"
+                      [currentUserUid]="currentUserUid"
+                      [participantsMap]="participantsMap"
+                      [chatId]="chatId"
+                      [formatMessageHtml]="formatMessage"
+                      (bubbleClick)="onBubbleClick($event)"
+                      (quickReaction)="
+                        onQuickReaction($event.msg, $event.emoji)
+                      "
+                      (toggleOptions)="
+                        toggleOptions($event.msgId, $event.event)
+                      "
+                      (openEdit)="openEditFromOptions($event.msg, $event.event)"
+                    ></app-private-message-bubble>
 
-                  <img
-                    *ngIf="msg.sender === currentUserUid"
-                    [src]="participantsMap[msg.sender].avatar"
-                    alt="{{ participantsMap[msg.sender].name }}"
-                    class="rounded-full"
-                    [ngClass]="
-                      isMobile ? 'w-[50px] h-[50px]' : 'w-[70px] h-[70px]'
-                    "
-                  />
+                    <img
+                      *ngIf="msg.sender === currentUserUid"
+                      [src]="participantsMap[msg.sender].avatar"
+                      alt="{{ participantsMap[msg.sender].name }}"
+                      class="rounded-full"
+                      [ngClass]="
+                        isMobile ? 'w-[50px] h-[50px]' : 'w-[70px] h-[70px]'
+                      "
+                    />
+                  </ng-container>
                 </ng-template>
               </div>
             </ng-container>
@@ -294,9 +300,82 @@
     <ng-template #pickAChat>
       <div
         *ngIf="!isNewMessage && screenWidth > 1024"
-        class="flex-1 flex items-center justify-center text-gray-400"
+        class="relative flex-1 grid place-items-center overflow-hidden"
       >
-        Wähle einen Nutzer oder Channel, um zu chatten.
+        <div
+          class="absolute top-4 left-10 flex items-center gap-4 cursor-default px-5 py-3 rounded-full bg-gray-100/50 border border-gray-200/80 text-gray-400 backdrop-blur animate-bounce-slow hover:bg-[#ffffff0f]"
+        >
+          <svg
+            class="w-5 h-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 19V5" />
+            <path d="M5 12l7-7 7 7" />
+          </svg>
+          <span class="text-gray-400 text-lg md:text-xl">
+            Suchleiste nutzen, um direkt in Chats oder Channels zu springen
+          </span>
+        </div>
+
+        <div
+          class="z-10 flex flex-col items-center text-center gap-4 p-6 cursor-default"
+        >
+          <svg
+            class="w-24 h-24 animate-float drop-shadow"
+            viewBox="0 0 96 96"
+            fill="none"
+          >
+            <path
+              d="M8 12
+       H48
+       A12 12 0 0 1 60 24
+       V36
+       A12 12 0 0 1 48 48
+       H20
+       A12 12 0 0 1 8 36
+       V12
+       Z"
+              fill="#535AF1"
+              fill-opacity="0.3"
+            />
+            <circle cx="26" cy="30" r="3" fill="#535AF1" fill-opacity="0.6" />
+            <circle cx="34" cy="30" r="3" fill="#535AF1" fill-opacity="0.6" />
+            <circle cx="42" cy="30" r="3" fill="#535AF1" fill-opacity="0.6" />
+            <path
+              d="M48 44
+       H88
+       V68
+       A12 12 0 0 1 76 80
+       H48
+       A12 12 0 0 1 36 68
+       V56
+       A12 12 0 0 1 48 44
+       Z"
+              fill="#797EF3"
+              fill-opacity="0.2"
+            />
+            <circle cx="54" cy="62" r="3" fill="#797EF3" fill-opacity="0.6" />
+            <circle cx="62" cy="62" r="3" fill="#797EF3" fill-opacity="0.6" />
+            <circle cx="70" cy="62" r="3" fill="#797EF3" fill-opacity="0.6" />
+          </svg>
+          <h2 class="text-gray-400 text-lg md:text-xl">
+            Wähle einen Nutzer oder Channel, um zu chatten.
+          </h2>
+          <div class="flex items-center gap-1 mt-1" aria-hidden="true">
+            <span class="dot"></span><span class="dot dot2"></span
+            ><span class="dot dot3"></span>
+          </div>
+          <div class="flex flex-wrap justify-center gap-5 mt-2">
+            <span class="chip"><strong>Ctrl+K</strong> - Schnell suche</span>
+            <span class="chip"><strong>#</strong> - Channel suchen</span>
+            <span class="chip"><strong>&#64;</strong> - Nutzer suchen</span>
+          </div>
+        </div>
       </div>
     </ng-template>
 

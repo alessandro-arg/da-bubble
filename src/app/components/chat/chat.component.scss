@@ -1,0 +1,70 @@
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(156, 163, 175, 0.8);
+  animation: blink 1.4s infinite;
+}
+
+.dot2 {
+  animation-delay: 0.2s;
+}
+
+.dot3 {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0%,
+  80%,
+  100% {
+    opacity: 0.2;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+.chip {
+  @apply cursor-default px-3 py-1 rounded-full text-lg bg-gray-100/50 border border-gray-200/80 text-gray-400 backdrop-blur;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    background-color: rgba(255, 255, 255, 0.059);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2.2s infinite;
+}
+
+@keyframes bounce-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.drop-shadow {
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.06));
+}

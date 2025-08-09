@@ -81,16 +81,19 @@ export class LoginComponent implements OnInit {
     }
 
     try {
-      await firstValueFrom(
+      const cred = await firstValueFrom(
         this.authService.login(
           this.credentials.email,
           this.credentials.password
         )
       );
-      const redirectUrl =
-        this.authService.redirectUrl ||
-        `/landingpage/${this.authService.currentUserSubject.value?.uid}`;
-      this.router.navigateByUrl(redirectUrl);
+
+      // ✅ use the UID from the login result
+      const uid = cred.user.uid;
+      // (optional) clear any stale redirect
+      this.authService.redirectUrl = null;
+
+      this.router.navigate(['/landingpage', uid]);
     } catch {
       pwCtrl.setErrors({ incorrect: true });
       pwCtrl.markAsTouched();

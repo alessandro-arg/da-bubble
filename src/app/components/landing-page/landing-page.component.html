@@ -42,6 +42,7 @@
   </div>
 
   <app-searchbar
+    #searchbarCmp
     (userSelected)="openPrivateChat($event)"
     (groupSelected)="openGroupChat($event)"
     class="w-2/4 items-center justify-center pl-16 hidden lg:flex"
@@ -50,39 +51,43 @@
 
   <div
     *ngIf="currentUser"
-    class="flex items-center mr-4 gap-5 w-2/4 cursor-pointer justify-end hover:text-[#797EF3]"
-    (mouseenter)="currentUserHovered = true"
-    (mouseleave)="currentUserHovered = false"
-    (click)="toggleDropdown(); $event.stopPropagation()"
+    class="mr-4 w-2/4 flex items-center gap-5 justify-end"
   >
-    <h2
-      class="font-bold text-3xl"
-      [ngClass]="screenWidth < 1024 ? 'hidden' : ''"
-    >
-      {{ currentUser.name }}
-    </h2>
     <div
-      class="relative"
-      [ngClass]="screenWidth < 1024 ? 'w-[50px] h-[50px]' : 'w-16 h-16'"
+      class="cursor-pointer flex items-center gap-5 justify-end hover:text-[#797EF3] w-max"
+      (mouseenter)="currentUserHovered = true"
+      (mouseleave)="currentUserHovered = false"
+      (click)="toggleDropdown(); $event.stopPropagation()"
     >
-      <img
-        [src]="currentUser.avatar || 'assets/img/profile.svg'"
-        alt="Profilbild"
-        class="rounded-full object-cover"
-        [ngClass]="screenWidth < 1024 ? 'w-[50px] h-[50px]' : 'w-16 h-16'"
-      />
+      <h2
+        class="font-bold text-3xl"
+        [ngClass]="screenWidth < 1024 ? 'hidden' : ''"
+      >
+        {{ currentUser.name }}
+      </h2>
       <div
-        class="absolute bottom-0 right-0 w-4 h-4 bg-[#92C83E] rounded-full border-2 border-[#edeefe]"
-      ></div>
+        class="relative"
+        [ngClass]="screenWidth < 1024 ? 'w-[50px] h-[50px]' : 'w-16 h-16'"
+      >
+        <img
+          [src]="currentUser.avatar || 'assets/img/profile.svg'"
+          alt="Profilbild"
+          class="rounded-full object-cover"
+          [ngClass]="screenWidth < 1024 ? 'w-[50px] h-[50px]' : 'w-16 h-16'"
+        />
+        <div
+          class="absolute bottom-0 right-0 w-4 h-4 bg-[#92C83E] rounded-full border-2 border-[#edeefe]"
+        ></div>
+      </div>
+      <img
+        [src]="
+          currentUserHovered
+            ? 'assets/img/icons/arrow_down_purple.png'
+            : 'assets/img/icons/arrow_down.png'
+        "
+        [ngClass]="screenWidth < 1024 ? 'hidden' : ''"
+      />
     </div>
-    <img
-      [src]="
-        currentUserHovered
-          ? 'assets/img/icons/arrow_down_purple.png'
-          : 'assets/img/icons/arrow_down.png'
-      "
-      [ngClass]="screenWidth < 1024 ? 'hidden' : ''"
-    />
   </div>
 </div>
 

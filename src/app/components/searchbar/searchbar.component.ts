@@ -6,10 +6,12 @@
 
 import {
   Component,
+  ElementRef,
   EventEmitter,
   HostListener,
   OnInit,
   Output,
+  ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service';
@@ -40,6 +42,8 @@ export class SearchbarComponent implements OnInit {
 
   isMobile = false;
 
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
+
   constructor(
     private userService: UserService,
     private groupService: GroupService,
@@ -55,6 +59,19 @@ export class SearchbarComponent implements OnInit {
   ngOnInit() {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
+    });
+  }
+
+  /**
+   * Focus the searchbar with the Ctrl + K keyboard combination.
+   */
+  focusInput() {
+    const el = this.searchInput?.nativeElement;
+    if (!el) return;
+
+    setTimeout(() => {
+      el.focus();
+      el.select();
     });
   }
 

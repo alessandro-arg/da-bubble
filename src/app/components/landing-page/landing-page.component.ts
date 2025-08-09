@@ -74,6 +74,7 @@ export class LandingPageComponent implements OnInit {
 
   @ViewChild('userListDiv') userListDiv!: ElementRef<HTMLDivElement>;
   @ViewChild('chatListDiv') chatListDiv!: ElementRef<HTMLDivElement>;
+  @ViewChild('searchbarCmp') searchbar?: SearchbarComponent;
 
   constructor(
     @Inject(PLATFORM_ID) platformId: Object,
@@ -120,6 +121,36 @@ export class LandingPageComponent implements OnInit {
   onResize(event: UIEvent) {
     if (this.isBrowser) {
       this.screenWidth = (event.target as Window).innerWidth;
+    }
+  }
+
+  /**
+   * Handles the global keyboard shortcut for focusing the search bar.
+   *
+   * Listens for `Ctrl+K` (Windows/Linux) or `Cmd+K` (macOS) and,
+   * when pressed, prevents the default browser action and calls
+   * the `focusInput()` method on the `SearchbarComponent` to
+   * focus the search input field.
+   *
+   * @param {KeyboardEvent} ev - The keyboard event object triggered by the user's key press.
+   */
+  @HostListener('window:keydown', ['$event'])
+  onGlobalKeydown(ev: KeyboardEvent) {
+    const isK = ev.key?.toLowerCase() === 'k';
+    const modifier = ev.ctrlKey || ev.metaKey;
+    const target = ev.target as HTMLElement | null;
+    const tag = target?.tagName?.toLowerCase();
+    const isTypingField =
+      tag === 'input' || tag === 'textarea' || target?.isContentEditable;
+
+    const overlaysOpen = this.showDropdown || this.showProfileModal;
+
+    if (modifier && isK && !isTypingField && !overlaysOpen) {
+      ev.preventDefault();
+
+      if (this.screenWidth >= 1024) {
+        this.searchbar?.focusInput();
+      }
     }
   }
 
