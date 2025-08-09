@@ -45,6 +45,7 @@
     #searchbarCmp
     (userSelected)="openPrivateChat($event)"
     (groupSelected)="openGroupChat($event)"
+    [currentUserUid]="currentUserUid"
     class="w-2/4 items-center justify-center pl-16 hidden lg:flex"
     [ngClass]="screenWidth < 1024 ? 'hidden' : ''"
   ></app-searchbar>

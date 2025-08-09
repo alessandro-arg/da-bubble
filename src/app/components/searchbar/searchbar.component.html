@@ -1,5 +1,5 @@
 <div
-  class="relative flex items-center w-full max-w-xl mx-6 rounded-full bg-white px-[40px] py-[16px] border border-[#ADB0D9 lg:border-none"
+  class="relative flex items-center w-full max-w-xl mx-6 rounded-full bg-white px-[40px] py-[16px] border border-[#ADB0D9] lg:border-none"
 >
   <input
     #searchInput
@@ -15,7 +15,7 @@
   <!-- Popup -->
   <div
     *ngIf="showPopup && !isMobile"
-    class="show-popup-user-list absolute top-full mt-[-10px] ml-10 left-0 w-fit bg-white shadow-lg z-10 p-4 max-h-60 overflow-y-auto rounded-2xl rounded-tl-none border border-[#8f94d6]"
+    class="show-popup-user-list absolute flex flex-col gap-3 left-[20px] top-full -mb-4 p-5 w-[350px] max-h-[467px] overflow-auto bg-white border border-[#ADB0D9] rounded-t-[20px] rounded-br-[20px] shadow-[0px_2px_10px_0px_#00000014] z-20"
   >
     <div *ngIf="filteredGroups.length > 0">
       <div class="text-sm font-semibold text-gray-500 mb-2">Gruppen</div>

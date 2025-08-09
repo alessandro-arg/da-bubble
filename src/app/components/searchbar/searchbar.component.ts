@@ -9,9 +9,13 @@ import {
   ElementRef,
   EventEmitter,
   HostListener,
+  Input,
+  OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   QueryList,
+  SimpleChanges,
   ViewChild,
   ViewChildren,
 } from '@angular/core';
@@ -21,6 +25,7 @@ import { User } from '../../models/user.model';
 import { GroupService } from '../../services/group.service';
 import { Group } from '../../models/group.model';
 import { MobileService } from '../../services/mobile.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-searchbar',
@@ -29,10 +34,13 @@ import { MobileService } from '../../services/mobile.service';
   templateUrl: './searchbar.component.html',
   styleUrls: ['./searchbar.component.scss'],
 })
-export class SearchbarComponent implements OnInit {
+export class SearchbarComponent implements OnInit, OnChanges, OnDestroy {
   @Output() userSelected = new EventEmitter<User>();
   @Output() groupSelected = new EventEmitter<string>();
+  @Input() currentUserUid!: string | null;
+  private groupsSub?: Subscription;
 
+  myGroups: Group[] = [];
   showPopup = false;
   searchQuery = '';
   filteredUsers: User[] = [];
@@ -57,7 +65,6 @@ export class SearchbarComponent implements OnInit {
     private mobileService: MobileService
   ) {
     this.loadAllUsers();
-    this.loadAllGroups();
   }
 
   /**
@@ -67,6 +74,30 @@ export class SearchbarComponent implements OnInit {
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
     });
+    if (this.currentUserUid) this.startGroupsLive(this.currentUserUid);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['currentUserUid'] && this.currentUserUid) {
+      this.startGroupsLive(this.currentUserUid);
+    }
+  }
+
+  ngOnDestroy() {
+    this.groupsSub?.unsubscribe();
+  }
+
+  private startGroupsLive(uid: string) {
+    this.groupsSub?.unsubscribe();
+    this.groupsSub = this.groupService
+      .getGroupsByMemberLive(uid)
+      .subscribe((groups) => {
+        this.myGroups = groups; // always the up-to-date list of groups the user is in
+        if (this.searchQuery.startsWith('#')) {
+          // reapply the current text filter so the popup updates instantly
+          this.filterGroupsByQuery();
+        }
+      });
   }
 
   /**
@@ -92,15 +123,6 @@ export class SearchbarComponent implements OnInit {
   }
 
   /**
-   * Loads and caches all groups.
-   */
-  private async loadAllGroups() {
-    const groups = await this.groupService.getAllGroups();
-    this.allGroups = groups;
-    this.filteredGroups = [...this.allGroups];
-  }
-
-  /**
    * Detects clicks outside the search popup or input field and hides the popup.
    * @param event Mouse click event
    */
@@ -116,9 +138,14 @@ export class SearchbarComponent implements OnInit {
   }
 
   /**
-   * Handles input changes to detect mentions or group references
-   * and filter the available users/groups accordingly.
-   * @param event Input event from the search field
+   * Handles changes in the mention input field (`@user` or `#group`) and updates the filtered lists accordingly.
+   *
+   * - If empty input, hides the popup and resets state.
+   * - If starts with `@`, filters `allUsers` by name.
+   * - If starts with `#`, filters `myGroups` by name.
+   * - Otherwise, clears the filtered lists and hides the popup.
+   *
+   * @param {Event} event - The input event triggered when the user types in the mention field.
    */
   async onInputChange(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -135,31 +162,58 @@ export class SearchbarComponent implements OnInit {
 
     if (first === '@') {
       this.filteredUsers = rest
-        ? this.allUsers.filter((u) => u.name.toLowerCase().includes(rest))
+        ? this.allUsers.filter((u) => u.name.toLowerCase().startsWith(rest))
         : [...this.allUsers];
       this.filteredGroups = [];
-      this.activeList = this.filteredUsers.length ? 'users' : null;
+      this.activeList = 'users';
       this.activeIndex = 0;
-      this.showPopup = !!this.activeList;
-    } else if (first === '#') {
-      this.filteredGroups = rest
-        ? this.allGroups.filter((g) => g.name.toLowerCase().includes(rest))
-        : [...this.allGroups];
-      this.filteredUsers = [];
-      this.activeList = this.filteredGroups.length ? 'groups' : null;
-      this.activeIndex = 0;
-      this.showPopup = !!this.activeList;
-    } else {
-      this.filteredUsers = [];
-      this.filteredGroups = [];
-      this.activeList = null;
-      this.showPopup = false;
+      this.showPopup = true;
+      setTimeout(() => this.scrollActiveIntoView(), 0);
+      return;
     }
 
-    // ensure the first item is visible if popup opened
+    if (first === '#') {
+      this.filterGroupsByQuery();
+      return;
+    }
+
+    this.filteredUsers = [];
+    this.filteredGroups = [];
+    this.activeList = null;
+    this.showPopup = false;
+  }
+
+  /**
+   * Filters the list of groups (`myGroups`) based on the current search query after `#`.
+   *
+   * - Matches group names starting with the query (case-insensitive).
+   * - If no query is present, copies all groups into the filtered list.
+   *
+   * @private
+   */
+  private filterGroupsByQuery() {
+    const rest = this.searchQuery.slice(1).trim().toLowerCase();
+    this.filteredGroups = rest
+      ? this.myGroups.filter((g) => g.name.toLowerCase().startsWith(rest))
+      : [...this.myGroups];
+
+    this.filteredUsers = [];
+    this.activeList = 'groups';
+    this.activeIndex = 0;
+    this.showPopup = true;
+
     setTimeout(() => this.scrollActiveIntoView(), 0);
   }
 
+  /**
+   * Handles keyboard navigation for the mention suggestions popup.
+   *
+   * - `ArrowDown` / `ArrowUp` → Move selection.
+   * - `Enter` / `Tab` → Select current suggestion.
+   * - `Escape` → Close popup.
+   *
+   * @param {KeyboardEvent} e - The keyboard event triggered by the user.
+   */
   onKeydown(e: KeyboardEvent) {
     if (!this.showPopup || !this.activeList) return;
 
@@ -203,6 +257,11 @@ export class SearchbarComponent implements OnInit {
     }
   }
 
+  /**
+   * Scrolls the currently active suggestion into view within the popup list.
+   *
+   * @private
+   */
   private scrollActiveIntoView() {
     let items: ElementRef<HTMLElement>[];
     if (this.activeList === 'users') {

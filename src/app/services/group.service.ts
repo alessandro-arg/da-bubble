@@ -177,17 +177,44 @@ export class GroupService {
     return collectionData(groupsRef, { idField: 'id' }) as Observable<Group[]>;
   }
 
+  /**
+   * Checks if a group name already exists in Firestore.
+   *
+   * @param {string} name - The group name to check.
+   * @returns {Promise<boolean>} Resolves to `true` if the name is already taken, otherwise `false`.
+   */
   async isGroupNameTaken(name: string): Promise<boolean> {
-    // 1) reference the "groups" collection
     const groupsRef = collection(this.firestore, 'groups');
-
-    // 2) build a query for name == passed name, but only need 1 result
     const nameQuery = query(groupsRef, where('name', '==', name), limit(1));
-
-    // 3) run it
     const snap = await getDocs(nameQuery);
-
-    // 4) if it's non-empty, the name is taken
     return !snap.empty;
+  }
+
+  /**
+   * Retrieves all groups where the specified user is a participant.
+   *
+   * @param {string} uid - The UID of the user to look up.
+   * @returns {Promise<Group[]>} A promise that resolves to an array of `Group` objects.
+   */
+  async getGroupsByMember(uid: string): Promise<Group[]> {
+    const groupsRef = collection(this.firestore, 'groups');
+    const q = query(groupsRef, where('participants', 'array-contains', uid));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) } as Group));
+  }
+
+  /**
+   * Subscribes to real-time updates for all groups where the specified user is a participant.
+   *
+   * @param {string} uid - The UID of the user to subscribe to group updates for.
+   * @returns {Observable<Group[]>} An observable that emits an array of `Group` objects whenever data changes.
+   */
+  getGroupsByMemberLive(uid: string): Observable<Group[]> {
+    const groupsRef = collection(
+      this.firestore,
+      'groups'
+    ) as CollectionReference<Group>;
+    const q = query(groupsRef, where('participants', 'array-contains', uid));
+    return collectionData(q, { idField: 'id' }) as Observable<Group[]>;
   }
 }
