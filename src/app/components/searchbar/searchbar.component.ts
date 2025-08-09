@@ -26,6 +26,7 @@ import { GroupService } from '../../services/group.service';
 import { Group } from '../../models/group.model';
 import { MobileService } from '../../services/mobile.service';
 import { Subscription } from 'rxjs';
+import { PresenceService } from '../../services/presence.service';
 
 @Component({
   selector: 'app-searchbar',
@@ -38,6 +39,10 @@ export class SearchbarComponent implements OnInit, OnChanges, OnDestroy {
   @Output() userSelected = new EventEmitter<User>();
   @Output() groupSelected = new EventEmitter<string>();
   @Input() currentUserUid!: string | null;
+
+  statusMap: Record<string, boolean> = {};
+  private presenceSubs: Subscription[] = [];
+  private usersSub?: Subscription;
   private groupsSub?: Subscription;
 
   myGroups: Group[] = [];
@@ -62,8 +67,21 @@ export class SearchbarComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private userService: UserService,
     private groupService: GroupService,
+    private presence: PresenceService,
     private mobileService: MobileService
   ) {
+    this.usersSub = this.userService.getAllUsersLive().subscribe((users) => {
+      this.allUsers = users.sort((a, b) => a.name.localeCompare(b.name));
+      this.presenceSubs.forEach((s) => s.unsubscribe());
+      this.presenceSubs = users
+        .filter((u) => u.uid)
+        .map((u) =>
+          this.presence.getUserStatus(u.uid!).subscribe((rec) => {
+            this.statusMap[u.uid!] = rec.state === 'online';
+          })
+        );
+    });
+
     this.loadAllUsers();
   }
 
@@ -92,9 +110,8 @@ export class SearchbarComponent implements OnInit, OnChanges, OnDestroy {
     this.groupsSub = this.groupService
       .getGroupsByMemberLive(uid)
       .subscribe((groups) => {
-        this.myGroups = groups; // always the up-to-date list of groups the user is in
+        this.myGroups = groups;
         if (this.searchQuery.startsWith('#')) {
-          // reapply the current text filter so the popup updates instantly
           this.filterGroupsByQuery();
         }
       });
