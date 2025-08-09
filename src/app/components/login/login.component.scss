@@ -24,21 +24,9 @@ h1 {
   }
 }
 
-.register-link-mobile {
-  display: none;
-}
-
 @media screen and (max-width: 430px) {
-  .register-link-destop {
-    display: none;
-  }
-
   .logo-container {
     justify-content: center;
-  }
-
-  .register-link-mobile {
-    display: flex;
   }
 
   footer {

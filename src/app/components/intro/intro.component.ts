@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./intro.component.scss'],
 })
 export class IntroComponent implements OnInit {
-  constructor(private router: Router) { }
+  constructor(private router: Router) {}
 
   /**
    * Lifecycle hook that is called after Angular has initialized all data-bound properties of a directive.
@@ -30,34 +30,28 @@ export class IntroComponent implements OnInit {
    * @returns A promise that resolves once the animation sequence is initiated.
    */
   private async startAnimationSequence(): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     await this.triggerElementAnimations();
 
-    setTimeout(() => {
-      this.router.navigate(['/login']);
-    }, 250);
+    this.router.navigate(['/login']);
   }
 
   /**
    * Triggers animations for specific elements in the intro component.
-   * 
+   *
    * This method applies CSS classes to elements to initiate animations and removes
    * specific classes after a delay to complete the animation sequence. It returns
    * a promise that resolves once all animations are completed.
-   * 
+   *
    * @returns {Promise<void>} A promise that resolves when the animations are finished.
    */
   private triggerElementAnimations(): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const elements = {
         background: document.querySelector('.background-color-intro'),
         logo: document.querySelector('.background-color-intro-logo'),
-        content: document.querySelector('.intro-content')
+        content: document.querySelector('.intro-content'),
       };
-
-      if (elements.content) {
-        elements.content.classList.add('animate-active');
-      }
 
       setTimeout(() => {
         if (elements.logo) {

@@ -9,11 +9,19 @@
     }"
   >
     <div class="logo flex items-center gap-2">
-      <img src="assets/img/logo.svg" alt="DABubble Logo" class="w-16 h-auto" />
+      <img
+        src="assets/img/logo.svg"
+        alt="DABubble Logo"
+        class="w-16 h-auto"
+        style="view-transition-name: app-logo"
+      />
       <p class="text-2xl font-bold">DABubble</p>
     </div>
 
-    <div class="register-link-destop text-[18px] text-center">
+    <div
+      class="register-link-destop text-[18px] text-center"
+      [ngClass]="isMobile ? 'hidden' : 'flex'"
+    >
       <div class="text-lg">
         <p>Neu bei DABubble?</p>
         <a routerLink="/register" class="text-[#797EF3] hover:text-[#444DF2]">
@@ -227,7 +235,7 @@
     </form>
   </div>
 
-  <div class="register-link-mobile mt-6 text-center w-full">
+  <div class="mt-6 text-center w-full" [ngClass]="isMobile ? 'flex' : 'hidden'">
     <div
       class="text-gray-600 w-full flex gap-5 flex-col justify-center items-center"
     >
