@@ -12,10 +12,23 @@ import { Router } from '@angular/router';
 export class IntroComponent implements OnInit {
   constructor(private router: Router) { }
 
+  /**
+   * Lifecycle hook that is called after Angular has initialized all data-bound properties of a directive.
+   * This method is used to start the animation sequence when the component is initialized.
+   *
+   * @see https://angular.io/api/core/OnInit
+   */
   ngOnInit(): void {
     this.startAnimationSequence();
   }
 
+  /**
+   * Initiates an animation sequence by first waiting for a delay,
+   * then triggering element animations, and finally navigating
+   * to the login page after a short timeout.
+   *
+   * @returns A promise that resolves once the animation sequence is initiated.
+   */
   private async startAnimationSequence(): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 1000));
     await this.triggerElementAnimations();
@@ -25,6 +38,15 @@ export class IntroComponent implements OnInit {
     }, 250);
   }
 
+  /**
+   * Triggers animations for specific elements in the intro component.
+   * 
+   * This method applies CSS classes to elements to initiate animations and removes
+   * specific classes after a delay to complete the animation sequence. It returns
+   * a promise that resolves once all animations are completed.
+   * 
+   * @returns {Promise<void>} A promise that resolves when the animations are finished.
+   */
   private triggerElementAnimations(): Promise<void> {
     return new Promise(resolve => {
       const elements = {
@@ -52,129 +74,3 @@ export class IntroComponent implements OnInit {
     });
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * IntroComponent handles the animated intro screen before routing the user to the login page.
- * It plays only once per browser session by checking `sessionStorage`.
- *
-
-import { Component, AfterViewInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-
-@Component({
-  selector: 'app-intro',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './intro.component.html',
-  styleUrls: ['./intro.component.scss'],
-})
-export class IntroComponent implements AfterViewInit {
-  /**
-   * Creates an instance of IntroComponent.
-   * @param router Angular Router for navigation.
-   * @param platformId Identifier to check if the code is running in a browser.
-   *
-  constructor(
-    private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
-
-  /**
-   * Lifecycle hook called after component's view has been fully initialized.
-   * Starts the intro animation sequence.
-   *
-  ngAfterViewInit(): void {
-    this.startIntroSequence();
-  }
-
-  /**
-   * Triggers the intro animation if it hasn't been shown yet.
-   * Uses sessionStorage to track whether the intro has already run.
-   * Navigates to the login page after animation or immediately if already shown.
-   *
-  private startIntroSequence(): void {
-    setTimeout(() => {
-      if (isPlatformBrowser(this.platformId)) {
-        const introAlreadyShown = sessionStorage.getItem('introShown');
-        if (!introAlreadyShown) {
-          this.runIntroAnimationSequence();
-        } else {
-          this.navigateToLogin();
-        }
-      } else {
-        this.navigateToLogin();
-      }
-    }, 100);
-  }
-
-  /**
-   * Runs the full intro animation and navigates to login after it's finished.
-   *
-  private runIntroAnimationSequence(): void {
-    setTimeout(() => {
-      this.animateIntroElements();
-      setTimeout(() => {
-        this.navigateToLogin();
-      }, 1000);
-    }, 1000);
-  }
-
-  /**
-   * Handles DOM manipulation to perform the sliding intro animation.
-   *
-  private animateIntroElements(): void {
-    const introContent = document.querySelector('.intro-content');
-    const backgroundColorIntro = document.querySelector(
-      '.background-color-intro'
-    );
-    const backgroundColorIntroLogo = document.querySelector(
-      '.background-color-intro-logo'
-    );
-
-    if (introContent && backgroundColorIntroLogo) {
-      introContent.classList.add('slide-animation');
-      backgroundColorIntroLogo.classList.remove('background-color-intro-logo');
-
-      setTimeout(() => {
-        if (backgroundColorIntro) {
-          backgroundColorIntro.classList.remove('background-color-intro');
-        }
-      }, 600);
-    }
-  }
-
-  /**
-   * Navigates to the login page and clears localStorage in browser context.
-  
-  private navigateToLogin(): void {
-    this.router
-      .navigate(['/login'])
-      .catch((err) => console.error('Navigation error:', err));
-
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.clear();
-    }
-  }
-}
-   */
