@@ -11,7 +11,9 @@ import {
   HostListener,
   OnInit,
   Output,
+  QueryList,
   ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../services/user.service';
@@ -37,12 +39,17 @@ export class SearchbarComponent implements OnInit {
   filteredGroups: Group[] = [];
   allUsers: User[] = [];
   allGroups: Group[] = [];
-  searchMode: 'name' | 'mention' = 'name';
-  currentSearchType: 'users' | 'groups' = 'users';
-
+  activeIndex = 0;
+  activeList: 'users' | 'groups' | null = null;
   isMobile = false;
 
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
+  @ViewChildren('userItem', { read: ElementRef }) userItems!: QueryList<
+    ElementRef<HTMLElement>
+  >;
+  @ViewChildren('groupItem', { read: ElementRef }) groupItems!: QueryList<
+    ElementRef<HTMLElement>
+  >;
 
   constructor(
     private userService: UserService,
@@ -119,6 +126,7 @@ export class SearchbarComponent implements OnInit {
 
     if (!this.searchQuery) {
       this.showPopup = false;
+      this.activeList = null;
       return;
     }
 
@@ -130,18 +138,81 @@ export class SearchbarComponent implements OnInit {
         ? this.allUsers.filter((u) => u.name.toLowerCase().includes(rest))
         : [...this.allUsers];
       this.filteredGroups = [];
-      this.showPopup = this.filteredUsers.length > 0;
+      this.activeList = this.filteredUsers.length ? 'users' : null;
+      this.activeIndex = 0;
+      this.showPopup = !!this.activeList;
     } else if (first === '#') {
       this.filteredGroups = rest
         ? this.allGroups.filter((g) => g.name.toLowerCase().includes(rest))
         : [...this.allGroups];
       this.filteredUsers = [];
-      this.showPopup = this.filteredGroups.length > 0;
+      this.activeList = this.filteredGroups.length ? 'groups' : null;
+      this.activeIndex = 0;
+      this.showPopup = !!this.activeList;
     } else {
       this.filteredUsers = [];
       this.filteredGroups = [];
+      this.activeList = null;
       this.showPopup = false;
     }
+
+    // ensure the first item is visible if popup opened
+    setTimeout(() => this.scrollActiveIntoView(), 0);
+  }
+
+  onKeydown(e: KeyboardEvent) {
+    if (!this.showPopup || !this.activeList) return;
+
+    const listLength =
+      this.activeList === 'users'
+        ? this.filteredUsers.length
+        : this.filteredGroups.length;
+
+    if (listLength === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      this.activeIndex = (this.activeIndex + 1) % listLength;
+      this.scrollActiveIntoView();
+      return;
+    }
+
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.activeIndex = (this.activeIndex - 1 + listLength) % listLength;
+      this.scrollActiveIntoView();
+      return;
+    }
+
+    if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault();
+      if (this.activeList === 'users') {
+        const u = this.filteredUsers[this.activeIndex];
+        if (u) this.selectUser(u);
+      } else {
+        const g = this.filteredGroups[this.activeIndex];
+        if (g) this.selectGroup(g);
+      }
+      return;
+    }
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      this.showPopup = false;
+      return;
+    }
+  }
+
+  private scrollActiveIntoView() {
+    let items: ElementRef<HTMLElement>[];
+    if (this.activeList === 'users') {
+      items = this.userItems?.toArray() ?? [];
+    } else if (this.activeList === 'groups') {
+      items = this.groupItems?.toArray() ?? [];
+    } else {
+      return;
+    }
+    items[this.activeIndex]?.nativeElement.scrollIntoView({ block: 'nearest' });
   }
 
   /**
@@ -152,6 +223,7 @@ export class SearchbarComponent implements OnInit {
   selectUser(user: User) {
     this.searchQuery = '';
     this.showPopup = false;
+    this.activeList = null;
     this.userSelected.emit(user);
   }
 
@@ -163,6 +235,7 @@ export class SearchbarComponent implements OnInit {
   selectGroup(group: Group) {
     this.searchQuery = '';
     this.showPopup = false;
+    this.activeList = null;
     this.groupSelected.emit(group.id!);
   }
 }

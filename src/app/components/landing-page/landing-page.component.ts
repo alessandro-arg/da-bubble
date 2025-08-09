@@ -139,13 +139,13 @@ export class LandingPageComponent implements OnInit {
     const isK = ev.key?.toLowerCase() === 'k';
     const modifier = ev.ctrlKey || ev.metaKey;
     const target = ev.target as HTMLElement | null;
-    const tag = target?.tagName?.toLowerCase();
-    const isTypingField =
-      tag === 'input' || tag === 'textarea' || target?.isContentEditable;
-
     const overlaysOpen = this.showDropdown || this.showProfileModal;
 
-    if (modifier && isK && !isTypingField && !overlaysOpen) {
+    if (modifier && isK) {
+      ev.preventDefault();
+    }
+
+    if (modifier && isK && !overlaysOpen) {
       ev.preventDefault();
 
       if (this.screenWidth >= 1024) {
