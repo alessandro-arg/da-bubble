@@ -12,34 +12,11 @@
   />
   <img src="assets/img/icons/search.png" alt="" class="size-6" />
 
-  <!-- Popup -->
   <div
     *ngIf="showPopup && !isMobile"
     class="show-popup-user-list absolute flex flex-col gap-3 left-[20px] top-full -mb-4 p-5 w-[350px] max-h-[467px] overflow-auto bg-white border border-[#ADB0D9] rounded-b-[20px] rounded-tr-[20px] shadow-[0px_2px_10px_0px_#00000014] z-20"
   >
-    <div *ngIf="filteredGroups.length > 0">
-      <div
-        *ngFor="let group of filteredGroups; let i = index"
-        #groupItem
-        class="flex items-center p-2 rounded-full cursor-pointer gap-3 w-fit px-5"
-        [ngClass]="{
-          'bg-[#edeefe]': i === activeIndex && activeList === 'groups',
-          'hover:bg-[#edeefe]': i !== activeIndex || activeList !== 'groups'
-        }"
-        (click)="selectGroup(group)"
-        role="option"
-        aria-selected="{{ i === activeIndex && activeList === 'groups' }}"
-      >
-        <img
-          src="assets/img/icons/tag.png"
-          alt="Gruppen Icon"
-          class="w-8 h-8 rounded-full object-cover"
-        />
-        <div class="font-medium">{{ group.name }}</div>
-      </div>
-    </div>
-
-    <!-- Benutzer Ergebnisse -->
+    <!-- user mention list -->
     <div *ngIf="filteredUsers.length > 0" class="flex flex-col gap-3">
       <div
         *ngFor="let user of filteredUsers; let i = index"
@@ -68,8 +45,10 @@
         <p
           class="text-base transition-colors duration-200"
           [ngClass]="{
-            'font-bold text-[#535AF1]': i === activeMentionIndex,
-            'font-normal text-black': i !== activeMentionIndex
+            'font-bold text-[#535AF1]':
+              i === activeIndex && activeList === 'users',
+            'font-normal text-black':
+              i !== activeIndex && activeList === 'users'
           }"
         >
           {{ user.name }} <span *ngIf="user.uid === currentUserUid">(Du)</span>
@@ -77,68 +56,123 @@
       </div>
     </div>
 
+    <!-- group mention list -->
+    <div *ngIf="filteredGroups.length > 0" class="flex flex-col gap-3">
+      <div
+        *ngFor="let group of filteredGroups; let i = index"
+        #groupItem
+        class="w-max ml-4 mr-[5px] px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+        [ngClass]="{
+          'bg-[#ECEEFE]': i === activeIndex && activeList === 'groups'
+        }"
+        (click)="selectGroup(group)"
+        role="option"
+        aria-selected="{{ i === activeIndex && activeList === 'groups' }}"
+      >
+        <p
+          class="text-lg"
+          [ngClass]="{
+            'font-bold text-[#535AF1]':
+              i === activeIndex && activeList === 'groups',
+            'font-normal text-black':
+              i !== activeIndex && activeList === 'groups'
+          }"
+        >
+          # {{ group.name }}
+        </p>
+      </div>
+    </div>
+
     <div
       *ngIf="filteredUsers.length === 0 && filteredGroups.length === 0"
-      class="p-2 text-gray-500"
+      class="ml-4 mr-[5px] px-5 py-1 cursor-default text-gray-500"
     >
-      Keine Ergebnisse
+      <p>Keine Ergebnisse</p>
     </div>
   </div>
 
   <!-- only show this block on mobile -->
   <div
     *ngIf="showPopup && isMobile"
-    class="fixed inset-0 flex flex-col mt-[200px] bg-white shadow-lg z-50 overflow-y-auto"
+    class="fixed inset-0 flex flex-col mt-[190px] bg-white z-50 overflow-y-auto"
   >
-    <div *ngIf="filteredGroups.length > 0" class="px-4">
-      <div
-        *ngFor="let group of filteredGroups; let i = index"
-        #groupItem
-        class="flex items-center p-2 rounded-full cursor-pointer gap-3"
-        [ngClass]="{
-          'bg-[#edeefe]': i === activeIndex && activeList === 'groups',
-          'hover:bg-[#edeefe]': i !== activeIndex || activeList !== 'groups'
-        }"
-        (click)="selectGroup(group)"
-        role="option"
-        aria-selected="{{ i === activeIndex && activeList === 'groups' }}"
-      >
-        <img
-          src="assets/img/icons/tag.png"
-          alt="Gruppen Icon"
-          class="w-8 h-8 rounded-full object-cover"
-        />
-        <div class="font-medium">{{ group.name }}</div>
-      </div>
-    </div>
-
-    <!-- Benutzer Ergebnisse (mobile) -->
-    <div *ngIf="filteredUsers.length > 0" class="px-4 mt-4">
+    <!-- user mention list (mobile) -->
+    <div
+      *ngIf="filteredUsers.length > 0"
+      class="flex flex-col gap-4 px-5 pt-3 pb-10"
+    >
       <div
         *ngFor="let user of filteredUsers; let i = index"
         #userItem
-        class="flex items-center p-2 rounded-full cursor-pointer gap-3"
+        class="w-max ml-4 mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
         [ngClass]="{
-          'bg-[#edeefe]': i === activeIndex && activeList === 'users',
-          'hover:bg-[#edeefe]': i !== activeIndex || activeList !== 'users'
+          'bg-[#ECEEFE]': i === activeIndex && activeList === 'users',
         }"
         (click)="selectUser(user)"
         role="option"
         aria-selected="{{ i === activeIndex && activeList === 'users' }}"
       >
-        <img
-          [src]="user.avatar || 'assets/img/profile.svg'"
-          alt="Avatar"
-          class="w-8 h-8 rounded-full object-cover"
-        />
-        <div class="font-medium">{{ user.name }}</div>
+        <div class="relative w-12 h-12">
+          <img
+            [src]="user.avatar || 'assets/img/profile.svg'"
+            alt="User"
+            class="w-full h-full rounded-full object-cover"
+          />
+          <div
+            class="absolute bottom-0 right-[-2px] w-4 h-4 rounded-full border-2 border-white"
+            [style.backgroundColor]="
+              statusMap[user.uid] ? '#92C83E' : '#686868'
+            "
+          ></div>
+        </div>
+        <p
+          class="text-base transition-colors duration-200"
+          [ngClass]="{
+            'font-bold text-[#535AF1]':
+              i === activeIndex && activeList === 'users',
+            'font-normal text-black':
+              i !== activeIndex && activeList === 'users'
+          }"
+        >
+          {{ user.name }} <span *ngIf="user.uid === currentUserUid">(Du)</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- group mention list (mobile) -->
+    <div
+      *ngIf="filteredGroups.length > 0"
+      class="flex flex-col gap-4 px-5 pt-3 pb-10"
+    >
+      <div
+        *ngFor="let group of filteredGroups; let i = index"
+        #groupItem
+        class="w-max ml-4 mr-[5px] px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+        [ngClass]="{
+          'bg-[#ECEEFE]': i === activeIndex && activeList === 'groups'
+        }"
+        (click)="selectGroup(group)"
+        role="option"
+        aria-selected="{{ i === activeIndex && activeList === 'groups' }}"
+      >
+        <p
+          class="text-lg"
+          [ngClass]="{
+            'font-bold text-[#535AF1]':
+              i === activeIndex && activeList === 'groups',
+            'font-normal text-black':
+              i !== activeIndex && activeList === 'groups'
+          }"
+        >
+          # {{ group.name }}
+        </p>
       </div>
     </div>
 
     <!-- No results -->
     <div
       *ngIf="filteredUsers.length === 0 && filteredGroups.length === 0"
-      class="p-4 text-gray-500"
+      class="ml-4 mr-[5px] px-5 py-1 cursor-default text-gray-500"
     >
       Keine Ergebnisse
     </div>

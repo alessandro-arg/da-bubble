@@ -70,6 +70,8 @@ export class SearchbarComponent implements OnInit, OnChanges, OnDestroy {
     private presence: PresenceService,
     private mobileService: MobileService
   ) {
+    this.loadAllUsers();
+
     this.usersSub = this.userService.getAllUsersLive().subscribe((users) => {
       this.allUsers = users.sort((a, b) => a.name.localeCompare(b.name));
       this.presenceSubs.forEach((s) => s.unsubscribe());
@@ -81,30 +83,53 @@ export class SearchbarComponent implements OnInit, OnChanges, OnDestroy {
           })
         );
     });
-
-    this.loadAllUsers();
   }
 
   /**
    * Initializes the component, including checking for mobile device context.
    */
   ngOnInit() {
+    if (this.currentUserUid) this.startGroupsLive(this.currentUserUid);
+
     this.mobileService.isMobile$.subscribe((isMobile) => {
       this.isMobile = isMobile;
     });
-    if (this.currentUserUid) this.startGroupsLive(this.currentUserUid);
   }
 
+  /**
+   * Angular lifecycle hook called when input-bound properties change.
+   *
+   * - If `currentUserUid` changes and has a value, starts live group subscription.
+   *
+   * @param {SimpleChanges} changes - The object containing the changed input property values.
+   */
   ngOnChanges(changes: SimpleChanges) {
     if (changes['currentUserUid'] && this.currentUserUid) {
       this.startGroupsLive(this.currentUserUid);
     }
   }
 
+  /**
+   * Angular lifecycle hook called just before the component is destroyed.
+   *
+   * - Unsubscribes from all active subscriptions to prevent memory leaks.
+   */
   ngOnDestroy() {
     this.groupsSub?.unsubscribe();
+    this.usersSub?.unsubscribe();
+    this.presenceSubs.forEach((s) => s.unsubscribe());
   }
 
+  /**
+   * Starts a live Firestore subscription to fetch groups where the given user is a member.
+   *
+   * - Unsubscribes from any existing group subscription before creating a new one.
+   * - Updates `myGroups` whenever the data changes.
+   * - If the current search query starts with `#`, re-filters groups accordingly.
+   *
+   * @private
+   * @param {string} uid - The UID of the user whose groups should be observed in real time.
+   */
   private startGroupsLive(uid: string) {
     this.groupsSub?.unsubscribe();
     this.groupsSub = this.groupService

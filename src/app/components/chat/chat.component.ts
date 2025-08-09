@@ -164,6 +164,11 @@ export class ChatComponent implements OnChanges, OnInit, OnDestroy {
     this.screenWidth = window.innerWidth;
   }
 
+  get isPartnerOnline(): boolean {
+    const uid = this.chatPartner?.uid;
+    return !!(uid && this.statusMap[uid]);
+  }
+
   /**
    * Updates screen width on window resize.
    */

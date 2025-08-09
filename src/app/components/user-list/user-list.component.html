@@ -32,6 +32,7 @@
     <app-searchbar
       (userSelected)="openPrivateChat($event)"
       (groupSelected)="openGroupChat($event)"
+      [currentUserUid]="currentUserUid"
       class="w-full items-center flex"
     ></app-searchbar>
   </div>
