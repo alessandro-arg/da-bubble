@@ -60,7 +60,8 @@
     <form
       #loginForm="ngForm"
       (ngSubmit)="onSubmit(loginForm)"
-      class="flex justify-center flex-col gap-5 medShort:gap-1 w-[90%]"
+      class="flex justify-center flex-col medShort:gap-1 w-[90%]"
+      [ngClass]="isMobile ? 'gap-3' : 'gap-5'"
     >
       <!-- Email Field -->
       <div>
@@ -71,10 +72,11 @@
             <img
               src="assets/img/mail.svg"
               alt="Email"
-              class="ml-5 mr-7 w-5 h-5"
+              class="w-5 h-5"
+              [ngClass]="{ 'ml-5 mr-7': !isMobile, 'ml-3 mr-5': isMobile }"
             />
             <input
-              class="w-full bg-[#edeefe] text-[18px] focus:outline-none placeholder:text-[#686868]"
+              class="w-full bg-[#edeefe] focus:outline-none placeholder:text-[#686868]"
               [ngClass]="{ 'text-lg': !isMobile, 'text-base': isMobile }"
               type="email"
               id="email"
@@ -82,7 +84,9 @@
               pattern="[^@]+@[^@]+\.[a-zA-Z]{2,6}"
               [(ngModel)]="credentials.email"
               #emailCtrl="ngModel"
-              placeholder="beispielname@email.com"
+              [placeholder]="
+                !isMobile ? 'beispielname@email.com' : 'beispiel@email.com'
+              "
               required
               email
             />
@@ -93,16 +97,28 @@
           [ngClass]="{ 'text-base': !isMobile, 'text-sm': isMobile }"
         >
           <p
-            *ngIf="emailCtrl.errors?.required && emailCtrl.touched"
+            *ngIf="emailCtrl.errors?.required && emailCtrl.touched && !isMobile"
             class="text-[#ED1E79]"
           >
             Bitte geben Sie eine E-Mail-Adresse ein.
           </p>
           <p
-            *ngIf="emailCtrl.errors?.pattern && emailCtrl.touched"
+            *ngIf="emailCtrl.errors?.required && emailCtrl.touched && isMobile"
+            class="text-[#ED1E79]"
+          >
+            E-Mail-Adresse fehlt.
+          </p>
+          <p
+            *ngIf="emailCtrl.errors?.pattern && emailCtrl.touched && !isMobile"
             class="text-[#ED1E79]"
           >
             Diese E-Mail-Adresse ist leider ungültig.
+          </p>
+          <p
+            *ngIf="emailCtrl.errors?.pattern && emailCtrl.touched && isMobile"
+            class="text-[#ED1E79]"
+          >
+            E-Mail-Adresse ist ungültig.
           </p>
         </div>
       </div>
@@ -117,7 +133,8 @@
           <img
             src="assets/img/lock.svg"
             alt="Password"
-            class="ml-5 mr-7 w-5 h-5"
+            class="w-5 h-5"
+            [ngClass]="{ 'ml-5 mr-7': !isMobile, 'ml-3 mr-5': isMobile }"
           />
           <input
             class="w-full bg-[#edeefe] focus:outline-none placeholder:text-[#686868]"
@@ -189,7 +206,12 @@
       <div class="form-group flex justify-center items-center w-full">
         <button
           type="button"
-          class="w-full flex items-center justify-center gap-[10px] rounded-[100px] px-[32px] py-[11px] bg-[#ECEEFE] border border-[#ECEEFE] hover:border-[#444DF2] text-[#444DF2] hover:font-bold transition-all duration-200"
+          class="w-full flex items-center justify-center rounded-[100px] bg-[#ECEEFE] border border-[#ECEEFE] text-[#444DF2] transition-all duration-200"
+          [ngClass]="{
+            'px-[32px] py-[11px] gap-[10px] hover:font-bold hover:border-[#444DF2]':
+              !isMobile,
+            'px-[16px] py-[10px] gap-[5px]': isMobile
+          }"
           (click)="loginWithGoogle()"
         >
           <img
@@ -220,7 +242,7 @@
           type="button"
           (click)="guestLogin()"
           [disabled]="loading"
-          class="guest-login-btn border text-[#444DF2] border-[#797EF3] hover:bg-[#535AF1] py-3 px-6 rounded-full disabled:pointer-events-none bg-white disabled:text-[#686868] disabled:border-[#686868] transition-all duration-200"
+          class="guest-login-btn border text-[#444DF2] border-[#797EF3] hover:bg-[#535AF1] py-3 px-3 rounded-full disabled:pointer-events-none bg-white disabled:text-[#686868] disabled:border-[#686868] transition-all duration-200"
         >
           <span *ngIf="!loading">Gäste-Login</span>
           <span *ngIf="loading">Laden...</span>
@@ -230,13 +252,11 @@
   </div>
 
   <div class="mt-6 text-center w-full" [ngClass]="isMobile ? 'flex' : 'hidden'">
-    <div
-      class="text-gray-600 w-full flex gap-5 flex-col justify-center items-center"
-    >
+    <div class="w-full flex gap-5 flex-col justify-center items-center">
       <p>Neu bei DABubble?</p>
       <a
         routerLink="/register"
-        class="text-blue-700 border border-blue-700 rounded-full py-2 px-4"
+        class="text-[#444DF2] border border-[#797EF3] rounded-[25px] font-bold py-2 px-4"
       >
         Konto erstellen
       </a>

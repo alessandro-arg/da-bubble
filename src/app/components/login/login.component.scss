@@ -23,13 +23,3 @@ h1 {
     color: white;
   }
 }
-
-@media screen and (max-width: 430px) {
-  .logo-container {
-    justify-content: center;
-  }
-
-  footer {
-    display: none;
-  }
-}

@@ -77,8 +77,8 @@
           <img
             src="assets/img/person_filled.svg"
             alt=""
-            class="ml-5 mr-7 w-5 h-5"
-            aria-hidden="true"
+            class="w-5 h-5"
+            [ngClass]="{ 'ml-5 mr-7': !isMobile, 'ml-3 mr-5': isMobile }"
           />
           <input
             class="w-full bg-[#edeefe] focus:outline-none placeholder:text-[#686868]"
@@ -135,8 +135,8 @@
           <img
             src="assets/img/mail.svg"
             alt=""
-            class="ml-5 mr-7 w-5 h-5"
-            aria-hidden="true"
+            class="w-5 h-5"
+            [ngClass]="{ 'ml-5 mr-7': !isMobile, 'ml-3 mr-5': isMobile }"
           />
           <input
             class="w-full bg-[#edeefe] focus:outline-none placeholder:text-[#686868]"
@@ -144,7 +144,9 @@
             type="email"
             id="email"
             formControlName="email"
-            placeholder="beispielname@email.com"
+            [placeholder]="
+              !isMobile ? 'beispielname@email.com' : 'beispiel@email.com'
+            "
             required
             aria-describedby="email-error"
           />
@@ -157,11 +159,22 @@
           <p
             *ngIf="
               registerForm.get('email')?.hasError('required') &&
-              registerForm.get('email')?.touched
+              registerForm.get('email')?.touched &&
+              !isMobile
             "
             class="text-[#ED1E79]"
           >
             Bitte geben Sie eine E-Mail-Adresse ein.
+          </p>
+          <p
+            *ngIf="
+              registerForm.get('email')?.hasError('required') &&
+              registerForm.get('email')?.touched &&
+              isMobile
+            "
+            class="text-[#ED1E79]"
+          >
+            E-Mail-Adresse fehlt.
           </p>
           <p
             *ngIf="
@@ -175,11 +188,22 @@
           <p
             *ngIf="
               registerForm.get('email')?.hasError('emailTaken') &&
-              registerForm.get('email')?.touched
+              registerForm.get('email')?.touched &&
+              !isMobile
             "
             class="text-[#ED1E79]"
           >
             Diese E-Mail-Adresse ist bereits registriert.
+          </p>
+          <p
+            *ngIf="
+              registerForm.get('email')?.hasError('emailTaken') &&
+              registerForm.get('email')?.touched &&
+              isMobile
+            "
+            class="text-[#ED1E79]"
+          >
+            E-Mail-Adresse existiert bereits.
           </p>
         </div>
       </div>
@@ -192,8 +216,8 @@
           <img
             src="assets/img/lock.svg"
             alt=""
-            class="ml-5 mr-7 w-5 h-5"
-            aria-hidden="true"
+            class="w-5 h-5"
+            [ngClass]="{ 'ml-5 mr-7': !isMobile, 'ml-3 mr-5': isMobile }"
           />
           <input
             class="w-full bg-[#edeefe] focus:outline-none placeholder:text-[#686868]"
@@ -243,18 +267,29 @@
           <p
             *ngIf="
               registerForm.get('password')?.hasError('minlength') &&
-              registerForm.get('password')?.touched
+              registerForm.get('password')?.touched &&
+              !isMobile
             "
             class="text-[#ED1E79]"
           >
             Das Passwort muss mindestens 6 Zeichen lang sein.
+          </p>
+          <p
+            *ngIf="
+              registerForm.get('password')?.hasError('minlength') &&
+              registerForm.get('password')?.touched &&
+              isMobile
+            "
+            class="text-[#ED1E79]"
+          >
+            Mindestens 6 Zeichen.
           </p>
         </div>
       </div>
 
       <!-- Privacy Policy Checkbox -->
       <div class="form-group">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 group cursor-pointer">
           <div class="relative items-center flex justify-center">
             <img
               [src]="
@@ -267,18 +302,18 @@
                   ? 'Checked'
                   : 'Not checked'
               }}"
-              class="cursor-pointer hover:bg-[#edeefe]"
+              class="group-hover:bg-[#edeefe]"
               (click)="togglePrivacyPolicy()"
             />
           </div>
           <label
-            class="text-[16px] text-[#42526E]"
+            class="text-[16px] text-[#42526E] cursor-pointer"
             (click)="togglePrivacyPolicy()"
           >
             Ich stimme der
             <a
               routerLink="/privacy-policy"
-              class="text-[#797EF3] hover:text-[#444df2] text-lg cursor-pointer"
+              class="text-[#797EF3] hover:text-[#444df2] text-base sm:text-lg"
             >
               Datenschutzerklärung
             </a>

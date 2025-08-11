@@ -7,7 +7,6 @@ import { UserService } from '../../../../services/user.service';
 import { User } from '../../../../models/user.model';
 import { RegistrationService } from '../../../../services/registration.service';
 import { firstValueFrom } from 'rxjs';
-import { set } from '@angular/fire/database';
 import { MobileService } from '../../../../services/mobile.service';
 
 @Component({
@@ -113,7 +112,6 @@ export class ChooseYourAvatarComponent implements OnInit {
   private handleGuestUser(): void {
     if (this.currentUser?.isGuest) {
       this.setGuestAvatar();
-      this.confirmAvatar();
     }
   }
 
