@@ -24,10 +24,12 @@ import { UserListComponent } from '../../components/user-list/user-list.componen
 import { WorkspaceToggleButtonComponent } from '../../components/workspace-toggle-button/workspace-toggle-button.component';
 import { ChatComponent } from '../chat/chat.component';
 import { ThreadComponent } from '../thread/thread.component';
-import { Auth, onAuthStateChanged } from '@angular/fire/auth';
+import { Auth, onAuthStateChanged, signOut } from '@angular/fire/auth';
 import { PresenceService } from '../../services/presence.service';
 import { MobileService } from '../../services/mobile.service';
 import { AvatarEditModalComponent } from './avatar-edit-modal/avatar-edit-modal.component';
+import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -84,7 +86,8 @@ export class LandingPageComponent implements OnInit {
     private route: ActivatedRoute,
     private eRef: ElementRef,
     private presence: PresenceService,
-    private mobileService: MobileService
+    private mobileService: MobileService,
+    private authService: AuthService
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
 
@@ -316,12 +319,16 @@ export class LandingPageComponent implements OnInit {
    */
   async logout() {
     try {
-      if (this.currentUserUid) {
-        await this.presence.forceOffline(this.currentUserUid);
+      const uid = this.auth.currentUser?.uid || this.currentUserUid;
+      if (uid) {
+        await this.presence.forceOffline(uid);
+        await signOut(this.auth);
       }
-      this.router.navigate(['/login']);
-    } catch (error) {
-      console.error('Logout error:', error);
+      await firstValueFrom(this.authService.logout());
+    } catch (e) {
+      console.error(e);
+    } finally {
+      location.assign('/login');
     }
   }
 

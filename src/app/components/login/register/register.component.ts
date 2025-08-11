@@ -107,16 +107,6 @@ export class RegisterComponent {
     this.loading = true;
     const { name, email, password, privacyPolicy } = this.registerForm.value;
     try {
-      if (await this.userService.isNameTaken(name)) {
-        this.registerForm.get('name')?.setErrors({ nameTaken: true });
-        this.registerForm.get('name')?.markAsTouched();
-        return;
-      }
-      if (await this.userService.isEmailTaken(email)) {
-        this.registerForm.get('email')?.setErrors({ emailTaken: true });
-        this.registerForm.get('email')?.markAsTouched();
-        return;
-      }
       this.registrationService.setRegistrationData({
         name,
         email,

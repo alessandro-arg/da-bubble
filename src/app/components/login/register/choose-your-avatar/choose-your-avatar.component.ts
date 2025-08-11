@@ -8,6 +8,7 @@ import { User } from '../../../../models/user.model';
 import { RegistrationService } from '../../../../services/registration.service';
 import { firstValueFrom } from 'rxjs';
 import { MobileService } from '../../../../services/mobile.service';
+import { GroupService } from '../../../../services/group.service';
 
 @Component({
   selector: 'app-choose-your-avatar',
@@ -28,12 +29,18 @@ export class ChooseYourAvatarComponent implements OnInit {
   arrowHover = false;
   registrationName = '';
 
+  private readonly DEFAULT_GROUP_IDS = [
+    'CY11IlECr0PhcVwxnCbJ',
+    'Dm1d4sq8PaENyXHoCm1t',
+  ];
+
   constructor(
     private authService: AuthService,
     private userService: UserService,
     private registrationService: RegistrationService,
     private router: Router,
-    private mobileService: MobileService
+    private mobileService: MobileService,
+    private groupService: GroupService
   ) {}
 
   /**
@@ -266,12 +273,19 @@ export class ChooseYourAvatarComponent implements OnInit {
     userCredential: any,
     name: string
   ): Promise<void> {
+    const uid = userCredential.user?.uid as string;
     await this.userService.createUser({
       uid: userCredential.user?.uid,
       name: name,
       email: userCredential.user?.email,
       avatar: this.selectedAvatar,
     });
+
+    await Promise.all(
+      this.DEFAULT_GROUP_IDS.map((gid) =>
+        this.groupService.addUserToGroup(gid, uid)
+      )
+    );
   }
 
   /**
