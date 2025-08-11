@@ -236,6 +236,7 @@ export class ChatInputComponent implements AfterViewInit {
       e.preventDefault();
       this.activeGroupIndex =
         (this.activeGroupIndex + 1) % this.filteredGroups.length;
+      this.scrollGroupMentionIntoView();
       return;
     }
     if (e.key === 'ArrowUp') {
@@ -243,6 +244,7 @@ export class ChatInputComponent implements AfterViewInit {
       this.activeGroupIndex =
         (this.activeGroupIndex - 1 + this.filteredGroups.length) %
         this.filteredGroups.length;
+      this.scrollGroupMentionIntoView();
       return;
     }
     if (e.key === 'Enter' || e.key === 'Tab') {
@@ -250,6 +252,16 @@ export class ChatInputComponent implements AfterViewInit {
       this.selectGroup(this.filteredGroups[this.activeGroupIndex]);
       return;
     }
+  }
+
+  /**
+   * Scrolls the currently active group mention item into view.
+   */
+  private scrollGroupMentionIntoView() {
+    const items = this.groupMentionItems.toArray();
+    items[this.activeGroupIndex]?.nativeElement.scrollIntoView({
+      block: 'nearest',
+    });
   }
 
   /**

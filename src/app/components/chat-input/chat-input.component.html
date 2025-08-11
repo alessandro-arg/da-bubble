@@ -23,16 +23,16 @@
     <!-- user mention list -->
     <ul
       *ngIf="showMentionList"
-      class="mention-list absolute flex flex-col gap-3 left-[20px] bottom-full -mb-4 p-5 w-[350px] max-h-[467px] overflow-auto bg-white border border-[#ADB0D9] rounded-t-[20px] rounded-br-[20px] shadow-[0px_2px_10px_0px_#00000014] z-20"
+      class="mention-list absolute flex flex-col gap-3 left-[20px] bottom-full -mb-4 p-3 md:p-5 w-[270px] sm:w-[350px] max-h-[200px] sm:max-h-[467px] overflow-auto bg-white border border-[#ADB0D9] rounded-t-[20px] rounded-br-[20px] shadow-[0px_2px_10px_0px_#00000014] z-20 overflow-x-hidden"
     >
       <li
         #mentionItem
         *ngFor="let u of filteredUsers; let i = index"
         (mousedown)="selectMentionUser(u)"
         [ngClass]="{ 'bg-[#ECEEFE]': i === activeMentionIndex }"
-        class="w-max ml-4 mr-[5px] flex items-center gap-4 px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+        class="w-[90%] sm:w-max ml-4 sm:mr-[5px] flex flex-wrap items-center gap-4 px-3 sm:px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
       >
-        <div class="relative w-12 h-12">
+        <div class="relative w-12 h-12 shrink-0">
           <img
             [src]="u.avatar || 'assets/img/profile.svg'"
             alt="User"
@@ -44,7 +44,7 @@
           ></div>
         </div>
         <p
-          class="text-base transition-colors duration-200"
+          class="flex-1 min-w-0 text-base transition-colors duration-200 whitespace-normal break-words"
           [ngClass]="{
             'font-bold text-[#535AF1]': i === activeMentionIndex,
             'font-normal text-black': i !== activeMentionIndex
@@ -58,17 +58,17 @@
     <!-- group mention list -->
     <ul
       *ngIf="showGroupList"
-      class="mention-list absolute flex flex-col gap-3 left-[20px] bottom-full -mb-4 p-5 w-[350px] max-h-[467px] overflow-auto bg-white border border-[#ADB0D9] rounded-t-[20px] rounded-br-[20px] shadow-[0px_2px_10px_0px_#00000014] z-20"
+      class="mention-list absolute flex flex-col gap-3 left-[20px] bottom-full -mb-4 p-3 md:p-5 w-[270px] sm:w-[350px] max-h-[200px] sm:max-h-[467px] overflow-auto bg-white border border-[#ADB0D9] rounded-t-[20px] rounded-br-[20px] shadow-[0px_2px_10px_0px_#00000014] z-20 overflow-x-hidden"
     >
       <li
         #groupMentionItem
         *ngFor="let g of filteredGroups; let i = index"
         (mousedown)="selectGroup(g)"
         [ngClass]="{ 'bg-[#ECEEFE]': i === activeGroupIndex }"
-        class="w-max ml-4 mr-[5px] px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+        class="w-[90%] sm:w-max ml-4 mr-[5px] flex flex-wrap items-center px-3 sm:px-5 py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
       >
         <p
-          class="text-base"
+          class="flex-1 min-w-0 text-base transition-colors duration-200 whitespace-normal break-words"
           [ngClass]="{
             'font-bold text-[#535AF1]': i === activeGroupIndex,
             'font-normal text-black': i !== activeGroupIndex
