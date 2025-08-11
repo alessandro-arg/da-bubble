@@ -96,12 +96,12 @@
           (click)="onGroupClick(g)"
           (mouseenter)="hoveredGroupId = g.id"
           (mouseleave)="hoveredGroupId = null"
-          class="flex items-center gap-2 w-max rounded-2xl py-1 px-5 cursor-pointer transition-colors duration-200"
+          class="flex items-center gap-2 rounded-2xl py-1 px-5 cursor-pointer transition-colors duration-200"
           [ngClass]="{
             'bg-[#ECEEFE]': selectedGroupId === g.id,
             'hover:bg-[#E0E2FF]': selectedGroupId !== g.id,
-            'ml-0 xl:ml-[25px]': !isMobile,
-            'ml-[25px]': isMobile
+            'ml-0 xl:ml-[25px] w-full xl:w-max': !isMobile,
+            'ml-[25px] w-max': isMobile
           }"
         >
           <img
@@ -115,7 +115,7 @@
             alt="group icon"
           />
           <p
-            class="text-base transition-colors duration-200"
+            class="text-base transition-colors duration-200 break-words"
             [ngClass]="{
               'font-bold text-[#535AF1]': g.id === selectedGroupId,
               'font-normal text-black': g.id !== selectedGroupId
@@ -182,12 +182,13 @@
           <div
             *ngFor="let user of users"
             (click)="onClick(user)"
-            class="w-full break-words xl:w-max mr-[5px] flex items-center py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
+            class="break-words mr-[5px] flex items-center py-1 hover:bg-[#ECEEFE] rounded-[30px] cursor-pointer transition-colors duration-200"
             [ngClass]="{
               'bg-[#ECEEFE]': user.uid === selectedUserUid,
               'hover:bg-[#ECEEFE]': user.uid !== selectedUserUid,
-              'ml-0 xl:ml-4 gap-3 xl:gap-4 px-4 xl:px-5': !isMobile,
-              'ml-4 gap-4 px-5': isMobile
+              'ml-0 xl:ml-4 gap-3 xl:gap-4 px-4 xl:px-5 xl:w-max w-full':
+                !isMobile,
+              'ml-4 gap-4 px-5 w-max': isMobile
             }"
           >
             <div class="relative w-12 h-12">

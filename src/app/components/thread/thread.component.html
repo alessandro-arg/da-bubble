@@ -1,5 +1,6 @@
 <!-- Thread header -->
-<div class="w-full h-full flex flex-col">
+<div class="w-full h-full flex flex-col min-h-0">
+  <!-- Header -->
   <div
     class="w-full flex justify-between items-center shadow-[0px_2px_10px_0px_#00000014]"
     [ngClass]="
@@ -38,63 +39,64 @@
     </button>
   </div>
 
-  <!-- Thread message -->
-  <div
-    class="flex items-start my-2 py-4"
-    [ngClass]="{
-      'gap-[10px] px-[16px] ': isMobile,
-      'gap-[15px] px-[40px] ': !isMobile
-    }"
-  >
-    <ng-container *ngIf="originalMessage$ | async as msg">
-      <ng-container *ngIf="participantsMap[msg.sender] as user">
-        <img
-          [src]="user.avatar"
-          class="w-[50px] h-[50px] rounded-full"
-          [alt]="user.name"
-        />
-        <div class="flex flex-col max-w-[80%] gap-1">
-          <div class="flex items-center gap-5">
-            <span class="font-bold text-base"> {{ user.name }}</span>
-            <span class="text-[#686868] font-normal text-xs">
-              {{ msg.createdAt?.toDate() | date : "HH:mm" }} Uhr</span
-            >
-          </div>
-          <div
-            class="p-[15px] max-w-max text-wrap text-base transition-colors duration-200 bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px] group-hover:bg-white"
-          >
-            {{ msg.text }}
-          </div>
-        </div>
-      </ng-container>
-    </ng-container>
-  </div>
-
-  <!-- Separator -->
-  <ng-container *ngIf="threadMessages$ | async as replies">
-    <div *ngIf="replies.length > 1" class="px-4 lg:px-[40px]">
-      <div class="flex items-center">
-        <span class="text-base text-[#ADB0D9] whitespace-nowrap">
-          {{ replies.length }} Antworten
-        </span>
-        <div class="flex-grow h-px bg-[#ADB0D9] ml-5"></div>
-      </div>
-    </div>
-    <div *ngIf="replies.length === 1" class="px-4 lg:px-[40px]">
-      <div class="flex items-center">
-        <span class="text-base text-[#ADB0D9] whitespace-nowrap">
-          {{ replies.length }} Antwort
-        </span>
-        <div class="flex-grow h-px bg-[#ADB0D9] ml-5"></div>
-      </div>
-    </div>
-  </ng-container>
-
-  <!-- Answers -->
+  <!-- Scrollable content area -->
   <div
     #threadContainer
-    class="space-y-3 overflow-y-auto overflow-x-hidden h-[65vh]"
+    class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden"
   >
+    <!-- Thread message -->
+    <div
+      class="flex items-start my-2 py-4"
+      [ngClass]="{
+        'gap-[10px] px-[16px] ': isMobile,
+        'gap-[15px] px-[40px] ': !isMobile
+      }"
+    >
+      <ng-container *ngIf="originalMessage$ | async as msg">
+        <ng-container *ngIf="participantsMap[msg.sender] as user">
+          <img
+            [src]="user.avatar"
+            class="w-[50px] h-[50px] rounded-full"
+            [alt]="user.name"
+          />
+          <div class="flex flex-col max-w-[80%] gap-1">
+            <div class="flex items-center gap-5">
+              <span class="font-bold text-base"> {{ user.name }}</span>
+              <span class="text-[#686868] font-normal text-xs">
+                {{ msg.createdAt?.toDate() | date : "HH:mm" }} Uhr</span
+              >
+            </div>
+            <div
+              class="p-[15px] max-w-max text-wrap text-base transition-colors duration-200 bg-[#ECEEFE] text-black rounded-b-[30px] rounded-tr-[30px] group-hover:bg-white"
+            >
+              {{ msg.text }}
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+
+    <!-- Separator -->
+    <ng-container *ngIf="threadMessages$ | async as replies">
+      <div *ngIf="replies.length > 1" class="px-4 lg:px-[40px]">
+        <div class="flex items-center">
+          <span class="text-base text-[#ADB0D9] whitespace-nowrap">
+            {{ replies.length }} Antworten
+          </span>
+          <div class="flex-grow h-px bg-[#ADB0D9] ml-5"></div>
+        </div>
+      </div>
+      <div *ngIf="replies.length === 1" class="px-4 lg:px-[40px]">
+        <div class="flex items-center">
+          <span class="text-base text-[#ADB0D9] whitespace-nowrap">
+            {{ replies.length }} Antwort
+          </span>
+          <div class="flex-grow h-px bg-[#ADB0D9] ml-5"></div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Answers -->
     <ng-container *ngFor="let msg of threadMessages$ | async">
       <ng-container *ngIf="participantsMap[msg.sender] as user">
         <div
