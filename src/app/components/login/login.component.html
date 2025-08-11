@@ -1,5 +1,5 @@
 <div
-  class="login-page container mx-auto p-5 flex flex-col items-center min-h-screen relative"
+  class="login-page container mx-auto p-5 flex flex-col items-center min-h-screen relative cursor-default"
 >
   <div
     class="logo-container flex items-center w-full max-w-[1920px]"
@@ -66,7 +66,7 @@
       <!-- Email Field -->
       <div>
         <div
-          class="form-group form-group-input-div bg-[#edeefe] flex justify-center items-center rounded-full flex-col w-full p-4"
+          class="form-group bg-[#edeefe] border border-transparent hover:border-[#686868] focus-within:border-[#535AF1] focus-within:hover:border-[#444DF2] flex justify-center items-center rounded-full flex-col w-full p-4 transition-colors duration-200"
         >
           <div class="flex justify-center items-center w-full">
             <img
@@ -128,7 +128,7 @@
         class="form-group flex justify-center items-center hover:border-solid flex-col w-full"
       >
         <div
-          class="form-group-input-div bg-[#edeefe] hover:border-[#444DF2] flex justify-center items-center w-full py-4 rounded-full px-4"
+          class="bg-[#edeefe] border border-transparent hover:border-[#686868] focus-within:border-[#535AF1] focus-within:hover:border-[#444DF2] flex justify-center items-center w-full py-4 rounded-full px-4 transition-colors duration-200"
         >
           <img
             src="assets/img/lock.svg"
@@ -242,7 +242,7 @@
           type="button"
           (click)="guestLogin()"
           [disabled]="loading"
-          class="guest-login-btn border text-[#444DF2] border-[#797EF3] hover:bg-[#535AF1] py-3 px-3 rounded-full disabled:pointer-events-none bg-white disabled:text-[#686868] disabled:border-[#686868] transition-all duration-200"
+          class="border text-[#444DF2] border-[#797EF3] hover:bg-[#535AF1] hover:text-white py-3 px-3 rounded-full disabled:pointer-events-none bg-white disabled:text-[#686868] disabled:border-[#686868] transition-all duration-200"
         >
           <span *ngIf="!loading">Gäste-Login</span>
           <span *ngIf="loading">Laden...</span>

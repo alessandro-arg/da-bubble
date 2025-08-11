@@ -17,6 +17,7 @@ import {
   ValidatorFn,
 } from '@angular/forms';
 import { AuthService } from '../../../auth/auth.service';
+import { MobileService } from '../../../services/mobile.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -33,6 +34,8 @@ export class ResetPasswordComponent implements OnInit {
   successMessage: string | null = null;
   loading = false;
   oobCode: string | null = null;
+  isMobile = false;
+  arrowHover = false;
 
   /**
    * Constructor injecting dependencies and setting up form and query param handling.
@@ -43,7 +46,8 @@ export class ResetPasswordComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private mobileService: MobileService
   ) {
     this.resetForm = new FormGroup(
       {
@@ -68,6 +72,10 @@ export class ResetPasswordComponent implements OnInit {
    * Lifecycle hook that validates the reset password mode and code from URL params.
    */
   ngOnInit() {
+    this.mobileService.isMobile$.subscribe((isMobile) => {
+      this.isMobile = isMobile;
+    });
+
     this.route.queryParams.subscribe((params) => {
       this.oobCode = params['oobCode'] || null;
       const mode = params['mode'];
