@@ -28,6 +28,7 @@ export class ChooseYourAvatarComponent implements OnInit {
   isMobile = false;
   arrowHover = false;
   registrationName = '';
+  toastState: 'hidden' | 'enter' | 'leave' = 'hidden';
 
   private readonly DEFAULT_GROUP_IDS = [
     'CY11IlECr0PhcVwxnCbJ',
@@ -166,7 +167,7 @@ export class ChooseYourAvatarComponent implements OnInit {
       return;
     }
 
-    this.setLoadingState(true);
+    this.loading = true;
     await this.tryRegisterUser();
   }
 
@@ -215,8 +216,7 @@ export class ChooseYourAvatarComponent implements OnInit {
       this.handleRegistrationSuccess();
     } catch (error: any) {
       this.handleRegistrationError(error);
-    } finally {
-      this.setLoadingState(false);
+      this.loading = false;
     }
   }
 
@@ -297,18 +297,26 @@ export class ChooseYourAvatarComponent implements OnInit {
    * This method is intended to be called upon successful completion of the registration workflow.
    */
   private handleRegistrationSuccess(): void {
-    this.setSuccessMessage('Anmelden!');
-    this.clearRegistrationData();
-    this.navigateToLoginAfterDelay();
-  }
+    this.successMessage = 'Konto erfolgreich erstellt!';
+    this.toastState = 'enter';
 
-  /**
-   * Sets the success message to be displayed.
-   *
-   * @param message - The success message to set.
-   */
-  private setSuccessMessage(message: string): void {
-    this.successMessage = message;
+    const NAV_DELAY = 1300;
+    const HIDE_DELAY = 1600;
+
+    setTimeout(() => {
+      this.router.navigate(['/login']);
+    }, NAV_DELAY);
+
+    setTimeout(() => {
+      this.toastState = 'leave';
+    }, HIDE_DELAY - 250);
+
+    setTimeout(() => {
+      this.successMessage = null;
+      this.toastState = 'hidden';
+    }, HIDE_DELAY);
+
+    this.clearRegistrationData();
   }
 
   /**
@@ -327,18 +335,6 @@ export class ChooseYourAvatarComponent implements OnInit {
    */
   private clearRegistrationData(): void {
     this.registrationService.clear();
-  }
-
-  /**
-   * Navigates to the login page after a specified delay.
-   * This method uses a timeout to delay the navigation by 1800 milliseconds.
-   *
-   * @private
-   */
-  private navigateToLoginAfterDelay(): void {
-    setTimeout(() => {
-      this.router.navigate(['/login']);
-    }, 1800);
   }
 
   /**
