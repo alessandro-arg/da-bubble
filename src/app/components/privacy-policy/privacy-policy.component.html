@@ -10,13 +10,13 @@
   >
     <div class="logo flex items-center gap-2">
       <img src="assets/img/logo.svg" alt="DABubble Logo" class="w-16 h-auto" />
-      <p class="logo-text font-bold">DABubble</p>
+      <h5 class="text-2xl font-bold">DABubble</h5>
     </div>
   </header>
 
-  <div class="flex justify-center items-center mx-auto w-full">
+  <div class="flex justify-center items-center mx-auto w-full cursor-default">
     <div
-      class="relative md:max-w-[1000px] w-full flex flex-col px-[56px] py-[48px] gap-[32px] shadow-[0px_2px_10px_0px_#00000014] rounded-[30px] bg-white mt-8"
+      class="main relative md:max-w-[1000px] w-full flex flex-col px-[56px] py-[48px] gap-[32px] shadow-[0px_2px_10px_0px_#00000014] rounded-[30px] bg-white mt-8"
     >
       <a
         (click)="goBack()"
@@ -36,51 +36,11 @@
       </a>
 
       <div class="flex flex-col gap-5 break-words">
-        <h1
-          class="text-[#444DF2] font-bold"
-          [ngClass]="{ 'text-[46px]': !isMobile, 'text-[36px]': isMobile }"
-        >
+        <h1 class="text-[#444DF2] text-[46px] font-bold w-max">
           Datenschutzerklärung
         </h1>
         <p>Stand: 9. August 2025</p>
-        <h2
-          class="text-[#444DF2] font-bold"
-          [ngClass]="{ 'text-[32px]': !isMobile, 'text-[26px]': isMobile }"
-        >
-          Inhaltsübersicht
-        </h2>
-        <ul class="index">
-          <li><a class="index-link" href="#m3">Verantwortlicher</a></li>
-          <li>
-            <a class="index-link" href="#mOverview"
-              >Übersicht der Verarbeitungen</a
-            >
-          </li>
-          <li>
-            <a class="index-link" href="#m2427">Maßgebliche Rechtsgrundlagen</a>
-          </li>
-          <li>
-            <a class="index-link" href="#m12"
-              >Allgemeine Informationen zur Datenspeicherung und Löschung</a
-            >
-          </li>
-          <li>
-            <a class="index-link" href="#m182"
-              >Kontakt- und Anfrageverwaltung</a
-            >
-          </li>
-          <li>
-            <a class="index-link" href="#m2324"
-              >Datenschutzinformationen für Hinweisgeber</a
-            >
-          </li>
-        </ul>
-        <h2
-          class="text-[#444DF2] font-bold"
-          [ngClass]="{ 'text-[32px]': !isMobile, 'text-[28px]': isMobile }"
-        >
-          Verantwortlicher
-        </h2>
+        <h2 class="text-[#444DF2] font-bold">Verantwortlicher</h2>
         <p>
           Alessandro Argenziano,<br />Kirchstr. 2,<br />79801 Hohentengen a.H. -
           Baden-Württemberg
@@ -105,12 +65,7 @@
           >
         </p>
 
-        <h2
-          class="text-[#444DF2] font-bold"
-          [ngClass]="{ 'text-[32px]': !isMobile, 'text-[28px]': isMobile }"
-        >
-          Übersicht der Verarbeitungen
-        </h2>
+        <h2 class="text-[#444DF2] font-bold">Übersicht der Verarbeitungen</h2>
         <p>
           Die nachfolgende Übersicht fasst die Arten der verarbeiteten Daten und
           die Zwecke ihrer Verarbeitung zusammen und verweist auf die
@@ -142,12 +97,7 @@
           </li>
           <li>Hinweisgeberschutz.</li>
         </ul>
-        <h2
-          class="text-[#444DF2] font-bold"
-          [ngClass]="{ 'text-[32px]': !isMobile, 'text-[28px]': isMobile }"
-        >
-          Maßgebliche Rechtsgrundlagen
-        </h2>
+        <h2 class="text-[#444DF2] font-bold">Maßgebliche Rechtsgrundlagen</h2>
         <p>
           <strong>Nationale Datenschutzregelungen in Deutschland: </strong
           >Zusätzlich zu den Datenschutzregelungen der DSGVO gelten nationale
@@ -190,10 +140,7 @@
           DSG bestimmt.
         </p>
 
-        <h2
-          class="text-[#444DF2] font-bold"
-          [ngClass]="{ 'text-[32px]': !isMobile, 'text-[28px]': isMobile }"
-        >
+        <h2 class="text-[#444DF2] font-bold">
           Allgemeine Informationen zur Datenspeicherung und Löschung
         </h2>
         <p>
@@ -264,12 +211,7 @@
           </li>
         </ul>
 
-        <h2
-          class="text-[#444DF2] font-bold"
-          [ngClass]="{ 'text-[32px]': !isMobile, 'text-[28px]': isMobile }"
-        >
-          Kontakt- und Anfrageverwaltung
-        </h2>
+        <h2 class="text-[#444DF2] font-bold">Kontakt- und Anfrageverwaltung</h2>
         <p>
           Bei der Kontaktaufnahme mit uns (z. B. per Post, Kontaktformular,
           E-Mail, Telefon oder via soziale Medien) sowie im Rahmen bestehender
@@ -333,10 +275,7 @@
             >
           </li>
         </ul>
-        <h2
-          class="text-[#444DF2] font-bold"
-          [ngClass]="{ 'text-[32px]': !isMobile, 'text-[28px]': isMobile }"
-        >
+        <h2 class="text-[#444DF2] font-bold">
           Datenschutzinformationen für Hinweisgeber
         </h2>
         <p>
@@ -345,16 +284,7 @@
           und beteiligten Parteien im Rahmen unseres Hinweisgeberverfahrens
           handhaben. Unser Ziel ist es, eine unkomplizierte und sichere
           Möglichkeit zur Meldung von möglichem Fehlverhalten durch uns, unsere
-          Mitarbeiter oder Dienstleister zu bieten, insbesondere für Handlungen,
-          die gegen Gesetze oder<span
-            class="dsg-license-content-blurred de dsg-ttip-activate"
-          >
-            - Dieser Textbereich muss mit einer Premium Lizenz freischaltet
-            werden. - premiumtext premiumtext premiumtext premiumtext
-            premiumtext premiumtext premiumtext premiumtext premiumtext
-            premiumtext premiumtext premiumtext premiumtext premiumtext
-            premiumtext
-          </span>
+          Mitarbeiter oder Dienstleister zu bieten.
         </p>
         <p>
           Rechtsgrundlagen (Deutschland): Soweit wir Daten zur Erfüllung unserer
@@ -409,52 +339,6 @@
           DSGVO und im Fall besonderer Kategorien
         </p>
         <ul class="m-elements">
-          <li>
-            <strong>Verarbeitete Datenarten:</strong> Bestandsdaten (z. B. der
-            vollständige Name, Wohnadresse, Kontaktinformationen,
-            Kundennummer,<span
-              class="dsg-license-content-blurred de dsg-ttip-activate"
-            >
-              - Dieser Textbereich muss mit einer Premium Lizenz freischaltet
-              werden. - premiumtext premiumtext premiumtext </span
-            >); Beschäftigtendaten (Informationen zu Mitarbeitern und anderen
-            Personen in einem<span
-              class="dsg-license-content-blurred de dsg-ttip-activate"
-            >
-              - Dieser Textbereich muss mit einer Premium Lizenz freischaltet
-              werden. - premiumtext premiumtext premiumtext </span
-            >); Kontaktdaten (z. B. Post- und E-Mail-Adressen oder<span
-              class="dsg-license-content-blurred de dsg-ttip-activate"
-            >
-              - Dieser Textbereich muss mit einer Premium Lizenz freischaltet
-              werden. - premiumtext premiumtext premiumtext </span
-            >); Inhaltsdaten (z. B. textliche oder bildliche Nachrichten und
-            Beiträge sowie die sie betreffenden Informationen, wie z. B. Angaben
-            zur Autorenschaft<span
-              class="dsg-license-content-blurred de dsg-ttip-activate"
-            >
-              - Dieser Textbereich muss mit einer Premium Lizenz freischaltet
-              werden. - premiumtext premiumtext premiumtext premiumtext
-              premiumtext premiumtext </span
-            >). Nutzungsdaten (z. B. Seitenaufrufe und Verweildauer, Klickpfade,
-            Nutzungsintensität und -frequenz, verwendete Gerätetypen und
-            Betriebssysteme, Interaktionen mit<span
-              class="dsg-license-content-blurred de dsg-ttip-activate"
-            >
-              - Dieser Textbereich muss mit einer Premium Lizenz freischaltet
-              werden. - premiumtext premiumtext premiumtext premiumtext
-              premiumtext </span
-            >).
-          </li>
-          <li>
-            <strong>Betroffene Personen:</strong> Beschäftigte (z. B.
-            Angestellte, Bewerber, Aushilfskräfte und sonstige<span
-              class="dsg-license-content-blurred de dsg-ttip-activate"
-            >
-              - Dieser Textbereich muss mit einer Premium Lizenz freischaltet
-              werden. - premiumtext premiumtext premiumtext </span
-            >); Dritte Personen. Hinweisgeber.
-          </li>
           <li><strong>Zwecke der Verarbeitung:</strong> Hinweisgeberschutz.</li>
           <li>
             <strong>Aufbewahrung und Löschung:</strong> Löschung entsprechend
