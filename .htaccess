@@ -1,0 +1,31 @@
+Options -Multiviews
+RewriteEngine On
+
+# --- Canonical host: redirect www.dabubble → dabubble (adjust if you prefer www)
+RewriteCond %{HTTP_HOST} ^www\.dabubble\.alessandro-argenziano\.com$ [NC]
+RewriteRule ^(.*)$ https://dabubble.alessandro-argenziano.com/$1 [L,R=301]
+
+# --- (Optional) force HTTPS for the subdomain
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# --- Angular SPA fallback
+RewriteBase /
+# Serve existing files or dirs
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+# Otherwise hand to index.html
+RewriteRule ^ index.html [L]
+
+# --- Static asset caching (optional)
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType application/woff "access plus 1 month"
+  ExpiresByType application/woff2 "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/jpeg "access plus 1 month"
+</IfModule>

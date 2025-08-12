@@ -56,14 +56,21 @@ export class ChatService {
   async ensureChat(uid1: string, uid2: string): Promise<string> {
     const chatId = this.getChatId(uid1, uid2);
     const chatRef = doc(this.firestore, `chats/${chatId}`);
-    await setDoc(
-      chatRef,
-      {
+    const snap = await getDoc(chatRef);
+
+    if (!snap.exists()) {
+      await setDoc(chatRef, {
         participants: [uid1, uid2],
         updatedAt: serverTimestamp(),
-      },
-      { merge: true }
-    );
+        lastRead: {
+          [uid1]: serverTimestamp(),
+          [uid2]: serverTimestamp(),
+        },
+      });
+    } else {
+      await updateDoc(chatRef, { updatedAt: serverTimestamp() });
+    }
+
     return chatId;
   }
 
