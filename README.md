@@ -5,15 +5,14 @@ A modern Slack‑style chat application built with **Angular 17**, **Tailwind CS
 
 ## ✨ Features
 
-- 🔥 **Real‑time chat** powered by Firebase (Firestore/RTDB) & Angular
-- 👥 **Channels** (public/private) and **direct messages**
-- 🧵 **Threads** and in‑context replies
-- 😀 **Emoji reactions** (and message editing/deletion)
-- 🏷️ **Mentions** `@user` and `#channel`
-- 🟢 **Online / offline / last‑seen** presence indicators
-- 💬 **Typing indicators** and read receipts (optional)
-- 🎨 **Responsive UI/UX** with Tailwind and accessible components
-- 🔐 **Auth** with Email/Password and Google Sign‑In (Firebase Authentication)
+- **Real‑time chat** powered by Firebase (Firestore/RTDB) & Angular
+- **Channels** (public/private) and **direct messages**
+- **Threads** and in‑context replies
+- **Emoji reactions** (and message editing/deletion)
+- **Mentions** `@user` and `#channel`
+- **Online / offline / last‑seen** presence indicators
+- **Responsive UI/UX** with Tailwind and accessible components
+- **Auth** with Email/Password and Google Sign‑In (Firebase Authentication)
 
 ## 🖼️ Screenshots
 
