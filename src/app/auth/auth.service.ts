@@ -157,7 +157,7 @@ export class AuthService {
    */
   sendPasswordResetEmail(email: string): Observable<void> {
     const actionCodeSettings = {
-      url: 'http://localhost:4200/reset-password',
+      url: 'http://dabubble.alessandro-argenziano.com/reset-password',
       handleCodeInApp: true,
     };
 
@@ -221,25 +221,3 @@ export class AuthService {
     );
   }
 }
-
-/*
-
-  const actionCodeSettings = {
-      url: 'https://ihre-domain.de/reset-password',
-      handleCodeInApp: true
-    };
-
-
-    und auf der Firebase-Konsole unter "Authentifizierung" > "E-Mail-Vorlagen" > "Passwort zurücksetzen" den Link anpassen:
-    <a href="https://ihre-domain.de/reset-password?oobCode={{code}}">Passwort zurücksetzen</a>
-    Dies stellt sicher, dass der Link korrekt funktioniert und die Benutzer nach dem Zurücksetzen des Passworts zur richtigen Seite weitergeleitet werden.
-
-
-
-    https://dabubble-db274.firebaseapp.com/__/auth/action?mode=action&oobCode=code
-
-
-
-    https://dabubble-db274.firebaseapp.com/__/auth/action?mode=action&oobCode=code
-
-*/
